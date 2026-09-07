@@ -1,0 +1,6 @@
+@InfigoHR.Presentation_HostAddress = http://localhost:5119
+
+GET {{InfigoHR.Presentation_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
