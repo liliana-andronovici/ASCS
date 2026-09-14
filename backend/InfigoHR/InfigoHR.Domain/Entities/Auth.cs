@@ -2,7 +2,7 @@ using InfigoHR.Domain.Common;
 
 namespace InfigoHR.Domain.Entities;
 
-public class Auth : BaseEntity
+public class AuthEntity : BaseEntity
 {
     public int EmployeeId { get; set; }
     public required string PasswordHash { get; set; }

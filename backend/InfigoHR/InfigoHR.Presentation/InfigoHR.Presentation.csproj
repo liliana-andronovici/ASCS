@@ -17,7 +17,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\InfigoHR.Application\InfigoHR.Application.csproj" />
-      <ProjectReference Include="..\InfigoHR.Infrastructure\InfigoHR.Infrastructure.csproj" />
       <ProjectReference Include="..\InfigoHR.Persistence\InfigoHR.Persistence.csproj" />
     </ItemGroup>
 
