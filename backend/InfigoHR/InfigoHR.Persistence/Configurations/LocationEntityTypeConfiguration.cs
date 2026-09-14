@@ -4,14 +4,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InfigoHR.Persistence.Configurations;
 
-public class LocationConfiguration : IEntityTypeConfiguration<Location>
+public class LocationEntityTypeConfiguration : IEntityTypeConfiguration<LocationEntity>
 {
-    public void Configure(EntityTypeBuilder<Location> builder)
+    public void Configure(EntityTypeBuilder<LocationEntity> builder)
     {
-        builder.ToTable("Location");
-
+        builder.ToTable("Locations");
         builder.HasKey(l => l.Id);
-
         builder.Property(l => l.Name)
             .IsRequired()
             .HasMaxLength(150);

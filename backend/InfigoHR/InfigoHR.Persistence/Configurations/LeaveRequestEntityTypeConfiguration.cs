@@ -4,17 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InfigoHR.Persistence.Configurations;
 
-public class LeaveRequestConfiguration : IEntityTypeConfiguration<LeaveRequest>
+public class LeaveRequestEntityTypeConfiguration : IEntityTypeConfiguration<LeaveRequestEntity>
 {
-    public void Configure(EntityTypeBuilder<LeaveRequest> builder)
+    public void Configure(EntityTypeBuilder<LeaveRequestEntity> builder)
     {
-        // Denumire tabela
-        builder.ToTable("LeaveRequest");
-
-        // Cheie Primara (PK)
+        builder.ToTable("LeaveRequests");
         builder.HasKey(l => l.Id);
 
-        // Validari campuri data si text opțional
         builder.Property(l => l.StartDateUtc)
             .IsRequired();
 
@@ -22,21 +18,19 @@ public class LeaveRequestConfiguration : IEntityTypeConfiguration<LeaveRequest>
             .IsRequired();
 
         builder.Property(l => l.Note)
-            .HasMaxLength(500); // Limită rezonabilă pentru textul notei
+            .HasMaxLength(500);
 
-        // Conversie Enum-uri în int pentru stocare eficientă
         builder.Property(l => l.Type)
             .HasConversion<int>()
             .IsRequired();
 
-        builder.Property(l => l.StatusT)
+        builder.Property(l => l.Status)
             .HasConversion<int>()
             .IsRequired();
 
-        // Relație Foreign Key (1:N) cu tabela Employees
         builder.HasOne(l => l.Employee)
             .WithMany(e => e.LeaveRequests)
             .HasForeignKey(l => l.EmployeeId)
-            .OnDelete(DeleteBehavior.Cascade); // Dacă un angajat este șters, se șterg și cererile lui
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

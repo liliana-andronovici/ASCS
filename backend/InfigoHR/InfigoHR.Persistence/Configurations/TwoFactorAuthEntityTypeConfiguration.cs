@@ -4,17 +4,17 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InfigoHR.Persistence.Configurations;
 
-public class TwoFactorAuthConfiguration : IEntityTypeConfiguration<TwoFactorAuth>
+public class TwoFactorAuthEntityTypeConfiguration : IEntityTypeConfiguration<TwoFactorAuthEntity>
 {
-    public void Configure(EntityTypeBuilder<TwoFactorAuth> builder)
+    public void Configure(EntityTypeBuilder<TwoFactorAuthEntity> builder)
     {
-        builder.ToTable("TwoFactorAuth");
+        builder.ToTable("TwoFactorAuths");
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.EmployeeId).IsUnique();
         builder.Property(x => x.SecretKey).IsRequired().HasMaxLength(100);
         builder.HasOne(x => x.Employee)
             .WithOne(x => x.TwoFactorAuth)
-            .HasForeignKey<TwoFactorAuth>(x => x.EmployeeId)
+            .HasForeignKey<TwoFactorAuthEntity>(x => x.EmployeeId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

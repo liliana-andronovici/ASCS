@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InfigoHR.Persistence.Configurations;
 
-public class TrustedDeviceConfiguration : IEntityTypeConfiguration<TrustedDevice>
+public class TrustedDeviceEntityTypeConfiguration : IEntityTypeConfiguration<TrustedDeviceEntity>
 {
-    public void Configure(EntityTypeBuilder<TrustedDevice> builder)
+    public void Configure(EntityTypeBuilder<TrustedDeviceEntity> builder)
     {
-        builder.ToTable("TrustedDevice");
+        builder.ToTable("TrustedDevices");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.DeviceToken).IsRequired().HasMaxLength(250);
         builder.HasIndex(x => x.DeviceToken).IsUnique();

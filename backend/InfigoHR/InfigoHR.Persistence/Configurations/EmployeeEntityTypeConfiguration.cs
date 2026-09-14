@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InfigoHR.Persistence.Configurations;
 
-public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
+public class EmployeeEntityTypeConfiguration : IEntityTypeConfiguration<EmployeeEntity>
 {
-    public void Configure(EntityTypeBuilder<Employee> builder)
+    public void Configure(EntityTypeBuilder<EmployeeEntity> builder)
     {
         builder.ToTable("Employees");
         builder.HasKey(x => x.Id);
@@ -18,17 +18,20 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.Property(x => x.StartedOnUtc).IsRequired();
         builder.Property(x => x.InviteToken).HasMaxLength(250);
         builder.Property(x => x.Status).HasConversion<int>().IsRequired();
+
         builder.HasOne(x => x.Department)
             .WithMany(x => x.Employees)
             .HasForeignKey(x => x.DepartmentId)
             .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasOne(x => x.Location)
             .WithMany(x => x.Employees)
             .HasForeignKey(x => x.LocationId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasOne(x => x.Manager)
             .WithMany()
             .HasForeignKey(x => x.ManagerId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

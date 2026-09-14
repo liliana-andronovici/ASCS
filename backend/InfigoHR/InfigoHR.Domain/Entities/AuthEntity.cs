@@ -4,9 +4,10 @@ namespace InfigoHR.Domain.Entities;
 
 public class AuthEntity : BaseEntity
 {
-    public int EmployeeId { get; set; }
-    public required string PasswordHash { get; set; }
+    public string PasswordHash { get; set; }
     public string? ResetToken { get; set; }
     public DateTime? ResetTokenExpiresAtUtc { get; set; }
-    public virtual Employee Employee { get; set; } = null!;
+
+    public int EmployeeId { get; set; }
+    public virtual EmployeeEntity? Employee { get; set; }
 }
