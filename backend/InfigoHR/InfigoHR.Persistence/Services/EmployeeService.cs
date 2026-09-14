@@ -7,6 +7,7 @@ namespace InfigoHR.Persistence.Services;
 
 public sealed class EmployeeService(AppDbContext dbContext) : IEmployeeService
 {
+    // pentru a obtine toti angajatii, trebuie sa trimitem un GET request catre endpoint json
     public async Task<IReadOnlyList<EmployeeDto>> GetAllAsync(
         CancellationToken cancellationToken = default) =>
         await dbContext.Employees.AsNoTracking()
@@ -24,6 +25,7 @@ public sealed class EmployeeService(AppDbContext dbContext) : IEmployeeService
                 x.Status))
             .ToListAsync(cancellationToken);
 
+    // pentru a obtine un angajat dupa id, trebuie sa trimitem un GET request catre endpoint json cu id-ul angajatului
     public async Task<EmployeeDto?> GetByIdAsync(
         int id,
         CancellationToken cancellationToken = default) =>
@@ -42,6 +44,7 @@ public sealed class EmployeeService(AppDbContext dbContext) : IEmployeeService
                 x.Status))
             .SingleOrDefaultAsync(cancellationToken);
 
+    // pentru a crea un nou angajat, trebuie sa trimitem un POST request catre endpoint json cu datele angajatului
     public async Task<EmployeeDto> CreateAsync(
         CreateEmployeeDto dto,
         CancellationToken cancellationToken = default)
@@ -63,6 +66,7 @@ public sealed class EmployeeService(AppDbContext dbContext) : IEmployeeService
         return Map(entity);
     }
 
+    // pentru a actualiza un angajat, trebuie sa trimitem un PUT request catre endpoint json cu id-ul si datele noi
     public async Task<bool> UpdateAsync(
         int id,
         UpdateEmployeeDto dto,
