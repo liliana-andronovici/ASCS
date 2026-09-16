@@ -1,5 +1,9 @@
-using InfigoHR.Persistence;
 using EvolveDb;
+using FluentValidation;
+using InfigoHR.Application.Models.Departments;
+using InfigoHR.Application.Validators.Departments;
+using InfigoHR.Persistence;
+using InfigoHR.Presentation.Middleware;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddPersistence(builder.Configuration);
+
+// changed: FluentValidation validators registered
+builder.Services.AddScoped<IValidator<CreateDepartmentModel>, CreateDepartmentModelValidator>();
+builder.Services.AddScoped<IValidator<UpdateDepartmentModel>, UpdateDepartmentModelValidator>();
 
 var app = builder.Build();
 
@@ -34,6 +42,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseMiddleware<ExceptionHandlingMiddleware>(); // changed: centralized try/catch handling
 app.MapControllers();
 
 app.Run();

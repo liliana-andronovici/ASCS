@@ -1,3 +1,7 @@
+using InfigoHR.Application.Interfaces;
+using InfigoHR.Application.Repositories;
+using InfigoHR.Persistence.Repositories;
+using InfigoHR.Persistence.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +16,9 @@ public static class DependencyInjection
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
+
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // changed: repository registered
+        services.AddScoped<IDepartmentService, DepartmentService>();
 
         return services;
     }
