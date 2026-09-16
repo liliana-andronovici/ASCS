@@ -1,12 +1,16 @@
 using InfigoHR.Persistence;
 using EvolveDb;
 using Npgsql;
+using FluentValidation;
+using InfigoHR.Application.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));builder.Services.AddOpenApi();
 builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddValidatorsFromAssemblyContaining<CreateEmployeeModelValidator>();
 
 var app = builder.Build();
 
