@@ -1,9 +1,9 @@
 using FluentValidation;
 using InfigoHR.Application.Exceptions;
+using InfigoHR.Presentation.Models;
 
 namespace InfigoHR.Presentation.Middleware;
 
-// changed: exceptions handled in one place
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
@@ -22,20 +22,20 @@ public class ExceptionHandlingMiddleware
         catch (NotFoundException ex)
         {
             context.Response.StatusCode = StatusCodes.Status404NotFound;
-            await context.Response.WriteAsJsonAsync(new { message = ex.Message });
+            await context.Response.WriteAsJsonAsync(new ErrorResponseModel { Message = ex.Message });
         }
         catch (ValidationException ex)
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            await context.Response.WriteAsJsonAsync(new
+            await context.Response.WriteAsJsonAsync(new ValidationErrorResponseModel
             {
-                errors = ex.Errors.Select(x => x.ErrorMessage)
+                Errors = ex.Errors.Select(x => x.ErrorMessage)
             });
         }
         catch (Exception ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            await context.Response.WriteAsJsonAsync(new { message = ex.Message });
+            await context.Response.WriteAsJsonAsync(new ErrorResponseModel { Message = ex.Message });
         }
     }
 }

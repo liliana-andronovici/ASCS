@@ -1,5 +1,4 @@
-using FluentValidation;
-using InfigoHR.Application.Interfaces;
+using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models.Departments;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,52 +9,39 @@ namespace InfigoHR.Presentation.Controllers;
 public class DepartmentController : ControllerBase
 {
     private readonly IDepartmentService _departmentService;
-    private readonly IValidator<CreateDepartmentModel> _createValidator;
-    private readonly IValidator<UpdateDepartmentModel> _updateValidator;
 
-    public DepartmentController(
-        IDepartmentService departmentService,
-        IValidator<CreateDepartmentModel> createValidator,
-        IValidator<UpdateDepartmentModel> updateValidator)
+    public DepartmentController(IDepartmentService departmentService)
     {
         _departmentService = departmentService;
-        _createValidator = createValidator;
-        _updateValidator = updateValidator;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<DepartmentModel>>> GetAll()
     {
-        var departments = await _departmentService.GetAllAsync(); // changed: Async suffix
+        var departments = await _departmentService.GetAllAsync();
         return Ok(departments);
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<DepartmentModel>> GetById(int id)
     {
-        // changed: NotFound is now handled with custom exception + middleware
         var department = await _departmentService.GetByIdAsync(id);
         return Ok(department);
     }
 
     [HttpPost]
-    public async Task<ActionResult<DepartmentModel>> Create(CreateDepartmentModel model)
+    public async Task<IActionResult> Create(CreateDepartmentModel model)
     {
-        // changed: FluentValidation used
-        await _createValidator.ValidateAndThrowAsync(model);
-
-        var department = await _departmentService.CreateAsync(model);
-        return CreatedAtAction(nameof(GetById), new { id = department.Id }, department);
+        await _departmentService.CreateAsync(model);
+        return NoContent();
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<DepartmentModel>> Update(int id, UpdateDepartmentModel model)
+    public async Task<IActionResult> Update(int id, UpdateDepartmentModel model)
     {
-        // changed: FluentValidation used
-        await _updateValidator.ValidateAndThrowAsync(model);
-
-        var department = await _departmentService.UpdateAsync(id, model);
-        return Ok(department);
+        model.Id = id;
+        await _departmentService.UpdateAsync(model);
+        return NoContent();
     }
 
     [HttpDelete("{id:int}")]
