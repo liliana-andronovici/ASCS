@@ -5,44 +5,21 @@ using InfigoHR.Application.Common;
 
 namespace InfigoHR.Persistence.Repositories;
 
-public class LocationRepository : ILocationRepository
+public class LocationRepository : GenericRepository<LocationEntity>, ILocationRepository
 {
-    private readonly AppDbContext _context;
-    private DbSet<LocationEntity> Locations => _context.Locations;
-
-    public LocationRepository(AppDbContext context)
+    public LocationRepository(AppDbContext context) : base(context)
     {
-        _context = context;
-    }
-    
-    public async Task<List<LocationEntity>> GetAllAsync()
-        => await Locations.ToListAsync();
-
-    public async Task<LocationEntity?> GetByIdAsync(int id)
-        => await Locations.FindAsync(id);
-
-    public async Task AddAsync(LocationEntity location)
-    {
-        await Locations.AddAsync(location);
-        await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(LocationEntity entity)
+    public override async Task UpdateAsync(LocationEntity entity)
     {
         entity.UpdatedOnUtc = DateTime.UtcNow;
-        Locations.Update(entity);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteAsync(LocationEntity location)
-    {
-        Locations.Remove(location);
-        await _context.SaveChangesAsync();
+        await base.UpdateAsync(entity);
     }
 
     public async Task<PagedResult<LocationEntity>> GetPagedAsync(PaginationParams paginationParams)
     {
-        var query = Locations.AsQueryable();
+        var query = Entities.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(paginationParams.Search))
         {
