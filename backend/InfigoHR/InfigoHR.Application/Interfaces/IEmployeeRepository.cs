@@ -1,14 +1,10 @@
 ﻿using InfigoHR.Domain.Entities;
 
-namespace InfigoHR.Application.Interfaces;
+namespace InfigoHR.Application.Interfaces.Repositories;
 
-public interface IEmployeeRepository
+public interface IEmployeeRepository : IGenericRepository<EmployeeEntity>
 {
-    Task<List<EmployeeEntity>> GetAllAsync();
-    Task<EmployeeEntity?> GetByIdAsync(int id);
-    Task AddAsync(EmployeeEntity entity);
-    Task DeleteAsync(EmployeeEntity entity);
+    Task<bool> EmailExistsAsync(string email);
     Task<bool> DepartmentExistsAsync(int id);
     Task<bool> LocationExistsAsync(int id);
-    Task SaveChangesAsync();
 }

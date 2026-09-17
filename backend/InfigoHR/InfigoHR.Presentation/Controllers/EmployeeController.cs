@@ -1,8 +1,7 @@
-﻿using InfigoHR.Application.Models;
-using InfigoHR.Application.Interfaces;
+﻿using InfigoHR.Application.Interfaces.Services;
+using InfigoHR.Application.Models;
 using InfigoHR.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using FluentValidation;
 
 namespace InfigoHR.Presentation.Controllers;
 
@@ -11,11 +10,8 @@ namespace InfigoHR.Presentation.Controllers;
 public sealed class EmployeeController(IEmployeeService service) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeModel>>> GetAll()
-    {
-        var items = await service.GetAllAsync();
-        return Ok(items);
-    }
+    public async Task<ActionResult<IEnumerable<EmployeeModel>>> GetAll() =>
+        Ok(await service.GetAllAsync());
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<EmployeeModel>> GetById(int id)
@@ -31,23 +27,21 @@ public sealed class EmployeeController(IEmployeeService service) : ControllerBas
     }
 
     [HttpPost]
-    public async Task<ActionResult<EmployeeModel>> Create(
-        CreateEmployeeModel dto,
-        IValidator<CreateEmployeeModel> validator)
+    public async Task<IActionResult> Create(CreateEmployeeModel model)
     {
-        var validationResult = await validator.ValidateAsync(dto);
-        if (!validationResult.IsValid)
-            return ValidationProblem(new ValidationProblemDetails(
-                validationResult.ToDictionary()));
-
         try
         {
-            var created = await service.CreateAsync(dto);
+            var created = await service.CreateAsync(model);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
         catch (ConflictException ex)
         {
             return Conflict(ex.Message);
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            return ValidationProblem(new ValidationProblemDetails(
+                ex.Errors.ToDictionary(e => e.PropertyName, e => new[] { e.ErrorMessage })));
         }
         catch (InfigoHR.Domain.Exceptions.ValidationException ex)
         {
@@ -55,25 +49,22 @@ public sealed class EmployeeController(IEmployeeService service) : ControllerBas
         }
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(
-        int id,
-        UpdateEmployeeModel dto,
-        IValidator<UpdateEmployeeModel> validator)
+    [HttpPut]
+    public async Task<IActionResult> Update(UpdateEmployeeModel model)
     {
-        var validationResult = await validator.ValidateAsync(dto);
-        if (!validationResult.IsValid)
-            return ValidationProblem(new ValidationProblemDetails(
-                validationResult.ToDictionary()));
-
         try
         {
-            await service.UpdateAsync(id, dto);
+            await service.UpdateAsync(model);
             return NoContent();
         }
         catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            return ValidationProblem(new ValidationProblemDetails(
+                ex.Errors.ToDictionary(e => e.PropertyName, e => new[] { e.ErrorMessage })));
         }
         catch (InfigoHR.Domain.Exceptions.ValidationException ex)
         {

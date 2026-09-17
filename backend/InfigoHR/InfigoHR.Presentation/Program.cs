@@ -10,7 +10,6 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));builder.Services.AddOpenApi();
 builder.Services.AddPersistence(builder.Configuration);
-builder.Services.AddValidatorsFromAssemblyContaining<CreateEmployeeModelValidator>();
 
 var app = builder.Build();
 

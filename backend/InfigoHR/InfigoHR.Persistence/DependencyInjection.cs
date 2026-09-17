@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using InfigoHR.Application.Interfaces;
-using InfigoHR.Persistence.Services;
+using FluentValidation;
+using InfigoHR.Application.Interfaces.Repositories;
+using InfigoHR.Application.Interfaces.Services;
+using InfigoHR.Application.Services;
 using InfigoHR.Persistence.Repositories;
 
 namespace InfigoHR.Persistence;
@@ -15,9 +17,10 @@ public static class DependencyInjection
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
-        
+
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddValidatorsFromAssemblyContaining<InfigoHR.Application.Validators.CreateEmployeeModelValidator>();
 
         return services;
     }
