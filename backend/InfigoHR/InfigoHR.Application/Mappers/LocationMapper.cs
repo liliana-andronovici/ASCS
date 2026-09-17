@@ -1,4 +1,4 @@
-using InfigoHR.Application.DTOs;
+using InfigoHR.Application.Models.Locations;
 using InfigoHR.Domain.Entities;
 
 namespace InfigoHR.Application.Mappers;
@@ -12,5 +12,10 @@ public static class LocationMapper
             Id = entity.Id,
             Name = entity.Name
         };
+    }
+    
+    public static void ToEntity(UpdateLocationModel model, LocationEntity entity)
+    {
+        entity.Name = model.Name;
     }
 }

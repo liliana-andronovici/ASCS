@@ -1,10 +1,12 @@
-using InfigoHR.Application.DTOs;
+using InfigoHR.Application.Models.Locations;
 using InfigoHR.Application.Exceptions;
-using InfigoHR.Application.Interfaces;
+using InfigoHR.Application.Interfaces.Repositories;
+using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Mappers;
 using InfigoHR.Domain.Entities;
+using InfigoHR.Application.Common;
 
-namespace InfigoHR.Persistence.Services;
+namespace InfigoHR.Application.Services;
 
 public class LocationService : ILocationService
 {
@@ -21,6 +23,19 @@ public class LocationService : ILocationService
         return locations.Select(LocationMapper.ToModel).ToList();
     }
 
+    public async Task<PagedResult<LocationModel>> GetPagedAsync(PaginationParams paginationParams)
+    {
+        var pagedEntities = await _repository.GetPagedAsync(paginationParams);
+
+        return new PagedResult<LocationModel>
+        {
+            Items = pagedEntities.Items.Select(LocationMapper.ToModel).ToList(),
+            TotalCount = pagedEntities.TotalCount,
+            Page = pagedEntities.Page,
+            PageSize = pagedEntities.PageSize
+        };
+    }
+
     public async Task<LocationModel> GetByIdAsync(int id)
     {
         var location = await _repository.GetByIdAsync(id);
@@ -28,32 +43,26 @@ public class LocationService : ILocationService
         return LocationMapper.ToModel(location);
     }
 
-    public async Task<LocationModel> CreateAsync(CreateLocationModel model)
+    public async Task CreateAsync(CreateLocationModel model)
     {
         var location = new LocationEntity { Name = model.Name };
         await _repository.AddAsync(location);
-        await _repository.SaveChangesAsync();
-        return LocationMapper.ToModel(location);
     }
 
-    public async Task<LocationModel> UpdateAsync(int id, UpdateLocationModel model)
+    public async Task UpdateAsync(int id, UpdateLocationModel model)
     {
         var location = await _repository.GetByIdAsync(id);
         if (location == null) throw new LocationNotFoundException(id);
 
-        location.Name = model.Name;
-        location.UpdatedOnUtc = DateTime.UtcNow;
-        await _repository.SaveChangesAsync();
-
-        return LocationMapper.ToModel(location);
+        LocationMapper.ToEntity(model, location);
+        await _repository.UpdateAsync(location);
     }
-
+    
     public async Task DeleteAsync(int id)
     {
         var location = await _repository.GetByIdAsync(id);
         if (location == null) throw new LocationNotFoundException(id);
 
-        _repository.Remove(location);
-        await _repository.SaveChangesAsync();
+        await _repository.DeleteAsync(location);
     }
 }

@@ -1,11 +1,14 @@
-using InfigoHR.Application.Interfaces;
-using InfigoHR.Persistence.Services;
+using InfigoHR.Application.Interfaces.Repositories;
+using InfigoHR.Application.Interfaces.Services;
+using InfigoHR.Application.Services;
+using InfigoHR.Persistence.Repositories;
 using InfigoHR.Persistence;
 using EvolveDb;
 using Npgsql;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using InfigoHR.Application.Validators;
+using InfigoHR.Application.Validators.Locations;
+using InfigoHR.Presentation.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +45,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 app.MapControllers();

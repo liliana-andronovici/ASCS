@@ -1,7 +1,7 @@
 using FluentValidation;
-using InfigoHR.Application.DTOs;
+using InfigoHR.Application.Models.Locations;
 
-namespace InfigoHR.Application.Validators;
+namespace InfigoHR.Application.Validators.Locations;
 
 public class CreateLocationModelValidator : AbstractValidator<CreateLocationModel>
 {

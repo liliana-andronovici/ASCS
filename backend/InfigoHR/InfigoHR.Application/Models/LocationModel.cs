@@ -1,5 +1,4 @@
-namespace InfigoHR.Application.DTOs;
-
+namespace InfigoHR.Application.Models.Locations;
 public class LocationModel
 {
     public int Id { get; set; }

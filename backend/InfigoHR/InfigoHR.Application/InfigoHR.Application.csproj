@@ -11,7 +11,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Users\SignUp\" />
+      <Folder Include="Models\Locations\" />
+      <Folder Include="Validators\Locations\" />
     </ItemGroup>
 
     <ItemGroup>
