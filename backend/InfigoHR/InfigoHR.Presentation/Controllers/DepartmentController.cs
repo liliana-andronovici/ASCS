@@ -30,16 +30,15 @@ public class DepartmentController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateDepartmentModel model)
+    public async Task<ActionResult<int>> Create(CreateDepartmentModel model)
     {
-        await _departmentService.CreateAsync(model);
-        return NoContent();
+        var id = await _departmentService.CreateAsync(model);
+        return Ok(id);
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, UpdateDepartmentModel model)
+    [HttpPut]
+    public async Task<IActionResult> Update(UpdateDepartmentModel model)
     {
-        model.Id = id;
         await _departmentService.UpdateAsync(model);
         return NoContent();
     }

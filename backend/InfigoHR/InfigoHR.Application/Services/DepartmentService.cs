@@ -41,13 +41,14 @@ public class DepartmentService : IDepartmentService
         return DepartmentMapper.ToModel(department);
     }
 
-    public async Task CreateAsync(CreateDepartmentModel model)
+    public async Task<int> CreateAsync(CreateDepartmentModel model)
     {
         await _createValidator.ValidateAndThrowAsync(model);
 
         var department = DepartmentMapper.ToEntity(model);
         await _departmentRepository.AddAsync(department);
-        await _departmentRepository.SaveChangesAsync();
+
+        return department.Id;
     }
 
     public async Task UpdateAsync(UpdateDepartmentModel model)
@@ -61,8 +62,8 @@ public class DepartmentService : IDepartmentService
             throw new NotFoundException($"Department with id {model.Id} was not found.");
         }
 
-        DepartmentMapper.Map(model, department);
-        await _departmentRepository.SaveChangesAsync();
+        DepartmentMapper.ToEntity(model, department);
+        await _departmentRepository.UpdateAsync(department);
     }
 
     public async Task DeleteAsync(int id)
@@ -74,7 +75,6 @@ public class DepartmentService : IDepartmentService
             throw new NotFoundException($"Department with id {id} was not found.");
         }
 
-        _departmentRepository.Remove(department);
-        await _departmentRepository.SaveChangesAsync();
+        await _departmentRepository.DeleteAsync(department);
     }
 }

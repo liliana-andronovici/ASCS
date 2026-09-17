@@ -24,9 +24,8 @@ public static class DepartmentMapper
         };
     }
 
-    public static void Map(UpdateDepartmentModel model, DepartmentEntity department)
+    public static void ToEntity(UpdateDepartmentModel model, DepartmentEntity department)
     {
         department.Name = model.Name;
-        department.UpdatedOnUtc = DateTime.UtcNow;
     }
 }
