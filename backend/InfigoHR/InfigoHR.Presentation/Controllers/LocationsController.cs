@@ -34,17 +34,14 @@ public class LocationsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateLocationModel model)
     {
-        await _locationService.CreateAsync(model);
-        return StatusCode(201);
+        var id = await _locationService.CreateAsync(model);
+        return CreatedAtAction(nameof(GetById), new { id }, new { id });
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, UpdateLocationModel model)
+    [HttpPut]
+    public async Task<IActionResult> Update(UpdateLocationModel model)
     {
-        if (id != model.Id)
-            return BadRequest("Id in URL does not match Id in body.");
-
-        await _locationService.UpdateAsync(id, model);
+        await _locationService.UpdateAsync(model);
         return NoContent();
     }
 
