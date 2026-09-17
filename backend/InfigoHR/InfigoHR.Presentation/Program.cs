@@ -37,6 +37,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseMiddleware<InfigoHR.Presentation.Middleware.ExceptionHandlingMiddleware>();
 app.MapControllers();
 
 app.Run();
