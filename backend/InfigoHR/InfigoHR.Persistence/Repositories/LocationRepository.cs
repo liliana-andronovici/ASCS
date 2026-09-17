@@ -51,12 +51,14 @@ public class LocationRepository : ILocationRepository
 
         var totalCount = await query.CountAsync();
 
-        query = paginationParams.SortBy?.ToLower() switch
+        query = paginationParams.SortBy switch
         {
-            "name" => paginationParams.SortDescending
+            LocationSortBy.Name => paginationParams.SortDirection == SortDirection.Descending
                 ? query.OrderByDescending(l => l.Name)
                 : query.OrderBy(l => l.Name),
-            _ => query.OrderBy(l => l.Id)
+            _ => paginationParams.SortDirection == SortDirection.Descending
+                ? query.OrderByDescending(l => l.Id)
+                : query.OrderBy(l => l.Id)
         };
 
         var items = await query
