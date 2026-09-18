@@ -11,12 +11,6 @@ public class LocationRepository : GenericRepository<LocationEntity>, ILocationRe
     {
     }
 
-    public override async Task UpdateAsync(LocationEntity entity)
-    {
-        entity.UpdatedOnUtc = DateTime.UtcNow;
-        await base.UpdateAsync(entity);
-    }
-
     public async Task<PagedResult<LocationEntity>> GetPagedAsync(PaginationParams paginationParams)
     {
         var query = Entities.AsQueryable();
