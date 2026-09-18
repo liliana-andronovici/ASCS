@@ -1,4 +1,6 @@
-﻿using InfigoHR.Application.Models;
+﻿using InfigoHR.Application.Common;
+using InfigoHR.Application.Models;
+using InfigoHR.Domain.Common;
 using InfigoHR.Domain.Entities;
 
 namespace InfigoHR.Application.Mappers;
@@ -6,8 +8,19 @@ namespace InfigoHR.Application.Mappers;
 public static class EmployeeMapper
 {
     public static EmployeeModel ToModel(EmployeeEntity entity) =>
-        new(entity.Id, entity.FirstName, entity.LastName, entity.Email, entity.Title,
-            entity.StartedOnUtc, entity.DepartmentId, entity.LocationId, entity.ManagerId, entity.Status);
+        new()
+        {
+            Id = entity.Id,
+            FirstName = entity.FirstName,
+            LastName = entity.LastName,
+            Email = entity.Email,
+            Title = entity.Title,
+            StartedOnUtc = entity.StartedOnUtc,
+            DepartmentId = entity.DepartmentId,
+            LocationId = entity.LocationId,
+            ManagerId = entity.ManagerId,
+            Status = entity.Status
+        };
 
     public static EmployeeEntity ToEntity(CreateEmployeeModel model) =>
         new()
@@ -35,4 +48,13 @@ public static class EmployeeMapper
         entity.ManagerId = model.ManagerId;
         entity.Status = model.Status;
     }
+
+    public static PagedResult<EmployeeModel> ToPagedResult(PagedList<EmployeeEntity> pagedList) =>
+        new()
+        {
+            Items = pagedList.Items.Select(ToModel).ToList(),
+            TotalCount = pagedList.TotalCount,
+            Page = pagedList.Page,
+            PageSize = pagedList.PageSize
+        };
 }

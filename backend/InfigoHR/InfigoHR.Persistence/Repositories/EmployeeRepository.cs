@@ -1,7 +1,8 @@
-﻿using InfigoHR.Application.Interfaces.Repositories;
-using InfigoHR.Application.Models;
+﻿using InfigoHR.Application.Common;
+using InfigoHR.Application.Interfaces.Repositories;
+using InfigoHR.Domain.Common;
 using InfigoHR.Domain.Entities;
-using InfigoHR.Domain.Enums;
+using InfigoHR.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace InfigoHR.Persistence.Repositories;
@@ -9,7 +10,7 @@ namespace InfigoHR.Persistence.Repositories;
 public sealed class EmployeeRepository(AppDbContext dbContext)
     : GenericRepository<EmployeeEntity>(dbContext), IEmployeeRepository
 {
-    public async Task<(List<EmployeeEntity> Items, int TotalCount)> SearchAsync(EmployeeParameters query)
+    public async Task<PagedList<EmployeeEntity>> SearchAsync(EmployeeParameters query)
     {
         var employees = Entities.AsNoTracking().AsQueryable();
 
@@ -32,8 +33,17 @@ public sealed class EmployeeRepository(AppDbContext dbContext)
             employees = employees.Where(x => x.Status == query.Status);
 
         var descending = query.SortDirection == SortDirection.Descending;
+        employees = ApplySorting(employees, query.SortBy, descending);
 
-        employees = query.SortBy switch
+        return await employees.ToPagedListAsync(query.Page, query.PageSize);
+    }
+
+    public async Task<bool> EmailExistsAsync(string email) =>
+        await Entities.AnyAsync(x => x.Email == email);
+
+    private static IQueryable<EmployeeEntity> ApplySorting(
+        IQueryable<EmployeeEntity> employees, EmployeeSortField sortBy, bool descending) =>
+        sortBy switch
         {
             EmployeeSortField.FirstName => descending ? employees.OrderByDescending(x => x.FirstName) : employees.OrderBy(x => x.FirstName),
             EmployeeSortField.LastName => descending ? employees.OrderByDescending(x => x.LastName) : employees.OrderBy(x => x.LastName),
@@ -41,18 +51,4 @@ public sealed class EmployeeRepository(AppDbContext dbContext)
             EmployeeSortField.StartedOnUtc => descending ? employees.OrderByDescending(x => x.StartedOnUtc) : employees.OrderBy(x => x.StartedOnUtc),
             _ => descending ? employees.OrderByDescending(x => x.Id) : employees.OrderBy(x => x.Id)
         };
-
-        var totalCount = await employees.CountAsync();
-        var items = await employees.Skip((query.Page - 1) * query.PageSize).Take(query.PageSize).ToListAsync();
-        return (items, totalCount);
-    }
-
-    public async Task<bool> EmailExistsAsync(string email) =>
-        await Entities.AnyAsync(x => x.Email == email);
-
-    public async Task<bool> DepartmentExistsAsync(int id) =>
-        await Context.Set<Domain.Entities.DepartmentEntity>().AnyAsync(x => x.Id == id);
-
-    public async Task<bool> LocationExistsAsync(int id) =>
-        await Context.Set<Domain.Entities.LocationEntity>().AnyAsync(x => x.Id == id);
 }

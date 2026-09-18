@@ -1,4 +1,4 @@
-﻿namespace InfigoHR.Domain.Enums;
+﻿namespace InfigoHR.Application.Common;
 
 public enum SortDirection
 {

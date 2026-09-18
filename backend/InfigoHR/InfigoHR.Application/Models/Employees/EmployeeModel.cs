@@ -2,14 +2,16 @@
 
 namespace InfigoHR.Application.Models;
 
-public sealed record EmployeeModel(
-    int Id,
-    string FirstName,
-    string LastName,
-    string Email,
-    string Title,
-    DateTime StartedOnUtc,
-    int? DepartmentId,
-    int? LocationId,
-    int? ManagerId,
-    EmployeeStatus Status);
+public sealed class EmployeeModel
+{
+    public int Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+    public string Title { get; set; }
+    public DateTime StartedOnUtc { get; set; }
+    public int? DepartmentId { get; set; }
+    public int? LocationId { get; set; }
+    public int? ManagerId { get; set; }
+    public EmployeeStatus Status { get; set; }
+}

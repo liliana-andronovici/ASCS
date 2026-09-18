@@ -2,13 +2,15 @@
 
 namespace InfigoHR.Application.Models;
 
-public sealed record CreateEmployeeModel(
-    string FirstName,
-    string LastName,
-    string Email,
-    string Title,
-    DateTime StartedOnUtc,
-    int? DepartmentId,
-    int? LocationId,
-    int? ManagerId,
-    EmployeeStatus Status = EmployeeStatus.Inactive);
+public sealed class CreateEmployeeModel
+{
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+    public string Title { get; set; }
+    public DateTime StartedOnUtc { get; set; }
+    public int? DepartmentId { get; set; }
+    public int? LocationId { get; set; }
+    public int? ManagerId { get; set; }
+    public EmployeeStatus Status { get; set; } = EmployeeStatus.Inactive;
+}
