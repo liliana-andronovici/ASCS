@@ -6,10 +6,16 @@ namespace InfigoHR.Application.Validators;
 
 public class UpdateEmployeeModelValidator : AbstractValidator<UpdateEmployeeModel>
 {
+    private readonly IEmployeeRepository _employeeRepository;
+    private readonly IDepartmentRepository _departmentRepository;
+
     public UpdateEmployeeModelValidator(
         IEmployeeRepository employeeRepository,
         IDepartmentRepository departmentRepository)
     {
+        _employeeRepository = employeeRepository;
+        _departmentRepository = departmentRepository;
+
         RuleFor(x => x.FirstName).NotEmpty().MaximumLength(100);
         RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);
         RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(150);
@@ -18,11 +24,17 @@ public class UpdateEmployeeModelValidator : AbstractValidator<UpdateEmployeeMode
         RuleFor(x => x.Status).IsInEnum();
 
         RuleFor(x => x.DepartmentId)
-            .MustAsync(async (id, ct) => id is null || await departmentRepository.ExistsAsync(id.Value))
+            .MustAsync(DepartmentExistsAsync)
             .WithMessage("The specified department does not exist.");
 
         RuleFor(x => x.ManagerId)
-            .MustAsync(async (id, ct) => id is null || await employeeRepository.GetByIdAsync(id.Value) is not null)
+            .MustAsync(ManagerExistsAsync)
             .WithMessage("The specified manager does not exist.");
     }
+
+    private async Task<bool> DepartmentExistsAsync(int? departmentId, CancellationToken ct) =>
+        departmentId is null || await _departmentRepository.ExistsAsync(departmentId.Value);
+
+    private async Task<bool> ManagerExistsAsync(int? managerId, CancellationToken ct) =>
+        managerId is null || await _employeeRepository.GetByIdAsync(managerId.Value) is not null;
 }

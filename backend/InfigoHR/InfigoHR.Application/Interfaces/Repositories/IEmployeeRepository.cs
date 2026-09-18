@@ -1,4 +1,4 @@
-﻿using InfigoHR.Application.Common;
+﻿using InfigoHR.Application.Models;
 using InfigoHR.Domain.Common;
 using InfigoHR.Domain.Entities;
 

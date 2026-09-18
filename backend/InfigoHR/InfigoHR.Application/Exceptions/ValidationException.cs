@@ -1,3 +1,3 @@
 ﻿namespace InfigoHR.Application.Exceptions;
 
-public sealed class ValidationException(string message) : Exception(message);
+public class ValidationException(string message) : Exception(message);

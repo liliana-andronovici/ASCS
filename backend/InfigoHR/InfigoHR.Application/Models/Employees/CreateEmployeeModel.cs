@@ -2,7 +2,7 @@
 
 namespace InfigoHR.Application.Models;
 
-public sealed class CreateEmployeeModel
+public  class CreateEmployeeModel
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }

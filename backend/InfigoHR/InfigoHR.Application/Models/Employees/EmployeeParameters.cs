@@ -1,8 +1,9 @@
-﻿using InfigoHR.Domain.Enums;
+﻿using InfigoHR.Application.Common;
+using InfigoHR.Domain.Enums;
 
-namespace InfigoHR.Application.Common;
+namespace InfigoHR.Application.Models;
 
-public sealed class EmployeeParameters : QueryParameters
+public class EmployeeParameters : QueryParameters
 {
     public string? Search { get; set; }
     public int? DepartmentId { get; set; }

@@ -4,10 +4,11 @@ using InfigoHR.Domain.Common;
 using InfigoHR.Domain.Entities;
 using InfigoHR.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
+using InfigoHR.Application.Models;
 
 namespace InfigoHR.Persistence.Repositories;
 
-public sealed class EmployeeRepository(AppDbContext dbContext)
+public class EmployeeRepository(AppDbContext dbContext)
     : GenericRepository<EmployeeEntity>(dbContext), IEmployeeRepository
 {
     public async Task<PagedList<EmployeeEntity>> SearchAsync(EmployeeParameters query)

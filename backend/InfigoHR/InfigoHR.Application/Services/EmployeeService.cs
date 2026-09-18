@@ -8,7 +8,7 @@ using InfigoHR.Application.Models;
 
 namespace InfigoHR.Application.Services;
 
-public sealed class EmployeeService(
+public class EmployeeService(
     IEmployeeRepository repository,
     IValidator<CreateEmployeeModel> createValidator,
     IValidator<UpdateEmployeeModel> updateValidator) : IEmployeeService
@@ -16,8 +16,7 @@ public sealed class EmployeeService(
     public async Task<PagedResult<EmployeeModel>> GetAllAsync(EmployeeParameters query)
     {
         var pagedList = await repository.SearchAsync(query);
-        return EmployeeMapper.ToPagedResult(pagedList);
-    }
+        return pagedList.ToPagedResult(EmployeeMapper.ToModel);    }
 
     public async Task<EmployeeModel> GetByIdAsync(int id)
     {

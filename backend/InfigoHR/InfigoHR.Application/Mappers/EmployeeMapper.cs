@@ -1,6 +1,4 @@
-﻿using InfigoHR.Application.Common;
-using InfigoHR.Application.Models;
-using InfigoHR.Domain.Common;
+﻿using InfigoHR.Application.Models;
 using InfigoHR.Domain.Entities;
 
 namespace InfigoHR.Application.Mappers;
@@ -48,13 +46,4 @@ public static class EmployeeMapper
         entity.ManagerId = model.ManagerId;
         entity.Status = model.Status;
     }
-
-    public static PagedResult<EmployeeModel> ToPagedResult(PagedList<EmployeeEntity> pagedList) =>
-        new()
-        {
-            Items = pagedList.Items.Select(ToModel).ToList(),
-            TotalCount = pagedList.TotalCount,
-            Page = pagedList.Page,
-            PageSize = pagedList.PageSize
-        };
 }

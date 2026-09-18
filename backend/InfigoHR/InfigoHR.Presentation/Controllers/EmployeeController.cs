@@ -7,7 +7,7 @@ namespace InfigoHR.Presentation.Controllers;
 
 [ApiController]
 [Route("api/employees")]
-public sealed class EmployeeController(IEmployeeService service) : ControllerBase
+public class EmployeeController(IEmployeeService service) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<PagedResult<EmployeeModel>>> GetAll([FromQuery] EmployeeParameters query)
@@ -18,7 +18,8 @@ public sealed class EmployeeController(IEmployeeService service) : ControllerBas
     [HttpGet("{id:int}")]
     public async Task<ActionResult<EmployeeModel>> GetById(int id)
     {
-        return Ok(await service.GetByIdAsync(id));
+        var employee = await service.GetByIdAsync(id);
+        return Ok(employee);
     }
 
     [HttpPost]
