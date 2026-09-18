@@ -1,4 +1,5 @@
-namespace InfigoHR.Application.Common;
+namespace InfigoHR.Application.Models.Locations;
+using InfigoHR.Application.Common;
 
 public class PaginationParams : QueryParameters
 {

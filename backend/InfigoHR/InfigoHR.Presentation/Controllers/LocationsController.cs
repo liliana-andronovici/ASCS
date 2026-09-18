@@ -19,19 +19,22 @@ public class LocationsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<LocationModel>>> GetAll()
     {
-        return Ok(await _locationService.GetAllAsync());
+        var locations = await _locationService.GetAllAsync();
+        return Ok(locations);
     }
 
     [HttpGet("paged")]
     public async Task<ActionResult<PagedListModel<LocationModel>>> GetPaged([FromQuery] PaginationParams paginationParams)
     {
-        return Ok(await _locationService.GetPagedAsync(paginationParams));
+        var pagedLocations = await _locationService.GetPagedAsync(paginationParams);
+        return Ok(pagedLocations);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<LocationModel>> GetById(int id)
     {
-        return Ok(await _locationService.GetByIdAsync(id));
+        var location = await _locationService.GetByIdAsync(id);
+        return Ok(location);
     }
 
     [HttpPost]

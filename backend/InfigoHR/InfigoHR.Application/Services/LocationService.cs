@@ -26,9 +26,9 @@ public class LocationService : ILocationService
     public async Task<PagedListModel<LocationModel>> GetPagedAsync(PaginationParams paginationParams)
     {
         var pagedEntities = await _repository.GetPagedAsync(paginationParams);
-        return LocationMapper.ToModel(pagedEntities);
+        return pagedEntities.ToPagedModel(LocationMapper.ToModel);
     }
-
+    
     public async Task<LocationModel> GetByIdAsync(int id)
     {
         var location = await _repository.GetByIdAsync(id);

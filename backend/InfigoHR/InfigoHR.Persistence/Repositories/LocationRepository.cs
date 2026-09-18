@@ -3,6 +3,7 @@ using InfigoHR.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using InfigoHR.Application.Common;
 using InfigoHR.Domain.Common;
+using InfigoHR.Application.Models.Locations;
 
 namespace InfigoHR.Persistence.Repositories;
 
