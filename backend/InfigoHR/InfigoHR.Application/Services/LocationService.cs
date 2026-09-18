@@ -43,16 +43,17 @@ public class LocationService : ILocationService
         return LocationMapper.ToModel(location);
     }
 
-    public async Task CreateAsync(CreateLocationModel model)
+    public async Task<int> CreateAsync(CreateLocationModel model)
     {
         var location = new LocationEntity { Name = model.Name };
         await _repository.AddAsync(location);
+        return location.Id;
     }
 
-    public async Task UpdateAsync(int id, UpdateLocationModel model)
+    public async Task UpdateAsync(UpdateLocationModel model)
     {
-        var location = await _repository.GetByIdAsync(id);
-        if (location == null) throw new LocationNotFoundException(id);
+        var location = await _repository.GetByIdAsync(model.Id);
+        if (location == null) throw new LocationNotFoundException(model.Id);
 
         LocationMapper.ToEntity(model, location);
         await _repository.UpdateAsync(location);
