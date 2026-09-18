@@ -24,7 +24,7 @@ try
     using var connection = new NpgsqlConnection(connectionString);
     var evolve = new Evolve(connection, msg => Console.WriteLine(msg))
     {
-        Locations = new[] { Path.Combine(AppContext.BaseDirectory, "db", "migrations") },
+        Locations = new[] { Path.Combine(AppContext.BaseDirectory, "Migrations") },
         IsEraseDisabled = true
     };
     evolve.Migrate();
