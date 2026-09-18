@@ -1,14 +1,10 @@
-using InfigoHR.Application.Interfaces.Repositories;
-using InfigoHR.Application.Interfaces.Services;
-using InfigoHR.Application.Services;
-using InfigoHR.Persistence.Repositories;
-using InfigoHR.Persistence;
 using EvolveDb;
-using Npgsql;
 using FluentValidation;
-using FluentValidation.AspNetCore;
-using InfigoHR.Application.Validators.Locations;
+using InfigoHR.Application.Models.Departments;
+using InfigoHR.Application.Validators.Departments;
+using InfigoHR.Persistence;
 using InfigoHR.Presentation.Middleware;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,10 +12,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddPersistence(builder.Configuration);
 
-builder.Services.AddScoped<ILocationRepository, LocationRepository>();
-builder.Services.AddScoped<ILocationService, LocationService>();
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateLocationModelValidator>();
+builder.Services.AddScoped<IValidator<CreateDepartmentModel>, CreateDepartmentModelValidator>();
+builder.Services.AddScoped<IValidator<UpdateDepartmentModel>, UpdateDepartmentModelValidator>();
 
 var app = builder.Build();
 
@@ -30,7 +24,7 @@ try
     using var connection = new NpgsqlConnection(connectionString);
     var evolve = new Evolve(connection, msg => Console.WriteLine(msg))
     {
-        Locations = new[] { Path.Combine(AppContext.BaseDirectory, "db", "migrations") },
+        Locations = new[] { Path.Combine(AppContext.BaseDirectory, "Migrations") },
         IsEraseDisabled = true
     };
     evolve.Migrate();

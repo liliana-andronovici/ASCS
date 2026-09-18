@@ -1,43 +1,46 @@
-using Ardalis.GuardClauses;
 using InfigoHR.Application.Interfaces.Repositories;
+using InfigoHR.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace InfigoHR.Persistence.Repositories;
 
-public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
+public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : BaseEntity
 {
-    protected readonly AppDbContext Context;
-    protected DbSet<TEntity> Entities => Context.Set<TEntity>();
+    protected readonly AppDbContext DbContext;
+    protected readonly DbSet<TEntity> Entities;
 
-    public GenericRepository(AppDbContext context)
+    public GenericRepository(AppDbContext dbContext)
     {
-        Context = context;
+        DbContext = dbContext;
+        Entities = dbContext.Set<TEntity>();
     }
 
-    public async Task<List<TEntity>> GetAllAsync()
-        => await Entities.ToListAsync();
+    public async Task<IEnumerable<TEntity>> GetAllAsync()
+    {
+        return await Entities.AsNoTracking().ToListAsync();
+    }
 
     public async Task<TEntity?> GetByIdAsync(int id)
-        => await Entities.FindAsync(id);
+    {
+        return await Entities.FirstOrDefaultAsync(entity => entity.Id == id);
+    }
 
     public async Task AddAsync(TEntity entity)
     {
-        Guard.Against.Null(entity, nameof(entity));
         await Entities.AddAsync(entity);
-        await Context.SaveChangesAsync();
+        await DbContext.SaveChangesAsync();
     }
 
-    public virtual async Task UpdateAsync(TEntity entity)
+    public async Task UpdateAsync(TEntity entity)
     {
-        Guard.Against.Null(entity, nameof(entity));
+        entity.UpdatedOnUtc = DateTime.UtcNow;
         Entities.Update(entity);
-        await Context.SaveChangesAsync();
+        await DbContext.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(TEntity entity)
     {
-        Guard.Against.Null(entity, nameof(entity));
         Entities.Remove(entity);
-        await Context.SaveChangesAsync();
+        await DbContext.SaveChangesAsync();
     }
 }
