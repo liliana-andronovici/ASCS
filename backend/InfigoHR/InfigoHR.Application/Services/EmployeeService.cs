@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using InfigoHR.Application.Common;
 using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Mappers;
@@ -13,11 +14,17 @@ public sealed class EmployeeService(
     IValidator<CreateEmployeeModel> createValidator,
     IValidator<UpdateEmployeeModel> updateValidator) : IEmployeeService
 {
-    public async Task<IEnumerable<EmployeeModel>> GetAllAsync()
+    public async Task<PagedResult<EmployeeModel>> GetAllAsync(EmployeeParameters query)
     {
-        var entities = await repository.GetAllAsync();
-        return entities.Select(EmployeeMapper.ToModel);
-    }
+        var (entities, totalCount) = await repository.SearchAsync(query);
+        var items = entities.Select(EmployeeMapper.ToModel).ToList();
+        return new PagedResult<EmployeeModel>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = query.Page,
+            PageSize = query.PageSize
+        };    }
 
     public async Task<EmployeeModel> GetByIdAsync(int id)
     {
@@ -26,7 +33,7 @@ public sealed class EmployeeService(
         return EmployeeMapper.ToModel(entity);
     }
 
-    public async Task<EmployeeModel> CreateAsync(CreateEmployeeModel model)
+    public async Task CreateAsync(CreateEmployeeModel model)
     {
         await createValidator.ValidateAndThrowAsync(model);
 
@@ -44,8 +51,6 @@ public sealed class EmployeeService(
 
         var entity = EmployeeMapper.ToEntity(model);
         await repository.AddAsync(entity);
-
-        return EmployeeMapper.ToModel(entity);
     }
 
     public async Task UpdateAsync(UpdateEmployeeModel model)

@@ -1,5 +1,7 @@
-﻿using InfigoHR.Application.Interfaces.Services;
+﻿using InfigoHR.Application.Common;
+using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models;
+using InfigoHR.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InfigoHR.Presentation.Controllers;
@@ -9,31 +11,78 @@ namespace InfigoHR.Presentation.Controllers;
 public sealed class EmployeeController(IEmployeeService service) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<EmployeeModel>>> GetAll() =>
-        Ok(await service.GetAllAsync());
+    public async Task<ActionResult<PagedResult<EmployeeModel>>> GetAll([FromQuery] EmployeeParameters query) =>
+        Ok(await service.GetAllAsync(query));
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<EmployeeModel>> GetById(int id) =>
-        Ok(await service.GetByIdAsync(id));
+    public async Task<ActionResult<EmployeeModel>> GetById(int id)
+    {
+        try
+        {
+            return Ok(await service.GetByIdAsync(id));
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateEmployeeModel model)
     {
-        var created = await service.CreateAsync(model);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        try
+        {
+            await service.CreateAsync(model);
+            return NoContent();
+        }
+        catch (ConflictException ex)
+        {
+            return Conflict(ex.Message);
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (InfigoHR.Domain.Exceptions.ValidationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
-    [HttpPut]
-    public async Task<IActionResult> Update(UpdateEmployeeModel model)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, UpdateEmployeeModel model)
     {
-        await service.UpdateAsync(model);
-        return NoContent();
+        model.Id = id;
+        try
+        {
+            await service.UpdateAsync(model);
+            return NoContent();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (InfigoHR.Domain.Exceptions.ValidationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        await service.DeleteAsync(id);
-        return NoContent();
+        try
+        {
+            await service.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 }
