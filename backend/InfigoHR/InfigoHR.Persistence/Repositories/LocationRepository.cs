@@ -2,6 +2,7 @@ using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using InfigoHR.Application.Common;
+using InfigoHR.Domain.Common;
 
 namespace InfigoHR.Persistence.Repositories;
 
@@ -11,7 +12,7 @@ public class LocationRepository : GenericRepository<LocationEntity>, ILocationRe
     {
     }
 
-    public async Task<PagedResult<LocationEntity>> GetPagedAsync(PaginationParams paginationParams)
+    public async Task<PagedList<LocationEntity>> GetPagedAsync(PaginationParams paginationParams)
     {
         var query = Entities.AsQueryable();
 
@@ -20,9 +21,14 @@ public class LocationRepository : GenericRepository<LocationEntity>, ILocationRe
             query = query.Where(l => EF.Functions.ILike(l.Name, $"%{paginationParams.Search}%"));
         }
 
-        var totalCount = await query.CountAsync();
+        query = ApplySorting(query, paginationParams);
 
-        query = paginationParams.SortBy switch
+        return await query.ToPagedAsync(paginationParams.Page, paginationParams.PageSize);
+    }
+
+    private IQueryable<LocationEntity> ApplySorting(IQueryable<LocationEntity> query, PaginationParams paginationParams)
+    {
+        return paginationParams.SortBy switch
         {
             LocationSortBy.Name => paginationParams.SortDirection == SortDirection.Descending
                 ? query.OrderByDescending(l => l.Name)
@@ -30,19 +36,6 @@ public class LocationRepository : GenericRepository<LocationEntity>, ILocationRe
             _ => paginationParams.SortDirection == SortDirection.Descending
                 ? query.OrderByDescending(l => l.Id)
                 : query.OrderBy(l => l.Id)
-        };
-
-        var items = await query
-            .Skip((paginationParams.Page - 1) * paginationParams.PageSize)
-            .Take(paginationParams.PageSize)
-            .ToListAsync();
-
-        return new PagedResult<LocationEntity>
-        {
-            Items = items,
-            TotalCount = totalCount,
-            Page = paginationParams.Page,
-            PageSize = paginationParams.PageSize
         };
     }
 }

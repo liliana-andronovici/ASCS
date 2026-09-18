@@ -23,17 +23,10 @@ public class LocationService : ILocationService
         return locations.Select(LocationMapper.ToModel).ToList();
     }
 
-    public async Task<PagedResult<LocationModel>> GetPagedAsync(PaginationParams paginationParams)
+    public async Task<PagedListModel<LocationModel>> GetPagedAsync(PaginationParams paginationParams)
     {
         var pagedEntities = await _repository.GetPagedAsync(paginationParams);
-
-        return new PagedResult<LocationModel>
-        {
-            Items = pagedEntities.Items.Select(LocationMapper.ToModel).ToList(),
-            TotalCount = pagedEntities.TotalCount,
-            Page = pagedEntities.Page,
-            PageSize = pagedEntities.PageSize
-        };
+        return LocationMapper.ToModel(pagedEntities);
     }
 
     public async Task<LocationModel> GetByIdAsync(int id)

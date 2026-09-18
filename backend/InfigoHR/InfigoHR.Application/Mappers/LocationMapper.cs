@@ -1,5 +1,7 @@
 using InfigoHR.Application.Models.Locations;
 using InfigoHR.Domain.Entities;
+using InfigoHR.Domain.Common;
+using InfigoHR.Application.Common;
 
 namespace InfigoHR.Application.Mappers;
 
@@ -13,7 +15,18 @@ public static class LocationMapper
             Name = entity.Name
         };
     }
-    
+
+    public static PagedListModel<LocationModel> ToModel(PagedList<LocationEntity> pagedList)
+    {
+        return new PagedListModel<LocationModel>
+        {
+            Items = pagedList.Items.Select(ToModel).ToList(),
+            TotalCount = pagedList.TotalCount,
+            Page = pagedList.Page,
+            PageSize = pagedList.PageSize
+        };
+    }
+
     public static void ToEntity(UpdateLocationModel model, LocationEntity entity)
     {
         entity.Name = model.Name;

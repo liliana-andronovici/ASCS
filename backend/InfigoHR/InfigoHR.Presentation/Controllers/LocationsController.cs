@@ -18,18 +18,21 @@ public class LocationsController : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<List<LocationModel>>> GetAll()
-        => Ok(await _locationService.GetAllAsync());
+    {
+        return Ok(await _locationService.GetAllAsync());
+    }
 
-    // Returns one page of locations, with optional search, sort, filter
     [HttpGet("paged")]
-    public async Task<ActionResult<PagedResult<LocationModel>>> GetPaged([FromQuery] PaginationParams paginationParams)
+    public async Task<ActionResult<PagedListModel<LocationModel>>> GetPaged([FromQuery] PaginationParams paginationParams)
     {
         return Ok(await _locationService.GetPagedAsync(paginationParams));
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<LocationModel>> GetById(int id)
-        => Ok(await _locationService.GetByIdAsync(id));
+    {
+        return Ok(await _locationService.GetByIdAsync(id));
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateLocationModel model)
