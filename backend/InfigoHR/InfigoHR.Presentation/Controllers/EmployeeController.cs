@@ -1,7 +1,7 @@
 ﻿using InfigoHR.Application.Common;
+using InfigoHR.Application.Exceptions;
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models;
-using InfigoHR.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InfigoHR.Presentation.Controllers;
@@ -43,7 +43,7 @@ public sealed class EmployeeController(IEmployeeService service) : ControllerBas
         {
             return BadRequest(ex.Message);
         }
-        catch (InfigoHR.Domain.Exceptions.ValidationException ex)
+        catch (InfigoHR.Application.Exceptions.ValidationException ex)
         {
             return BadRequest(ex.Message);
         }
@@ -66,7 +66,7 @@ public sealed class EmployeeController(IEmployeeService service) : ControllerBas
         {
             return BadRequest(ex.Message);
         }
-        catch (InfigoHR.Domain.Exceptions.ValidationException ex)
+        catch (InfigoHR.Application.Exceptions.ValidationException ex)
         {
             return BadRequest(ex.Message);
         }

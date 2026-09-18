@@ -1,4 +1,4 @@
-﻿using Ardalis.GuardClauses;
+using Ardalis.GuardClauses;
 using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Domain.Common;
 using Microsoft.EntityFrameworkCore;

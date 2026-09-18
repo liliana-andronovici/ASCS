@@ -1,3 +1,3 @@
-﻿namespace InfigoHR.Domain.Exceptions;
+﻿namespace InfigoHR.Application.Exceptions;
 
 public sealed class ConflictException(string message) : Exception(message);

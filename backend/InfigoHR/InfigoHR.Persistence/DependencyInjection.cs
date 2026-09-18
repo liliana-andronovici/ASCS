@@ -21,6 +21,8 @@ public static class DependencyInjection
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddValidatorsFromAssemblyContaining<InfigoHR.Application.Validators.CreateEmployeeModelValidator>();
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddScoped<IDepartmentService, DepartmentService>();
 
         return services;
     }

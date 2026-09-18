@@ -7,15 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\InfigoHR.Domain\InfigoHR.Domain.csproj" />
+        <ProjectReference Include="..\InfigoHR.Domain\InfigoHR.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Users\SignUp\" />
+        <Folder Include="Interfaces\" />
+        <Folder Include="Services\" />
+        <Folder Include="Users\SignUp\" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="FluentValidation" Version="12.1.1" />
+        <PackageReference Include="FluentValidation" Version="12.1.1" />
     </ItemGroup>
 
 </Project>

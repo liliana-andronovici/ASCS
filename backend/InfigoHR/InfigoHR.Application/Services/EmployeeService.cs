@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
 using InfigoHR.Application.Common;
+using InfigoHR.Application.Exceptions;
 using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Mappers;
 using InfigoHR.Application.Models;
-using InfigoHR.Domain.Exceptions;
-using ValidationException = InfigoHR.Domain.Exceptions.ValidationException;
+using ValidationException = InfigoHR.Application.Exceptions.ValidationException;
 
 namespace InfigoHR.Application.Services;
 
@@ -24,7 +24,8 @@ public sealed class EmployeeService(
             TotalCount = totalCount,
             Page = query.Page,
             PageSize = query.PageSize
-        };    }
+        };
+    }
 
     public async Task<EmployeeModel> GetByIdAsync(int id)
     {

@@ -1,4 +1,4 @@
-﻿using InfigoHR.Domain.Common;
+using InfigoHR.Domain.Common;
 
 namespace InfigoHR.Application.Interfaces.Repositories;
 

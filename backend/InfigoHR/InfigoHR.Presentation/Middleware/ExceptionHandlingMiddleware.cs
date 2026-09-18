@@ -1,4 +1,4 @@
-﻿using InfigoHR.Domain.Exceptions;
+using InfigoHR.Application.Exceptions;
 using InfigoHR.Presentation.Models;
 
 namespace InfigoHR.Presentation.Middleware;

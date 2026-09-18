@@ -1,4 +1,4 @@
-﻿namespace InfigoHR.Presentation.Models;
+namespace InfigoHR.Presentation.Models;
 
 public sealed class ErrorResponseModel
 {
