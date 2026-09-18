@@ -19,6 +19,7 @@ public static class DependencyInjection
 
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IDepartmentService, DepartmentService>();
+        services.AddScoped<AuthRepository>();
 
         return services;
     }

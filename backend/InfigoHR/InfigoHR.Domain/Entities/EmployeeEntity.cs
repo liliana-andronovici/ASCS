@@ -25,6 +25,7 @@ public class EmployeeEntity : BaseEntity
 
     public virtual AuthEntity? Auth { get; set; }
     public virtual TwoFactorAuthEntity? TwoFactorAuth { get; set; }
+    public ICollection<RoleEntity> Roles { get; set; } = new List<RoleEntity>();
     public virtual ICollection<TrustedDeviceEntity> TrustedDevices { get; set; } = new List<TrustedDeviceEntity>();
     public virtual ICollection<LeaveRequestEntity> LeaveRequests { get; set; } = new List<LeaveRequestEntity>();
 }
