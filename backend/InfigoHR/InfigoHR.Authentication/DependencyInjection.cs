@@ -1,14 +1,15 @@
-using System.Text;
+using FluentValidation;
+using InfigoHR.Authentication.Interfaces;
 using InfigoHR.Authentication.Jwt;
+using InfigoHR.Authentication.Models;
 using InfigoHR.Authentication.Services;
+using InfigoHR.Authentication.Validators;
 using InfigoHR.Domain.Entities;
 using InfigoHR.Domain.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace InfigoHR.Authentication;
 
@@ -19,64 +20,28 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddOptions<JwtOptions>()
-            .Bind(configuration.GetSection("Jwt"))
-            .Validate(
-                options => !string.IsNullOrWhiteSpace(options.Issuer),
-                "Jwt:Issuer is required.")
-            .Validate(
-                options => !string.IsNullOrWhiteSpace(options.Audience),
-                "Jwt:Audience is required.")
-            .Validate(
-                options =>
-                    !string.IsNullOrWhiteSpace(options.SecretKey) &&
-                    Encoding.UTF8.GetByteCount(options.SecretKey) >= 32,
-                "Jwt:SecretKey must contain at least 32 bytes.")
-            .Validate(
-                options => options.ExpirationMinutes > 0,
-                "Jwt:ExpirationMinutes must be greater than zero.")
-            .ValidateOnStart();
+            .Bind(configuration.GetSection(nameof(JwtOptions)));
 
-        services.AddScoped<JwtProvider>();
-        services.AddScoped<AuthService>();
-        services.AddScoped<IPasswordHasher<AuthEntity>,
+        services.AddScoped<IJwtProvider, JwtProvider>();
+        services.AddScoped<IAuthService, AuthService>();
+
+        services.AddScoped<
+            IPasswordHasher<AuthEntity>,
             PasswordHasher<AuthEntity>>();
+
+        services.AddScoped<
+            IValidator<SignInRequest>,
+            SignInRequestValidator>();
+
+        services.AddScoped<
+            IValidator<SignUpRequest>,
+            SignUpRequestValidator>();
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
 
-        services
-            .AddOptions<JwtBearerOptions>(
-                JwtBearerDefaults.AuthenticationScheme)
-            .Configure<IOptions<JwtOptions>>((options, jwtOptions) =>
-            {
-                var jwt = jwtOptions.Value;
-
-                options.MapInboundClaims = false;
-
-                options.TokenValidationParameters =
-                    new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = jwt.Issuer,
-
-                        ValidateAudience = true,
-                        ValidAudience = jwt.Audience,
-
-                        ValidateLifetime = true,
-                        RequireExpirationTime = true,
-
-                        ValidateIssuerSigningKey = true,
-                        RequireSignedTokens = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(jwt.SecretKey)),
-
-                        ValidAlgorithms =
-                            new[] { SecurityAlgorithms.HmacSha256 },
-
-                        ClockSkew = TimeSpan.FromSeconds(30)
-                    };
-            });
+        services.ConfigureOptions<JwtBearerOptionsSetup>();
 
         services.AddAuthorization(options =>
         {
@@ -87,9 +52,7 @@ public static class DependencyInjection
                 options.AddPolicy(permissionName, policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim(
-                        "permissions",
-                        permissionName);
+                    policy.RequireClaim("permissions", permissionName);
                 });
             }
         });

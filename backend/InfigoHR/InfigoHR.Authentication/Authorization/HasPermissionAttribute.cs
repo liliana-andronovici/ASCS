@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace InfigoHR.Authentication.Authorization;
 
-public sealed class HasPermissionAttribute : AuthorizeAttribute
+public class HasPermissionAttribute : AuthorizeAttribute
 {
     public HasPermissionAttribute(Permission permission)
         : base(permission.ToString())

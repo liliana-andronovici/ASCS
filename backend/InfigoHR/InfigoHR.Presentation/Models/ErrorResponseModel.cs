@@ -2,5 +2,5 @@ namespace InfigoHR.Presentation.Models;
 
 public class ErrorResponseModel
 {
-    public string Message { get; set; }
+    public string Message { get; set; } = string.Empty;
 }

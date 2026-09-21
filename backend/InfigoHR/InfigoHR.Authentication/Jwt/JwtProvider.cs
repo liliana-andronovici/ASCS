@@ -1,13 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using InfigoHR.Domain.Entities;
+using InfigoHR.Authentication.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace InfigoHR.Authentication.Jwt;
 
-public sealed class JwtProvider
+public class JwtProvider: IJwtProvider
 {
     private readonly JwtOptions _options;
 
@@ -16,27 +16,20 @@ public sealed class JwtProvider
         _options = options.Value;
     }
 
-    public string Generate(EmployeeEntity employee)
+    public string Generate(
+        int employeeId,
+        string email,
+        IEnumerable<string> permissions)
     {
         var claims = new List<Claim>
         {
-            new(
-                JwtRegisteredClaimNames.Sub,
-                employee.Id.ToString()),
-            new(
-                JwtRegisteredClaimNames.Email,
-                employee.Email)
+            new(JwtRegisteredClaimNames.Sub, employeeId.ToString()),
+            new(JwtRegisteredClaimNames.Email, email)
         };
-
-        var permissions = employee.Roles
-            .SelectMany(role => role.Permissions)
-            .Select(permission => permission.Name)
-            .Distinct();
-
-        foreach (var permission in permissions)
-        {
-            claims.Add(new Claim("permissions", permission));
-        }
+        
+        claims.AddRange(
+            permissions.Distinct()
+                .Select(permission => new Claim("permissions", permission)));
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_options.SecretKey));

@@ -4,16 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InfigoHR.Persistence.Configurations;
 
-public sealed class RoleEntityTypeConfiguration
+public class RoleEntityTypeConfiguration
     : IEntityTypeConfiguration<RoleEntity>
 {
     public void Configure(EntityTypeBuilder<RoleEntity> builder)
     {
         builder.ToTable("Roles");
-
         builder.HasKey(role => role.Id);
-        builder.Property(role => role.Id)
-            .ValueGeneratedNever();
 
         builder.Property(role => role.Name)
             .HasMaxLength(100)
@@ -24,26 +21,44 @@ public sealed class RoleEntityTypeConfiguration
 
         builder.HasMany(role => role.Permissions)
             .WithMany()
-            .UsingEntity(
-                "RolePermissions",
-                right => right.HasOne(typeof(PermissionEntity))
+            .UsingEntity<RolePermissionEntity>(
+                right => right
+                    .HasOne(join => join.Permission)
                     .WithMany()
-                    .HasForeignKey("PermissionId"),
-                left => left.HasOne(typeof(RoleEntity))
+                    .HasForeignKey(join => join.PermissionId),
+                left => left
+                    .HasOne(join => join.Role)
                     .WithMany()
-                    .HasForeignKey("RoleId"),
-                join => join.HasKey("RoleId", "PermissionId"));
+                    .HasForeignKey(join => join.RoleId),
+                join =>
+                {
+                    join.ToTable("RolePermissions");
+                    join.HasKey(item => new
+                    {
+                        item.RoleId,
+                        item.PermissionId
+                    });
+                });
 
         builder.HasMany(role => role.Employees)
             .WithMany(employee => employee.Roles)
-            .UsingEntity(
-                "EmployeeRoles",
-                right => right.HasOne(typeof(EmployeeEntity))
+            .UsingEntity<EmployeeRoleEntity>(
+                right => right
+                    .HasOne(join => join.Employee)
                     .WithMany()
-                    .HasForeignKey("EmployeeId"),
-                left => left.HasOne(typeof(RoleEntity))
+                    .HasForeignKey(join => join.EmployeeId),
+                left => left
+                    .HasOne(join => join.Role)
                     .WithMany()
-                    .HasForeignKey("RoleId"),
-                join => join.HasKey("EmployeeId", "RoleId"));
+                    .HasForeignKey(join => join.RoleId),
+                join =>
+                {
+                    join.ToTable("EmployeeRoles");
+                    join.HasKey(item => new
+                    {
+                        item.EmployeeId,
+                        item.RoleId
+                    });
+                });
     }
 }

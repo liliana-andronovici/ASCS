@@ -1,77 +1,99 @@
-using InfigoHR.Authentication.Jwt;
+using FluentValidation;
+using InfigoHR.Application.Interfaces.Repositories;
+using InfigoHR.Authentication.Interfaces;
+using InfigoHR.Authentication.Mappers;
 using InfigoHR.Authentication.Models;
 using InfigoHR.Domain.Entities;
 using InfigoHR.Domain.Enums;
-using InfigoHR.Persistence.Repositories;
 using Microsoft.AspNetCore.Identity;
 
 namespace InfigoHR.Authentication.Services;
 
-public sealed class AuthService
+public class AuthService : IAuthService
 {
-    private readonly AuthRepository _repository;
+    private readonly IEmployeeRepository _repository;
     private readonly IPasswordHasher<AuthEntity> _passwordHasher;
-    private readonly JwtProvider _jwtProvider;
+    private readonly IJwtProvider _jwtProvider;
+    private readonly IValidator<SignInRequest> _signInValidator;
+    private readonly IValidator<SignUpRequest> _signUpValidator;
 
     public AuthService(
-        AuthRepository repository,
+        IEmployeeRepository repository,
         IPasswordHasher<AuthEntity> passwordHasher,
-        JwtProvider jwtProvider)
+        IJwtProvider jwtProvider,
+        IValidator<SignInRequest> signInValidator,
+        IValidator<SignUpRequest> signUpValidator)
     {
         _repository = repository;
         _passwordHasher = passwordHasher;
         _jwtProvider = jwtProvider;
+        _signInValidator = signInValidator;
+        _signUpValidator = signUpValidator;
     }
 
     public async Task<AuthResponse?> SignInAsync(
         SignInRequest request,
         CancellationToken cancellationToken = default)
     {
-        var employee = await _repository.GetByEmailAsync(
-            request.Email.Trim(),
+        await _signInValidator.ValidateAndThrowAsync(
+            request,
             cancellationToken);
 
-        if (employee?.Auth is null ||
-            employee.Status != EmployeeStatus.Active)
+        var employee = await _repository.GetByEmailAsync(
+            request.Email,
+            cancellationToken);
+
+        var auth = employee?.Auth;
+
+        if (employee is null || auth is null)
         {
             return null;
         }
 
-        var result = _passwordHasher.VerifyHashedPassword(
-            employee.Auth,
-            employee.Auth.PasswordHash,
+        var isActive = employee.Status == EmployeeStatus.Active;
+
+        if (!isActive)
+        {
+            return null;
+        }
+
+        var verificationResult = _passwordHasher.VerifyHashedPassword(
+            auth,
+            auth.PasswordHash,
             request.Password);
 
-        if (result == PasswordVerificationResult.Failed)
+        var isPasswordInvalid =
+            verificationResult == PasswordVerificationResult.Failed;
+
+        if (isPasswordInvalid)
         {
             return null;
         }
 
-        return new AuthResponse(_jwtProvider.Generate(employee));
+        var permissions = employee.Roles
+            .SelectMany(role => role.Permissions)
+            .Select(permission => permission.Name);
+
+        var accessToken = _jwtProvider.Generate(
+            employee.Id,
+            employee.Email,
+            permissions);
+
+        return new AuthResponse
+        {
+            AccessToken = accessToken
+        };
     }
 
-    public async Task<AuthResponse?> SignUpAsync(
+    public async Task SignUpAsync(
         SignUpRequest request,
         CancellationToken cancellationToken = default)
     {
-        var email = request.Email.Trim();
+        await _signUpValidator.ValidateAndThrowAsync(
+            request,
+            cancellationToken);
 
-        if (await _repository.EmailExistsAsync(
-                email,
-                cancellationToken))
-        {
-            return null;
-        }
-
-        var employee = new EmployeeEntity
-        {
-            FirstName = request.FirstName.Trim(),
-            LastName = request.LastName.Trim(),
-            Email = email,
-            Title = request.Title.Trim(),
-            StartedOnUtc = request.StartedOn!.Value.UtcDateTime,
-            Status = EmployeeStatus.Active
-        };
+        var employee = AuthMapper.ToEntity(request);
 
         var auth = new AuthEntity
         {
@@ -84,15 +106,6 @@ public sealed class AuthService
 
         employee.Auth = auth;
 
-        var created = await _repository.TryAddAsync(
-            employee,
-            cancellationToken);
-
-        if (!created)
-        {
-            return null;
-        }
-
-        return new AuthResponse(_jwtProvider.Generate(employee));
+        await _repository.AddAsync(employee);
     }
 }
