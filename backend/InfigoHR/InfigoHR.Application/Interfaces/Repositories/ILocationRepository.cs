@@ -1,5 +1,4 @@
-using InfigoHR.Application.Common;
-using InfigoHR.Application.Models.Locations;
+using InfigoHR.Application.QueryParameters.Locations;
 using InfigoHR.Domain.Entities;
 using InfigoHR.Domain.Common;
 

@@ -5,6 +5,7 @@ using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Mappers;
 using InfigoHR.Domain.Entities;
 using InfigoHR.Application.Common;
+using InfigoHR.Application.QueryParameters.Locations;
 
 namespace InfigoHR.Application.Services;
 

@@ -2,6 +2,7 @@ using InfigoHR.Application.Models.Locations;
 using InfigoHR.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using InfigoHR.Application.Common;
+using InfigoHR.Application.QueryParameters.Locations;
 
 namespace InfigoHR.Presentation.Controllers;
 

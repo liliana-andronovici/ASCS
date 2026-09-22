@@ -1,6 +1,9 @@
 using InfigoHR.Application.Common;
 using InfigoHR.Application.Models.Locations;
+using InfigoHR.Application.QueryParameters.Locations;
+
 namespace InfigoHR.Application.Interfaces.Services;
+
 public interface ILocationService
 {
     Task<List<LocationModel>> GetAllAsync();
