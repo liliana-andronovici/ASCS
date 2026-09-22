@@ -2,5 +2,5 @@ namespace InfigoHR.Presentation.Models;
 
 public class ValidationErrorResponseModel
 {
-    public IEnumerable<string> Errors { get; set; }
+    public required IEnumerable<string> Errors { get; set; }
 }

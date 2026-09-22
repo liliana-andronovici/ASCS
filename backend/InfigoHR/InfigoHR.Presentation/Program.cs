@@ -1,12 +1,10 @@
 using EvolveDb;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using InfigoHR.Application;
 using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Application.Interfaces.Services;
-using InfigoHR.Application.Models.Departments;
-using InfigoHR.Application.Models.Locations;
 using InfigoHR.Application.Services;
-using InfigoHR.Application.Validators.Departments;
 using InfigoHR.Application.Validators.Locations;
 using InfigoHR.Persistence;
 using InfigoHR.Persistence.Repositories;
@@ -15,15 +13,16 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
+
 builder.Services.AddOpenApi();
+builder.Services.AddApplication();
 builder.Services.AddPersistence(builder.Configuration);
 
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 builder.Services.AddScoped<ILocationService, LocationService>();
-
-builder.Services.AddScoped<IValidator<CreateDepartmentModel>, CreateDepartmentModelValidator>();
-builder.Services.AddScoped<IValidator<UpdateDepartmentModel>, UpdateDepartmentModelValidator>();
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateLocationModelValidator>();

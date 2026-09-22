@@ -6,5 +6,4 @@ public interface IPagedResult<T>
     int TotalCount { get; set; }
     int Page { get; set; }
     int PageSize { get; set; }
-    int TotalPages { get; }
 }

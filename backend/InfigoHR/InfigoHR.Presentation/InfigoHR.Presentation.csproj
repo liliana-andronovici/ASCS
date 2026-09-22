@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="..\InfigoHR.Persistence\db\migrations\**\*.sql" LinkBase="db\migrations">
+        <Content Include="..\InfigoHR.Persistence\Migrations\**\*.sql" LinkBase="Migrations">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
