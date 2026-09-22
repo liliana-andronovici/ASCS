@@ -2,6 +2,7 @@
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models;
 using Microsoft.AspNetCore.Mvc;
+using InfigoHR.Application.QueryParameters.Employees;
 
 namespace InfigoHR.Presentation.Controllers;
 

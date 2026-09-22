@@ -5,6 +5,7 @@ using InfigoHR.Domain.Entities;
 using InfigoHR.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using InfigoHR.Application.Models;
+using InfigoHR.Application.QueryParameters.Employees;
 
 namespace InfigoHR.Persistence.Repositories;
 

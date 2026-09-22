@@ -1,5 +1,6 @@
 ﻿using InfigoHR.Application.Common;
 using InfigoHR.Application.Models;
+using InfigoHR.Application.QueryParameters.Employees;
 
 namespace InfigoHR.Application.Interfaces.Services;
 

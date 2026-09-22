@@ -1,4 +1,4 @@
-﻿using InfigoHR.Application.Models;
+﻿using InfigoHR.Application.QueryParameters.Employees;
 using InfigoHR.Domain.Common;
 using InfigoHR.Domain.Entities;
 
