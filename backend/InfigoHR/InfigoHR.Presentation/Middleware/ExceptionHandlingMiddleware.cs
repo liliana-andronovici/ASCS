@@ -1,4 +1,3 @@
-using FluentValidation;
 using InfigoHR.Application.Exceptions;
 using InfigoHR.Presentation.Models;
 
@@ -24,13 +23,23 @@ public class ExceptionHandlingMiddleware
             context.Response.StatusCode = StatusCodes.Status404NotFound;
             await context.Response.WriteAsJsonAsync(new ErrorResponseModel { Message = ex.Message });
         }
-        catch (ValidationException ex)
+        catch (ConflictException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status409Conflict;
+            await context.Response.WriteAsJsonAsync(new ErrorResponseModel { Message = ex.Message });
+        }
+        catch (FluentValidation.ValidationException ex)
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             await context.Response.WriteAsJsonAsync(new ValidationErrorResponseModel
             {
                 Errors = ex.Errors.Select(x => x.ErrorMessage)
             });
+        }
+        catch (ValidationException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsJsonAsync(new ErrorResponseModel { Message = ex.Message });
         }
         catch (Exception ex)
         {

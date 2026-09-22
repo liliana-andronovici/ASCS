@@ -1,19 +1,18 @@
 using EvolveDb;
-using FluentValidation;
-using InfigoHR.Application.Models.Departments;
-using InfigoHR.Application.Validators.Departments;
+using InfigoHR.Application;
 using InfigoHR.Persistence;
 using InfigoHR.Presentation.Middleware;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
-builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 
-builder.Services.AddScoped<IValidator<CreateDepartmentModel>, CreateDepartmentModelValidator>();
-builder.Services.AddScoped<IValidator<UpdateDepartmentModel>, UpdateDepartmentModelValidator>();
+builder.Services.AddOpenApi();
+builder.Services.AddApplication();
+builder.Services.AddPersistence(builder.Configuration);
 
 var app = builder.Build();
 
