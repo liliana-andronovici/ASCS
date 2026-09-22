@@ -17,6 +17,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\InfigoHR.Application\InfigoHR.Application.csproj" />
+      <ProjectReference Include="..\InfigoHR.EmailService\InfigoHR.EmailService.csproj" />
       <ProjectReference Include="..\InfigoHR.Persistence\InfigoHR.Persistence.csproj" />
     </ItemGroup>
 

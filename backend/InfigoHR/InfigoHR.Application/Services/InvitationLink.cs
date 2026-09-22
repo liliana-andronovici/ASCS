@@ -7,24 +7,26 @@ public sealed class InvitationLink
 {
     private readonly EmailServiceComponent _emailService;
     private readonly MailKitEmailSender _emailSender;
+    private readonly string _baseUrl;
 
     public InvitationLink(
         EmailServiceComponent emailService,
-        MailKitEmailSender emailSender)
+        MailKitEmailSender emailSender,
+        string baseUrl)
     {
         _emailService = emailService;
         _emailSender = emailSender;
+        _baseUrl = baseUrl;
     }
 
     public async Task<EmailServiceCreated> SendAsync(
         string email,
-        string baseUrl,
         string? data = null,
         TimeSpan? lifetime = null,
         CancellationToken cancellationToken = default)
     {
         var created = await _emailService.CreateAsync(
-            baseUrl,
+            _baseUrl,
             data,
             lifetime ?? TimeSpan.FromHours(24),
             cancellationToken);

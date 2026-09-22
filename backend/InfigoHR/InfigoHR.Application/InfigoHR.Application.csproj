@@ -8,11 +8,11 @@
 
     <ItemGroup>
         <ProjectReference Include="..\InfigoHR.Domain\InfigoHR.Domain.csproj" />
+        <ProjectReference Include="..\InfigoHR.EmailService\InfigoHR.EmailService.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <Folder Include="Interfaces\" />
-        <Folder Include="Services\" />
     </ItemGroup>
 
     <ItemGroup>

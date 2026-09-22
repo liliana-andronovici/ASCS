@@ -1,8 +1,11 @@
+using EmailService;
 using EvolveDb;
 using InfigoHR.Application;
+using InfigoHR.Application.Services;
 using InfigoHR.Persistence;
 using InfigoHR.Presentation.Middleware;
 using Npgsql;
+using EmailServiceComponent = EmailService.EmailService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,23 @@ builder.Services.AddControllers()
 builder.Services.AddOpenApi();
 builder.Services.AddApplication();
 builder.Services.AddPersistence(builder.Configuration);
+
+var smtpSettings = builder.Configuration
+    .GetSection("Smtp")
+    .Get<SmtpSettings>()
+    ?? throw new InvalidOperationException("SMTP configuration is missing.");
+
+var frontendBaseUrl = builder.Configuration["FrontendBaseUrl"]
+    ?? throw new InvalidOperationException("FrontendBaseUrl configuration is missing.");
+
+builder.Services.AddSingleton(smtpSettings);
+builder.Services.AddSingleton<IEmailServiceStore, InMemoryEmailServiceStore>();
+builder.Services.AddScoped<EmailServiceComponent>();
+builder.Services.AddScoped<MailKitEmailSender>();
+builder.Services.AddScoped<InvitationLink>(sp => new InvitationLink(
+    sp.GetRequiredService<EmailServiceComponent>(),
+    sp.GetRequiredService<MailKitEmailSender>(),
+    frontendBaseUrl));
 
 var app = builder.Build();
 
