@@ -6,8 +6,12 @@ namespace InfigoHR.Authentication.Validators;
 
 public class SignUpRequestValidator : AbstractValidator<SignUpRequest>
 {
+    private readonly IEmployeeRepository _repository;
+    
     public SignUpRequestValidator(IEmployeeRepository repository)
     {
+        _repository = repository;
+        
         RuleFor(request => request.FirstName)
             .NotEmpty()
             .MaximumLength(100);
@@ -17,20 +21,12 @@ public class SignUpRequestValidator : AbstractValidator<SignUpRequest>
             .MaximumLength(100);
 
         RuleFor(request => request.Email)
-            .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .MaximumLength(150)
             .EmailAddress()
-            .Must(email => !email.Any(char.IsWhiteSpace))
+            .Must(EmailValidationRules.NotContainWhitespace)
             .WithMessage("Email must not contain whitespace.")
-            .MustAsync(async (email, cancellationToken) =>
-            {
-                var emailExists = await repository.EmailExistsAsync(
-                    email,
-                    cancellationToken);
-
-                return !emailExists;
-            })
+            .MustAsync(BeAvailableEmailAsync)
             .WithMessage("An account with this email already exists.");
 
         RuleFor(request => request.Password)
@@ -44,5 +40,21 @@ public class SignUpRequestValidator : AbstractValidator<SignUpRequest>
 
         RuleFor(request => request.StartedOn)
             .NotNull();
+    }
+    
+    private async Task<bool> BeAvailableEmailAsync(
+        string? email,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return true;
+        }
+
+        var emailExists = await _repository.EmailExistsAsync(
+            email,
+            cancellationToken);
+
+        return !emailExists;
     }
 }
