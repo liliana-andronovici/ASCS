@@ -58,6 +58,7 @@ public sealed class EmailService
 
         return new EmailServiceCreated(
             record.Id,
+            token,
             AddTokenToUrl(baseUrl, token),
             record.ExpiresAtUtc);
     }

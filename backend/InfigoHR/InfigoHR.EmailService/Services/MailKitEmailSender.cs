@@ -65,7 +65,7 @@ public sealed class MailKitEmailSender
         using var client = new SmtpClient();
         var socketOptions = _settings.UseSsl
             ? SecureSocketOptions.SslOnConnect
-            : SecureSocketOptions.Auto;
+            : SecureSocketOptions.None;
 
         await client.ConnectAsync(
             _settings.Host,

@@ -35,9 +35,14 @@ public class EmployeeService(
         await repository.AddAsync(entity);
 
         // Send the employee invitation email after the employee has been created.
-        await invitationLink.SendAsync(
+        var invitation = await invitationLink.SendAsync(
             entity.Email,
             entity.Id.ToString());
+
+        entity.InviteToken = invitation.Token;
+        entity.InviteTokenExpiresAtUtc = invitation.ExpiresAtUtc.UtcDateTime;
+
+        await repository.UpdateAsync(entity);
 
         return entity.Id;
     }

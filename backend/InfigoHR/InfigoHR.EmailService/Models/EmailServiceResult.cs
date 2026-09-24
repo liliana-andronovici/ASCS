@@ -2,6 +2,7 @@ namespace EmailService;
 
 public sealed record EmailServiceCreated(
     Guid Id,
+    string Token,
     string Url,
     DateTimeOffset ExpiresAtUtc);
 

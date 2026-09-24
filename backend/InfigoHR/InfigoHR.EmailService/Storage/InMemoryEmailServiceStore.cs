@@ -1,9 +1,5 @@
 namespace EmailService;
 
-/// <summary>
-/// Minimal in-memory store for development and simple testing.
-/// Data is lost when the process stops.
-/// </summary>
 public sealed class InMemoryEmailServiceStore : IEmailServiceStore
 {
     private readonly object _sync = new();

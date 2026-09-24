@@ -22,8 +22,8 @@ var smtpSettings = builder.Configuration
     .Get<SmtpSettings>()
     ?? throw new InvalidOperationException("SMTP configuration is missing.");
 
-var frontendBaseUrl = builder.Configuration["FrontendBaseUrl"]
-    ?? throw new InvalidOperationException("FrontendBaseUrl configuration is missing.");
+var registrationBaseUrl = builder.Configuration["Links:Registration"]
+    ?? throw new InvalidOperationException("Registration URL configuration is missing.");
 
 builder.Services.AddSingleton(smtpSettings);
 builder.Services.AddSingleton<IEmailServiceStore, InMemoryEmailServiceStore>();
@@ -32,7 +32,7 @@ builder.Services.AddScoped<MailKitEmailSender>();
 builder.Services.AddScoped<InvitationLink>(sp => new InvitationLink(
     sp.GetRequiredService<EmailServiceComponent>(),
     sp.GetRequiredService<MailKitEmailSender>(),
-    frontendBaseUrl));
+    registrationBaseUrl));
 
 var app = builder.Build();
 

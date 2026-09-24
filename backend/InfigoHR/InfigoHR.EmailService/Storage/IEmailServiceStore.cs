@@ -1,9 +1,5 @@
 namespace EmailService;
 
-/// <summary>
-/// Storage contract for generated links.
-/// The host application can replace the in-memory store with its own database implementation.
-/// </summary>
 public interface IEmailServiceStore
 {
     Task AddAsync(
