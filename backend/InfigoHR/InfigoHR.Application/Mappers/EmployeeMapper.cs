@@ -27,7 +27,7 @@ public static class EmployeeMapper
             LastName = model.LastName,
             Email = model.Email,
             Title = model.Title,
-            StartedOnUtc = model.StartedOnUtc,
+            StartedOnUtc = DateTime.SpecifyKind(model.StartedOnUtc, DateTimeKind.Utc),
             DepartmentId = model.DepartmentId,
             LocationId = model.LocationId,
             ManagerId = model.ManagerId,
@@ -40,7 +40,7 @@ public static class EmployeeMapper
         entity.LastName = model.LastName;
         entity.Email = model.Email;
         entity.Title = model.Title;
-        entity.StartedOnUtc = model.StartedOnUtc;
+        entity.StartedOnUtc = DateTime.SpecifyKind(model.StartedOnUtc, DateTimeKind.Utc);
         entity.DepartmentId = model.DepartmentId;
         entity.LocationId = model.LocationId;
         entity.ManagerId = model.ManagerId;
