@@ -1,8 +1,15 @@
 using EvolveDb;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using InfigoHR.Application;
 using InfigoHR.EmailService.Configuration;
 using InfigoHR.EmailService.Interfaces;
+using InfigoHR.Application.Interfaces.Repositories;
+using InfigoHR.Application.Interfaces.Services;
+using InfigoHR.Application.Services;
+using InfigoHR.Application.Validators.Locations;
 using InfigoHR.Persistence;
+using InfigoHR.Persistence.Repositories;
 using InfigoHR.Presentation.Middleware;
 using Npgsql;
 using EmailServiceImplementation = InfigoHR.EmailService.Services.EmailService;
@@ -19,6 +26,12 @@ builder.Services.AddPersistence(builder.Configuration);
 
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 builder.Services.AddScoped<IEmailService, EmailServiceImplementation>();
+
+builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateLocationModelValidator>();
 
 var app = builder.Build();
 

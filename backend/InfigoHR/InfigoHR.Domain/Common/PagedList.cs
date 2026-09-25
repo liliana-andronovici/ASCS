@@ -1,4 +1,4 @@
-﻿namespace InfigoHR.Domain.Common;
+namespace InfigoHR.Domain.Common;
 
 public class PagedList<T>
 {
