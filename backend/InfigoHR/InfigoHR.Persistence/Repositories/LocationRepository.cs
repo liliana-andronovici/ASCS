@@ -3,6 +3,7 @@ using InfigoHR.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using InfigoHR.Application.Common;
 using InfigoHR.Domain.Common;
+using InfigoHR.Persistence.Extensions;
 using InfigoHR.Application.QueryParameters.Locations;
 
 namespace InfigoHR.Persistence.Repositories;
@@ -24,7 +25,7 @@ public class LocationRepository : GenericRepository<LocationEntity>, ILocationRe
 
         query = ApplySorting(query, paginationParams);
 
-        return await query.ToPagedAsync(paginationParams.Page, paginationParams.PageSize);
+        return await query.ToPagedListAsync(paginationParams.Page, paginationParams.PageSize);
     }
 
     private IQueryable<LocationEntity> ApplySorting(IQueryable<LocationEntity> query, LocationParameters paginationParams)
