@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using InfigoHR.Application.Interfaces.Repositories;
+using InfigoHR.Application.Interfaces.Services;
+using InfigoHR.Application.Services;
 using InfigoHR.Persistence.Repositories;
 
 namespace InfigoHR.Persistence;
