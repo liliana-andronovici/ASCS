@@ -1,4 +1,5 @@
 namespace InfigoHR.Application.Models.Locations;
+
 public class UpdateLocationModel
 {
     public int Id { get; set; }

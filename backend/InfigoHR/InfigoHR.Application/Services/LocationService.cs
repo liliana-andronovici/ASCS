@@ -24,22 +24,25 @@ public class LocationService : ILocationService
         return locations.Select(LocationMapper.ToModel).ToList();
     }
 
-    public async Task<PagedListModel<LocationModel>> GetPagedAsync(PaginationParams paginationParams)
+    public async Task<PagedResult<LocationModel>> GetPagedAsync(LocationParameters paginationParams)
     {
-        var pagedEntities = await _repository.GetPagedAsync(paginationParams);
-        return pagedEntities.ToPagedModel(LocationMapper.ToModel);
+        var pagedEntities = await _repository.SearchAsync(paginationParams);
+        return pagedEntities.ToPagedResult(LocationMapper.ToModel);
     }
     
     public async Task<LocationModel> GetByIdAsync(int id)
     {
         var location = await _repository.GetByIdAsync(id);
-        if (location == null) throw new LocationNotFoundException(id);
+        if (location == null)
+        {
+            throw new NotFoundException($"Location with id {id} was not found.");
+        }
         return LocationMapper.ToModel(location);
     }
 
     public async Task<int> CreateAsync(CreateLocationModel model)
     {
-        var location = new LocationEntity { Name = model.Name };
+        var location = LocationMapper.ToEntity(model);
         await _repository.AddAsync(location);
         return location.Id;
     }
@@ -47,7 +50,10 @@ public class LocationService : ILocationService
     public async Task UpdateAsync(UpdateLocationModel model)
     {
         var location = await _repository.GetByIdAsync(model.Id);
-        if (location == null) throw new LocationNotFoundException(model.Id);
+        if (location == null)
+        {
+            throw new NotFoundException($"Location with id {model.Id} was not found.");
+        }
 
         LocationMapper.ToEntity(model, location);
         await _repository.UpdateAsync(location);
@@ -56,7 +62,10 @@ public class LocationService : ILocationService
     public async Task DeleteAsync(int id)
     {
         var location = await _repository.GetByIdAsync(id);
-        if (location == null) throw new LocationNotFoundException(id);
+        if (location == null)
+        {
+            throw new NotFoundException($"Location with id {id} was not found.");
+        }
 
         await _repository.DeleteAsync(location);
     }

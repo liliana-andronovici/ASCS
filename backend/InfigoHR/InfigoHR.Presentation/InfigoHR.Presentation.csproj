@@ -28,10 +28,4 @@
         </Content>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="..\InfigoHR.Persistence\db\">
-        <Link>db</Link>
-      </Folder>
-    </ItemGroup>
-
 </Project>

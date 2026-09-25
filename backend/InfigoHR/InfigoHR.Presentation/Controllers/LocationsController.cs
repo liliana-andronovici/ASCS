@@ -25,7 +25,7 @@ public class LocationsController : ControllerBase
     }
 
     [HttpGet("paged")]
-    public async Task<ActionResult<PagedListModel<LocationModel>>> GetPaged([FromQuery] PaginationParams paginationParams)
+    public async Task<ActionResult<PagedResult<LocationModel>>> GetPaged([FromQuery] LocationParameters paginationParams)
     {
         var pagedLocations = await _locationService.GetPagedAsync(paginationParams);
         return Ok(pagedLocations);

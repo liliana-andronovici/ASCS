@@ -59,4 +59,3 @@ nunit-*.xml
 
 .idea
 .DS_Store
-appsettings.Development.json

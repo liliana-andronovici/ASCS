@@ -7,7 +7,7 @@ namespace InfigoHR.Application.Interfaces.Services;
 public interface ILocationService
 {
     Task<List<LocationModel>> GetAllAsync();
-    Task<PagedListModel<LocationModel>> GetPagedAsync(PaginationParams paginationParams);
+    Task<PagedResult<LocationModel>> GetPagedAsync(LocationParameters paginationParams);
     Task<LocationModel> GetByIdAsync(int id);
     Task<int> CreateAsync(CreateLocationModel model);
     Task UpdateAsync(UpdateLocationModel model);

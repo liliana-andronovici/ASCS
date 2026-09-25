@@ -13,7 +13,7 @@ public class LocationRepository : GenericRepository<LocationEntity>, ILocationRe
     {
     }
 
-    public async Task<PagedList<LocationEntity>> GetPagedAsync(PaginationParams paginationParams)
+    public async Task<PagedList<LocationEntity>> SearchAsync(LocationParameters paginationParams)
     {
         var query = Entities.AsQueryable();
 
@@ -27,7 +27,7 @@ public class LocationRepository : GenericRepository<LocationEntity>, ILocationRe
         return await query.ToPagedAsync(paginationParams.Page, paginationParams.PageSize);
     }
 
-    private IQueryable<LocationEntity> ApplySorting(IQueryable<LocationEntity> query, PaginationParams paginationParams)
+    private IQueryable<LocationEntity> ApplySorting(IQueryable<LocationEntity> query, LocationParameters paginationParams)
     {
         return paginationParams.SortBy switch
         {

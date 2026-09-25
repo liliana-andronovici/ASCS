@@ -16,6 +16,12 @@ public static class LocationMapper
         };
     }
 
+    public static LocationEntity ToEntity(CreateLocationModel model) =>
+        new()
+        {
+            Name = model.Name
+        };
+
     public static void ToEntity(UpdateLocationModel model, LocationEntity entity)
     {
         entity.Name = model.Name;
