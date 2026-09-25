@@ -3,10 +3,12 @@ using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 using InfigoHR.Application.QueryParameters.Employees;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InfigoHR.Presentation.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/employees")]
 public class EmployeeController(IEmployeeService service) : ControllerBase
 {

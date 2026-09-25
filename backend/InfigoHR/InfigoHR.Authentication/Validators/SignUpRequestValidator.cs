@@ -35,9 +35,6 @@ public class SignUpRequestValidator : AbstractValidator<SignUpRequest>
         RuleFor(request => request.Title)
             .NotEmpty()
             .MaximumLength(150);
-
-        RuleFor(request => request.StartedOn)
-            .NotNull();
     }
     
     private async Task<bool> BeAvailableEmailAsync(

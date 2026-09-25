@@ -14,7 +14,7 @@ public static class AuthMapper
             LastName = request.LastName,
             Email = request.Email,
             Title = request.Title,
-            StartedOnUtc = request.StartedOn!.Value.UtcDateTime,
+            StartedOnUtc = DateTime.UtcNow,
             Status = EmployeeStatus.Active
         };
     }

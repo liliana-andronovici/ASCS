@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace InfigoHR.Presentation.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {

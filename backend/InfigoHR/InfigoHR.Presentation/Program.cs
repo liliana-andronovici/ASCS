@@ -1,6 +1,5 @@
 using EvolveDb;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using InfigoHR.Application;
 using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Application.Interfaces.Services;
@@ -25,7 +24,6 @@ builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 
-builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateLocationModelValidator>();
 
 builder.Services.AddAuthenticationServices(builder.Configuration);
