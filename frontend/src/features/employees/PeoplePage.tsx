@@ -11,8 +11,6 @@ import { Checkbox } from "../../components/Checkbox";
 import { Button } from "../../components/Button";
 import type { Employee, EmployeeStatus } from "./types";
 
-const PAGE_SIZE = 11;
-
 const STATUS_BADGE: Record<EmployeeStatus, BadgeVariant> = {
     Active: "active",
     Inactive: "inactive",
@@ -20,23 +18,6 @@ const STATUS_BADGE: Record<EmployeeStatus, BadgeVariant> = {
 
 function formatStarted(dateIso: string) {
     return new Date(dateIso).toLocaleDateString("en-US", { month: "short", year: "numeric" });
-}
-
-function exportCsv(rows: Employee[]) {
-    const header = ["Name", "Title", "Email", "Status", "Started"];
-    const lines = rows.map((r) =>
-        [`${r.firstName} ${r.lastName}`, r.title, r.email, r.status, r.startedOnUtc.slice(0, 10)]
-            .map((v) => `"${v.replace(/"/g, '""')}"`)
-            .join(",")
-    );
-    const csv = [header.join(","), ...lines].join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "people.csv";
-    a.click();
-    URL.revokeObjectURL(url);
 }
 
 export default function PeoplePage() {
@@ -64,7 +45,6 @@ export default function PeoplePage() {
         departmentId,
         status,
         page,
-        pageSize: PAGE_SIZE,
     });
     const { data: departments, isError: isDepartmentsError } = useDepartments();
     const { data: directory } = useEmployeeDirectory();
@@ -80,6 +60,16 @@ export default function PeoplePage() {
         directory?.items.forEach((e) => map.set(e.id, `${e.firstName} ${e.lastName}`));
         return map;
     }, [directory]);
+
+    function handleExport() {
+        const params = new URLSearchParams();
+        if (search) params.set("search", search);
+        if (departmentId !== undefined) params.set("departmentId", String(departmentId));
+        if (status !== undefined) params.set("status", status);
+
+        const base = import.meta.env.VITE_API_URL ?? "/api";
+        window.location.href = `${base}/employees/export?${params.toString()}`;
+    }
 
     function openCreate() {
         setEditingEmployee(undefined);
@@ -121,7 +111,7 @@ export default function PeoplePage() {
                         People <span className="text-base font-normal text-gray-400">{data.totalCount}</span>
                     </h1>
                     <div className="flex gap-2">
-                        <Button variant="secondary" className="!w-auto px-4" onClick={() => exportCsv(data.items)}>
+                        <Button variant="secondary" className="!w-auto px-4" onClick={handleExport}>
                             Export CSV
                         </Button>
                         <Button onClick={openCreate} className="!w-auto px-4">
