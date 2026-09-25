@@ -1,12 +1,12 @@
-namespace EmailService;
+namespace InfigoHR.EmailService.Configuration;
 
-public sealed class SmtpSettings
+public class SmtpSettings
 {
-    public required string Host { get; init; }
-    public int Port { get; init; } = 25;
-    public bool UseSsl { get; init; }
-    public string? Username { get; init; }
-    public string? Password { get; init; }
-    public required string FromAddress { get; init; }
-    public string? FromName { get; init; }
+    public string Host { get; set; } = string.Empty;
+    public int Port { get; set; } = 25;
+    public bool UseSsl { get; set; }
+    public string? Username { get; set; }
+    public string? Password { get; set; }
+    public string FromAddress { get; set; } = string.Empty;
+    public string? FromName { get; set; }
 }
