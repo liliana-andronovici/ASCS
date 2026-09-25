@@ -37,9 +37,10 @@ export function EmployeeFormModal({ open, onClose, employee }: Props) {
     const serverError = createMutation.error ?? updateMutation.error;
 
     function onSubmit(values: EmployeeFormValues) {
+        const dateOnly = values.startedOnUtc || new Date().toISOString().slice(0, 10);
         const payload = {
             ...values,
-            startedOnUtc: values.startedOnUtc || new Date().toISOString().slice(0, 10),
+            startedOnUtc: new Date(`${dateOnly}T00:00:00.000Z`).toISOString(),
             departmentId: employee?.departmentId ?? null,
             locationId: employee?.locationId ?? null,
             managerId: employee?.managerId ?? null,

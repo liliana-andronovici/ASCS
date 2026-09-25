@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace InfigoHR.Presentation.Controllers;
 
 [ApiController]
-[Route("api/departments")]
+[Route("api/[controller]")]
 public class DepartmentController : ControllerBase
 {
     private readonly IDepartmentService _departmentService;

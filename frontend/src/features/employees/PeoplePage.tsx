@@ -68,7 +68,7 @@ export default function PeoplePage() {
         if (status !== undefined) params.set("status", status);
 
         const base = import.meta.env.VITE_API_URL ?? "/api";
-        window.location.href = `${base}/employees/export?${params.toString()}`;
+        window.location.href = `${base}/Employee/export?${params.toString()}`;
     }
 
     function openCreate() {

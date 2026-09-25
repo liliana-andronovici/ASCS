@@ -7,11 +7,11 @@ export function getEmployees(query: EmployeeQuery = {}): Promise<PagedResult<Emp
         if (value !== undefined) params.set(key, String(value));
     });
     const qs = params.toString();
-    return apiFetch<PagedResult<Employee>>(`/employees${qs ? `?${qs}` : ""}`);
+    return apiFetch<PagedResult<Employee>>(`/Employee${qs ? `?${qs}` : ""}`);
 }
 
 export function getEmployeeById(id: number): Promise<Employee> {
-    return apiFetch<Employee>(`/employees/${id}`);
+    return apiFetch<Employee>(`/Employee/${id}`);
 }
 
 export interface CreateEmployeeInput {
@@ -29,21 +29,21 @@ export interface CreateEmployeeInput {
 export type UpdateEmployeeInput = CreateEmployeeInput;
 
 export function createEmployee(input: CreateEmployeeInput): Promise<void> {
-    return apiFetch<void>("/employees", {
+    return apiFetch<void>("/Employee", {
         method: "POST",
         body: JSON.stringify(input),
     });
 }
 
 export function updateEmployee(id: number, input: UpdateEmployeeInput): Promise<void> {
-    return apiFetch<void>("/employees", {
+    return apiFetch<void>("/Employee", {
         method: "PUT",
         body: JSON.stringify({ id, ...input }),
     });
 }
 
 export function deleteEmployee(id: number): Promise<void> {
-    return apiFetch<void>(`/employees/${id}`, {
+    return apiFetch<void>(`/Employee/${id}`, {
         method: "DELETE",
     });
 }

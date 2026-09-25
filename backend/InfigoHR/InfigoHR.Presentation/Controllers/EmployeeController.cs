@@ -7,7 +7,7 @@ using InfigoHR.Application.QueryParameters.Employees;
 namespace InfigoHR.Presentation.Controllers;
 
 [ApiController]
-[Route("api/employees")]
+[Route("api/[controller]")]
 public class EmployeeController(IEmployeeService service) : ControllerBase
 {
     [HttpGet]

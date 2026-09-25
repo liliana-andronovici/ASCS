@@ -2,5 +2,5 @@
 import type { Department } from "./types";
 
 export function getDepartments(): Promise<Department[]> {
-    return apiFetch<Department[]>("/departments");
+    return apiFetch<Department[]>("/Department");
 }
