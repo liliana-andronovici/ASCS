@@ -10,9 +10,7 @@ public class SignInRequestValidator : AbstractValidator<SignInRequest>
         RuleFor(request => request.Email)
             .NotEmpty()
             .MaximumLength(150)
-            .EmailAddress()
-            .Must(EmailValidationRules.NotContainWhitespace)
-            .WithMessage("Email must not contain whitespace.");
+            .EmailAddress();
 
         RuleFor(request => request.Password)
             .NotEmpty();

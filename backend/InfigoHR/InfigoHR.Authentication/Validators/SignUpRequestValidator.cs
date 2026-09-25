@@ -24,8 +24,6 @@ public class SignUpRequestValidator : AbstractValidator<SignUpRequest>
             .NotEmpty()
             .MaximumLength(150)
             .EmailAddress()
-            .Must(EmailValidationRules.NotContainWhitespace)
-            .WithMessage("Email must not contain whitespace.")
             .MustAsync(BeAvailableEmailAsync)
             .WithMessage("An account with this email already exists.");
 
@@ -43,14 +41,9 @@ public class SignUpRequestValidator : AbstractValidator<SignUpRequest>
     }
     
     private async Task<bool> BeAvailableEmailAsync(
-        string? email,
+        string email,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            return true;
-        }
-
         var emailExists = await _repository.EmailExistsAsync(
             email,
             cancellationToken);
