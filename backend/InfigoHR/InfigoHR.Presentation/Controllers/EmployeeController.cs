@@ -16,13 +16,6 @@ public class EmployeeController(IEmployeeService service) : ControllerBase
         return Ok(await service.GetAllAsync(query));
     }
 
-    [HttpGet("export")]
-    public async Task<IActionResult> Export([FromQuery] EmployeeParameters query)
-    {
-        var csvBytes = await service.ExportCsvAsync(query);
-        return File(csvBytes, "text/csv", "people.csv");
-    }
-
     [HttpGet("{id:int}")]
     public async Task<ActionResult<EmployeeModel>> GetById(int id)
     {

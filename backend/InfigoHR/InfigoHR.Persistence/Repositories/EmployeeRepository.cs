@@ -22,16 +22,6 @@ public class EmployeeRepository(AppDbContext dbContext)
         return await employees.ToPagedListAsync(query.Page, query.PageSize);
     }
 
-    public async Task<List<EmployeeEntity>> SearchAllAsync(EmployeeParameters query)
-    {
-        var employees = ApplyFilters(Entities.AsNoTracking().AsQueryable(), query);
-
-        var descending = query.SortDirection == SortDirection.Descending;
-        employees = ApplySorting(employees, query.SortBy, descending);
-
-        return await employees.ToListAsync();
-    }
-
     public async Task<bool> EmailExistsAsync(string email) =>
         await Entities.AnyAsync(x => x.Email == email);
 

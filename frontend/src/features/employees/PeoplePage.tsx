@@ -61,16 +61,6 @@ export default function PeoplePage() {
         return map;
     }, [directory]);
 
-    function handleExport() {
-        const params = new URLSearchParams();
-        if (search) params.set("search", search);
-        if (departmentId !== undefined) params.set("departmentId", String(departmentId));
-        if (status !== undefined) params.set("status", status);
-
-        const base = import.meta.env.VITE_API_URL ?? "/api";
-        window.location.href = `${base}/Employee/export?${params.toString()}`;
-    }
-
     function openCreate() {
         setEditingEmployee(undefined);
         setFormOpen(true);
@@ -111,9 +101,6 @@ export default function PeoplePage() {
                         People <span className="text-base font-normal text-gray-400">{data.totalCount}</span>
                     </h1>
                     <div className="flex gap-2">
-                        <Button variant="secondary" className="!w-auto px-4" onClick={handleExport}>
-                            Export CSV
-                        </Button>
                         <Button onClick={openCreate} className="!w-auto px-4">
                             Add person
                         </Button>
