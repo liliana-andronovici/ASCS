@@ -3,6 +3,7 @@ import App from "../App";
 import { AuthLayer } from "../features/auth/AuthLayer";
 import LoginPage from "../features/auth/LoginPage";
 import PlaceholderPage from "../pages/PlaceholderPage";
+import PeoplePage from "../features/employees/PeoplePage";
 
 export const router = createBrowserRouter([
     {
@@ -10,7 +11,7 @@ export const router = createBrowserRouter([
         element: <App />,
         children: [
             { index: true, element: <PlaceholderPage title="Home" /> },
-            { path: "people", element: <PlaceholderPage title="People" /> },
+            { path: "people", element: <PeoplePage /> },
             { path: "orgChart", element: <PlaceholderPage title="Org chart" /> },
             { path: "timeOff", element: <PlaceholderPage title="Time off" /> },
             { path: "rooms", element: <PlaceholderPage title="Rooms" /> },
