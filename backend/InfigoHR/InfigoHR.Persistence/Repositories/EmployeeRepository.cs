@@ -42,8 +42,20 @@ public class EmployeeRepository
     public async Task<PagedList<EmployeeEntity>> SearchAsync(
         EmployeeParameters query)
     {
-        var employees = Entities.AsNoTracking().AsQueryable();
+        var employees = ApplyFilters(Entities.AsNoTracking().AsQueryable(), query);
 
+        var descending = query.SortDirection == SortDirection.Descending;
+        employees = ApplySorting(employees, query.SortBy, descending);
+
+        return await employees.ToPagedListAsync(query.Page, query.PageSize);
+    }
+
+    public async Task<bool> EmailExistsAsync(string email) =>
+        await Entities.AnyAsync(x => x.Email == email);
+
+    private static IQueryable<EmployeeEntity> ApplyFilters(
+        IQueryable<EmployeeEntity> employees, EmployeeParameters query)
+    {
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
             var search = query.Search.ToLower();
@@ -65,10 +77,7 @@ public class EmployeeRepository
             employees = employees.Where(x =>
                 x.Status == query.Status);
 
-        var descending = query.SortDirection == SortDirection.Descending;
-        employees = ApplySorting(employees, query.SortBy, descending);
-
-        return await employees.ToPagedListAsync(query.Page, query.PageSize);
+        return employees;
     }
 
     private static IQueryable<EmployeeEntity> ApplySorting(
