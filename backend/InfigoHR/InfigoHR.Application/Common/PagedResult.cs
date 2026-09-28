@@ -1,4 +1,4 @@
-﻿namespace InfigoHR.Application.Common;
+namespace InfigoHR.Application.Common;
 
 public class PagedResult<T> : IPagedResult<T>
 {
