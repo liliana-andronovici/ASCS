@@ -1,11 +1,11 @@
 using EvolveDb;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using InfigoHR.Application;
 using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Services;
 using InfigoHR.Application.Validators.Locations;
+using InfigoHR.Authentication;
 using InfigoHR.Persistence;
 using InfigoHR.Persistence.Repositories;
 using InfigoHR.Presentation.Middleware;
@@ -24,8 +24,9 @@ builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 
-builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateLocationModelValidator>();
+
+builder.Services.AddAuthenticationServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -56,6 +57,10 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseCors(corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
