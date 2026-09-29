@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useEmployees, useEmployeeDirectory } from "./useEmployees";
 import { useDepartments } from "../departments/useDepartments";
 import { EmployeeFormModal } from "./EmployeeFormModal";
@@ -217,9 +218,7 @@ export default function PeoplePage() {
                                 <div className="flex items-center gap-3">
                                     <Avatar firstName={emp.firstName} lastName={emp.lastName} />
                                     <div>
-                                        <div className="font-semibold text-navy">
-                                            {emp.firstName} {emp.lastName}
-                                        </div>
+                                        <Link to={`/people/${emp.id}`} className="block font-semibold text-navy hover:underline">{emp.firstName} {emp.lastName}</Link>
                                         <div className="text-gray-500">{emp.title}</div>
                                     </div>
                                 </div>
