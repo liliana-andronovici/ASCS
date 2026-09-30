@@ -1,4 +1,4 @@
-﻿namespace InfigoHR.Application.Common;
+namespace InfigoHR.Application.Common;
 
 public abstract class Parameters
 {
