@@ -1,5 +1,3 @@
-import { getToken } from "./sessions";
-
 const BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
 
 export class ApiError extends Error {
@@ -11,14 +9,8 @@ export class ApiError extends Error {
 }
 
 export async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
-    const token = getToken();
-
     const response = await fetch(`${BASE_URL}${path}`, {
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            ...options?.headers,
-        },
+        headers: { "Content-Type": "application/json", ...options?.headers },
         ...options,
     });
 

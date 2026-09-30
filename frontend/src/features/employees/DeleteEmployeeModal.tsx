@@ -1,6 +1,6 @@
 import { Modal } from "../../components/Modal";
 import { Button } from "../../components/Button";
-import { useDeleteEmployee } from "./useEmployeeMutations.ts";
+import { useDeleteEmployee } from "./useEmployeeMutations";
 import type { Employee } from "./types";
 
 type Props = {

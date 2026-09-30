@@ -74,11 +74,7 @@ export default function PeoplePage() {
     function toggleRow(id: number) {
         setSelected((prev) => {
             const next = new Set(prev);
-            if (next.has(id)) {
-                next.delete(id);
-            } else {
-                next.add(id);
-            }
+            next.has(id) ? next.delete(id) : next.add(id);
             return next;
         });
     }
