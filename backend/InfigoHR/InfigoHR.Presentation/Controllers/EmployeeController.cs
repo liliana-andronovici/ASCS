@@ -9,7 +9,7 @@ namespace InfigoHR.Presentation.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/employees")]
+[Route("api/[controller]")]
 public class EmployeeController(IEmployeeService service) : ControllerBase
 {
     [HttpGet]
