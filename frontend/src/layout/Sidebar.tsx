@@ -1,5 +1,5 @@
 ﻿import { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import logoImage from "../assets/logo.svg";
 import {
     ChevronRight,
@@ -12,7 +12,7 @@ import {
     UserPlus,
     Settings,
 } from "lucide-react";
-
+import { AccountMenu } from "../features/account/AccountMenu";
 
 const NAV_ITEMS = [
     { label: "Home", href: "/", icon: Home },
@@ -28,12 +28,12 @@ export function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);
 
     return (
-        <aside 
+        <aside
             className={`
             sticky top-0 h-screen bg-navy text-white flex flex-col transition-all duration-300 ease-in-out shrink-0 z-30 ${collapsed ? "w-16" : "w-52"}
             `}
         >
-            <div 
+            <div
                 className={`
                 flex items-center border-b border-white/20 p-4 h-16 ${collapsed ? "justify-center" : "justify-between"}
                 `}
@@ -50,20 +50,32 @@ export function Sidebar() {
 
             <nav className="flex flex-col gap-1 px-2">
                 {NAV_ITEMS.map((item) => {
-                    const Icon = item.icon; 
+                    const Icon = item.icon;
 
                     return (
-                        <Link to={item.href}
+                        <NavLink
+                            to={item.href}
+                            end={item.href === "/"}
                             key={item.href}
-                            className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 ${collapsed ? "justify-center" : ""}`}
+                            className={({ isActive }) =>
+                                `flex items-center gap-3 rounded-md py-2 text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-coral/60 ${
+                                    collapsed ? "justify-center px-3" : ""
+                                } ${
+                                    isActive
+                                        ? "border-l-2 border-coral bg-white/10 pl-[10px] pr-3 font-semibold text-white"
+                                        : "px-3 text-white/80 hover:bg-white/10"
+                                }`
+                            }
                             title={collapsed ? item.label : undefined}
                         >
                             <Icon size={20} />
                             {!collapsed && <span>{item.label}</span>}
-                        </Link>
+                        </NavLink>
                     );
                 })}
             </nav>
+
+            <AccountMenu collapsed={collapsed} />
         </aside>
     );
 }

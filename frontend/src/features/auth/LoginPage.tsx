@@ -1,17 +1,37 @@
 ﻿import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
+import { signIn } from "./api";
+import { setToken } from "../../lib/sessions";
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+
+    const signInMutation = useMutation({
+        mutationFn: signIn,
+        onSuccess: (data) => {
+            setToken(data.accessToken);
+            navigate("/");
+        },
+    });
+
+    function handleSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        signInMutation.mutate({ email, password });
+    }
 
     return (
         <>
             <h2 className="text-xl font-semibold text-navy">Sign in</h2>
             <p className="mb-6 text-sm text-gray-500">Use your work account.</p>
 
-            <Button variant="secondary" className="mb-4">
+            <Button variant="secondary" className="mb-4" type="button">
                 Continue with Google
             </Button>
 
@@ -21,8 +41,16 @@ export default function LoginPage() {
                 <div className="h-px flex-1 bg-gray-200" />
             </div>
 
-            <form className="flex flex-col gap-4">
-                <Input id="email" label="Work email" type="email" placeholder="ana.popescu@infigo.ro" />
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+                <Input
+                    id="email"
+                    label="Work email"
+                    type="email"
+                    placeholder="ana.popescu@infigo.ro"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
 
                 <div>
                     <div className="flex items-center justify-between">
@@ -37,6 +65,9 @@ export default function LoginPage() {
                         <input
                             id="password"
                             type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
                             className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-sm focus:border-navy focus:outline-none"
                         />
                         <button
@@ -49,7 +80,15 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                <Button type="submit">Sign in</Button>
+                {signInMutation.isError && (
+                    <p className="text-sm text-red-600">
+                        Couldn't sign in. Check your email and password and try again.
+                    </p>
+                )}
+
+                <Button type="submit" disabled={signInMutation.isPending}>
+                    {signInMutation.isPending ? "Signing in..." : "Sign in"}
+                </Button>
             </form>
 
             <a href="/magic-link" className="mt-4 block text-center text-sm text-coral hover:underline">
