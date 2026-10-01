@@ -66,7 +66,7 @@ public sealed class EmailService : IEmailService
         {
             if (client.IsConnected)
             {
-                await client.DisconnectAsync(true, CancellationToken.None);
+                await client.DisconnectAsync(quit: true, cancellationToken: CancellationToken.None);
             }
         }
     }

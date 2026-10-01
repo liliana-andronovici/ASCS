@@ -12,7 +12,7 @@ using InfigoHR.Persistence;
 using InfigoHR.Persistence.Repositories;
 using InfigoHR.Presentation.Middleware;
 using Npgsql;
-using EmailServiceImplementation = InfigoHR.EmailService.Services.EmailService;
+using InfigoHR.EmailService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +25,7 @@ builder.Services.AddApplication();
 builder.Services.AddPersistence(builder.Configuration);
 
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
-builder.Services.AddScoped<IEmailService, EmailServiceImplementation>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 builder.Services.AddScoped<ILocationService, LocationService>();
