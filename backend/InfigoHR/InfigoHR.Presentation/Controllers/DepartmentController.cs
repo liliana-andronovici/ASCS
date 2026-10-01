@@ -3,6 +3,8 @@ using InfigoHR.Application.Models.Departments;
 using InfigoHR.Authentication.Authorization;
 using InfigoHR.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
+using InfigoHR.Application.Common;
+using InfigoHR.Application.QueryParameters.Departments;
 
 namespace InfigoHR.Presentation.Controllers;
 
@@ -23,6 +25,15 @@ public class DepartmentController : ControllerBase
     {
         var departments = await _departmentService.GetAllAsync();
         return Ok(departments);
+    }
+    
+    [HasPermission(Permission.ReadDepartment)]
+    [HttpGet("paged")]
+    public async Task<ActionResult<PagedResult<DepartmentModel>>> GetPaged(
+        [FromQuery] DepartmentParameters paginationParams)
+    {
+        var pagedDepartments = await _departmentService.GetPagedAsync(paginationParams);
+        return Ok(pagedDepartments);
     }
 
     [HasPermission(Permission.ReadDepartment)]
