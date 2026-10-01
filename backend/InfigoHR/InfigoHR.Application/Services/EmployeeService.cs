@@ -17,7 +17,8 @@ public class EmployeeService(
     public async Task<PagedResult<EmployeeModel>> GetAllAsync(EmployeeParameters query)
     {
         var pagedList = await repository.SearchAsync(query);
-        return pagedList.ToPagedResult(EmployeeMapper.ToModel);    }
+        return pagedList.ToPagedResult(EmployeeMapper.ToModel);
+    }
 
     public async Task<EmployeeModel> GetByIdAsync(int id)
     {
