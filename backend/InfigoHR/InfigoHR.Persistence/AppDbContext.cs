@@ -16,6 +16,8 @@ public class AppDbContext : DbContext
     public DbSet<AuthEntity> Auths => Set<AuthEntity>();
     public DbSet<TwoFactorAuthEntity> TwoFactorAuths => Set<TwoFactorAuthEntity>();
     public DbSet<TrustedDeviceEntity> TrustedDevices => Set<TrustedDeviceEntity>();
+    public DbSet<OnboardingEntity> Onboardings => Set<OnboardingEntity>();
+    public DbSet<OnboardingTaskEntity> OnboardingTasks => Set<OnboardingTaskEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
