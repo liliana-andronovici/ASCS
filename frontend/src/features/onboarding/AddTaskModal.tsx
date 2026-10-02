@@ -17,19 +17,19 @@ export function AddTaskModal({ open, onClose, sections }: AddTaskModalProps) {
     const addTask = useAddOnboardingTask();
     const [sectionKey, setSectionKey] = useState<OnboardingSection["key"]>(sections[0]?.key ?? "beforeDayOne");
     const [title, setTitle] = useState("");
-    const [assignee, setAssignee] = useState("");
+    const [note, setNote] = useState("");
     const [dueDate, setDueDate] = useState("");
 
     function reset() {
         setTitle("");
-        setAssignee("");
+        setNote("");
         setDueDate("");
     }
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         addTask.mutate(
-            { sectionKey, title, assignee, dueDate },
+            { sectionKey, title, note: note || undefined, dueDate },
             {
                 onSuccess: () => {
                     reset();
@@ -68,12 +68,11 @@ export function AddTaskModal({ open, onClose, sections }: AddTaskModalProps) {
                     required
                 />
                 <Input
-                    id="task-assignee"
-                    label="Assignee"
-                    value={assignee}
-                    onChange={(event) => setAssignee(event.target.value)}
-                    placeholder="e.g. Ana, IT, Mihai"
-                    required
+                    id="task-note"
+                    label="Note (optional)"
+                    value={note}
+                    onChange={(event) => setNote(event.target.value)}
+                    placeholder="e.g. Tue 15 Sep 9:00"
                 />
                 <Input
                     id="task-due-date"

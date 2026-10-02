@@ -4,5 +4,6 @@ public class AddOnboardingTaskModel
 {
     public string SectionKey { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
+    public string? Note { get; set; }
     public string? DueDate { get; set; }
 }

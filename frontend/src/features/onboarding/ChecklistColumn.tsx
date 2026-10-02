@@ -40,16 +40,10 @@ export function ChecklistColumn({ section, onToggle, togglingId }: ChecklistColu
                                 >
                                     {task.title}
                                 </span>
-                                {note ? (
-                                    <span
-                                        className={`text-xs ${
-                                            status === "overdue" ? "text-coral" : "text-gray-500"
-                                        }`}
-                                    >
-                                        {task.assignee} · {note}
+                                {note && (
+                                    <span className={`text-xs ${status === "overdue" ? "text-coral" : "text-gray-500"}`}>
+                                        {note}
                                     </span>
-                                ) : (
-                                    <span className="text-xs text-gray-500">{task.assignee}</span>
                                 )}
                             </div>
                         </li>

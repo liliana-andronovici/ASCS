@@ -3,14 +3,13 @@ export type OnboardingTaskStatus = "done" | "pending" | "overdue";
 export interface OnboardingTask {
     id: number;
     title: string;
-    assignee: string;
+    note?: string;
     dueDate: string | null;
     completedOn: string | null;
-    note?: string;
 }
 
 export interface OnboardingSection {
-    key: "beforeDayOne" | "firstWeek" | "firstMonth";
+    key: "beforeDayOne" | "firstWeek" | "firstMonth" | "other";
     title: string;
     tasks: OnboardingTask[];
 }
@@ -30,6 +29,6 @@ export interface OnboardingChecklist {
 export interface AddTaskInput {
     sectionKey: OnboardingSection["key"];
     title: string;
-    assignee: string;
+    note?: string;
     dueDate: string;
 }

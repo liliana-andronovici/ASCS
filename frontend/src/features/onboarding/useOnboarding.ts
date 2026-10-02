@@ -12,7 +12,7 @@ export function useToggleOnboardingTask() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (taskId: number) => toggleTask(taskId),
-        onSuccess: (data) => queryClient.setQueryData(QUERY_KEY, data),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
     });
 }
 
@@ -20,6 +20,6 @@ export function useAddOnboardingTask() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (input: AddTaskInput) => addTask(input),
-        onSuccess: (data) => queryClient.setQueryData(QUERY_KEY, data),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
     });
 }

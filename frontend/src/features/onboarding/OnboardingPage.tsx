@@ -97,7 +97,7 @@ export default function OnboardingPage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-8 pt-5 md:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-8 pt-5 md:grid-cols-2 lg:grid-cols-4">
                         {data.sections.map((section) => (
                             <ChecklistColumn
                                 key={section.key}
