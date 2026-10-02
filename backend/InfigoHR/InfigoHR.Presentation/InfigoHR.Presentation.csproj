@@ -21,15 +21,7 @@
       <ProjectReference Include="..\InfigoHR.Application\InfigoHR.Application.csproj" />
       <ProjectReference Include="..\InfigoHR.EmailService\InfigoHR.EmailService.csproj" />
       <ProjectReference Include="..\InfigoHR.Persistence\InfigoHR.Persistence.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="..\InfigoHR.Persistence\Migrations\**\*.sql" LinkBase="Migrations">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <ProjectReference Include="..\InfigoHR.Application\InfigoHR.Application.csproj" />
-        <ProjectReference Include="..\InfigoHR.Persistence\InfigoHR.Persistence.csproj" />
-        <ProjectReference Include="..\InfigoHR.Authentication\InfigoHR.Authentication.csproj" />
+      <ProjectReference Include="..\InfigoHR.Authentication\InfigoHR.Authentication.csproj" />
     </ItemGroup>
 
 </Project>
