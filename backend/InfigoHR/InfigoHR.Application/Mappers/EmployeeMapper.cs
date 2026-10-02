@@ -1,4 +1,4 @@
-﻿using InfigoHR.Application.Models;
+﻿using InfigoHR.Application.Models.Employees;
 using InfigoHR.Domain.Entities;
 
 namespace InfigoHR.Application.Mappers;
