@@ -1,5 +1,5 @@
 ﻿using InfigoHR.Application.Common;
-using InfigoHR.Application.Models;
+using InfigoHR.Application.Models.Employees;
 using InfigoHR.Domain.Enums;
 
 namespace InfigoHR.Application.QueryParameters.Employees;

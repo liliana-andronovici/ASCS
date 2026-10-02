@@ -1,5 +1,7 @@
 using FluentValidation;
 using InfigoHR.Application;
+using InfigoHR.EmailService.Configuration;
+using InfigoHR.EmailService.Interfaces;
 using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Services;
@@ -8,6 +10,8 @@ using InfigoHR.Authentication;
 using InfigoHR.Persistence;
 using InfigoHR.Persistence.Repositories;
 using InfigoHR.Presentation.Middleware;
+    
+using InfigoHR.EmailService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +22,9 @@ builder.Services.AddControllers()
 builder.Services.AddOpenApi();
 builder.Services.AddApplication();
 builder.Services.AddPersistence(builder.Configuration);
+
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 builder.Services.AddScoped<ILocationService, LocationService>();

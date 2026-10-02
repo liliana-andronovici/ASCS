@@ -1,6 +1,6 @@
 ﻿using InfigoHR.Domain.Enums;
 
-namespace InfigoHR.Application.Models;
+namespace InfigoHR.Application.Models.Employees;
 
 public  class CreateEmployeeModel
 {

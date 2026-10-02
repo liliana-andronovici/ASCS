@@ -1,4 +1,4 @@
-﻿namespace InfigoHR.Application.Models;
+﻿namespace InfigoHR.Application.Models.Employees;
 
 public enum EmployeeSortField
 {
