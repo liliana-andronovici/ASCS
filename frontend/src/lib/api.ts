@@ -1,3 +1,5 @@
+import { clearToken, getToken } from "./sessions";
+
 const BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
 
 export class ApiError extends Error {
@@ -8,13 +10,25 @@ export class ApiError extends Error {
     }
 }
 
-export async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
+export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+    const token = getToken();
+
     const response = await fetch(`${BASE_URL}${path}`, {
-        headers: { "Content-Type": "application/json", ...options?.headers },
         ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...options.headers,
+        },
     });
 
     if (!response.ok) {
+        // token expirat sau invalid: stergem sesiunea si mergem la login
+        if (response.status === 401 && token) {
+            clearToken();
+            window.location.assign("/sign-in");
+        }
+
         const text = await response.text().catch(() => "");
         throw new ApiError(response.status, text || response.statusText);
     }
@@ -25,3 +39,4 @@ export async function apiFetch<T>(path: string, options?: RequestInit): Promise<
 
     return response.json() as Promise<T>;
 }
+ 
