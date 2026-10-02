@@ -11,7 +11,6 @@ CREATE TABLE "OnboardingTasks" (
     "OnboardingId" INT NOT NULL REFERENCES "Onboardings" ("Id") ON DELETE CASCADE,
     "Section" INT NOT NULL,
     "Title" TEXT NOT NULL,
-    "Assignee" TEXT NOT NULL,
     "Note" TEXT NULL,
     "DueDateUtc" TIMESTAMPTZ NULL,
     "CompletedOnUtc" TIMESTAMPTZ NULL,
