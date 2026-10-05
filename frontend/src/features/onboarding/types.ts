@@ -32,3 +32,15 @@ export interface AddTaskInput {
     note?: string;
     dueDate: string;
 }
+
+export interface OnboardingSummary {
+    employeeId: number;
+    firstName: string;
+    lastName: string;
+    title: string;
+    department: string;
+    startsOn: string;
+    completedTaskCount: number;
+    totalTaskCount: number;
+    isComplete: boolean;
+}

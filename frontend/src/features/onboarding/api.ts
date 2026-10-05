@@ -1,8 +1,16 @@
 import { apiFetch } from "../../lib/api";
-import type { AddTaskInput, OnboardingChecklist } from "./types";
+import type { AddTaskInput, OnboardingChecklist, OnboardingSummary } from "./types";
+
+export function getSummaries(): Promise<OnboardingSummary[]> {
+    return apiFetch<OnboardingSummary[]>("/Onboarding");
+}
 
 export function getChecklist(): Promise<OnboardingChecklist> {
     return apiFetch<OnboardingChecklist>("/Onboarding/checklist");
+}
+
+export function getChecklistFor(employeeId: number): Promise<OnboardingChecklist> {
+    return apiFetch<OnboardingChecklist>(`/Onboarding/${employeeId}`);
 }
 
 export function toggleTask(taskId: number): Promise<void> {
@@ -11,8 +19,8 @@ export function toggleTask(taskId: number): Promise<void> {
     });
 }
 
-export function addTask(input: AddTaskInput): Promise<void> {
-    return apiFetch<void>("/Onboarding/tasks", {
+export function addTaskFor(employeeId: number, input: AddTaskInput): Promise<void> {
+    return apiFetch<void>(`/Onboarding/${employeeId}/tasks`, {
         method: "POST",
         body: JSON.stringify(input),
     });

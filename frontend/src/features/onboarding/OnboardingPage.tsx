@@ -1,9 +1,6 @@
-import { useState } from "react";
 import { Avatar } from "../../components/Avatar";
-import { Button } from "../../components/Button";
 import { PageHeader } from "../../layout/PageHeader";
 import { getErrorMessage } from "../../lib/errors";
-import { AddTaskModal } from "./AddTaskModal";
 import { ChecklistColumn } from "./ChecklistColumn";
 import { useOnboardingChecklist, useToggleOnboardingTask } from "./useOnboarding";
 import { getTaskStatus } from "./taskStatus";
@@ -17,9 +14,8 @@ function formatStartDate(iso: string) {
 }
 
 export default function OnboardingPage() {
-    const [addTaskOpen, setAddTaskOpen] = useState(false);
     const checklist = useOnboardingChecklist();
-    const toggle = useToggleOnboardingTask();
+    const toggle = useToggleOnboardingTask(["onboarding", "checklist"]);
 
     if (checklist.isPending) {
         return <div className="p-6 text-sm text-gray-500">Loading onboarding…</div>;
@@ -40,26 +36,7 @@ export default function OnboardingPage() {
 
     return (
         <div className="flex min-h-0 flex-1 flex-col">
-            <PageHeader title="Onboarding">
-                <div className="flex gap-2">
-                    <Button
-                        type="button"
-                        variant="secondary"
-                        className="!w-auto px-4"
-                        disabled
-                        title="Templates aren't built yet"
-                    >
-                        Change template
-                    </Button>
-                    <Button
-                        type="button"
-                        className="!w-auto px-4"
-                        onClick={() => setAddTaskOpen(true)}
-                    >
-                        Add task
-                    </Button>
-                </div>
-            </PageHeader>
+            <PageHeader title="Onboarding" />
 
             <div className="p-6">
                 <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-card">
@@ -113,8 +90,6 @@ export default function OnboardingPage() {
                     )}
                 </div>
             </div>
-
-            <AddTaskModal open={addTaskOpen} onClose={() => setAddTaskOpen(false)} sections={data.sections} />
         </div>
     );
 }

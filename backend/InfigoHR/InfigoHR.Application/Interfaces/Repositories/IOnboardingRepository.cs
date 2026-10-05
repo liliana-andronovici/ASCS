@@ -6,6 +6,7 @@ public interface IOnboardingRepository : IGenericRepository<OnboardingEntity>
 {
     Task<OnboardingEntity?> GetByEmployeeIdAsync(int employeeId);
     Task<OnboardingTaskEntity?> GetTaskByIdAsync(int taskId);
+    Task<List<OnboardingEntity>> GetAllWithDetailsAsync();
     Task AddTaskAsync(OnboardingTaskEntity task);
     Task UpdateTaskAsync(OnboardingTaskEntity task);
 }

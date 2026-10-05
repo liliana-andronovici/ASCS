@@ -33,4 +33,10 @@ public class OnboardingRepository(AppDbContext dbContext)
         Context.Set<OnboardingTaskEntity>().Update(task);
         await Context.SaveChangesAsync();
     }
+    
+    public async Task<List<OnboardingEntity>> GetAllWithDetailsAsync() =>
+        await Entities
+            .Include(x => x.Employee!).ThenInclude(e => e!.Department)
+            .Include(x => x.Tasks)
+            .ToListAsync();
 }

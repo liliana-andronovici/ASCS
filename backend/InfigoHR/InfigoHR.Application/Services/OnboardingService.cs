@@ -81,4 +81,10 @@ public class OnboardingService : IOnboardingService
         !string.IsNullOrWhiteSpace(dueDate) && DateTime.TryParse(dueDate, out var parsed)
             ? DateTime.SpecifyKind(parsed.Date, DateTimeKind.Utc)
             : null;
+    
+    public async Task<List<OnboardingSummaryModel>> GetOnboardingSummariesAsync()
+    {
+        var onboardings = await _onboardingRepository.GetAllWithDetailsAsync();
+        return onboardings.Select(OnboardingMapper.ToSummaryModel).ToList();
+    }
 }

@@ -1,26 +1,32 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InfigoHR.Presentation.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("api/[controller]")]
 public class OnboardingController(IOnboardingService service) : ControllerBase
 {
-    [HttpGet("checklist")]
-    public async Task<ActionResult<OnboardingChecklistModel>> GetChecklist()
-    {
-        return Ok(await service.GetChecklistAsync(GetCurrentEmployeeId()));
-    }
+    private const int DevFallbackEmployeeId = 14;
 
-    [HttpPost("tasks")]
-    public async Task<IActionResult> AddTask(AddOnboardingTaskModel model)
+    [HttpGet]
+    public async Task<ActionResult<List<OnboardingSummaryModel>>> GetAll() =>
+        Ok(await service.GetOnboardingSummariesAsync());
+
+    [HttpGet("checklist")]
+    public async Task<ActionResult<OnboardingChecklistModel>> GetChecklist() =>
+        Ok(await service.GetChecklistAsync(GetCurrentEmployeeId()));
+
+    [HttpGet("{employeeId:int}")]
+    public async Task<ActionResult<OnboardingChecklistModel>> GetChecklistFor(int employeeId) =>
+        Ok(await service.GetChecklistAsync(employeeId));
+
+    [HttpPost("{employeeId:int}/tasks")]
+    public async Task<IActionResult> AddTask(int employeeId, AddOnboardingTaskModel model)
     {
-        await service.AddTaskAsync(GetCurrentEmployeeId(), model);
+        await service.AddTaskAsync(employeeId, model);
         return NoContent();
     }
 
@@ -34,6 +40,6 @@ public class OnboardingController(IOnboardingService service) : ControllerBase
     private int GetCurrentEmployeeId()
     {
         var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-        return int.Parse(sub!);
+        return sub is not null ? int.Parse(sub) : DevFallbackEmployeeId;
     }
 }

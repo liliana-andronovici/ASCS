@@ -6,9 +6,10 @@ type ChecklistColumnProps = {
     section: OnboardingSection;
     onToggle: (taskId: number) => void;
     togglingId: number | null;
+    readOnly?: boolean;
 };
 
-export function ChecklistColumn({ section, onToggle, togglingId }: ChecklistColumnProps) {
+export function ChecklistColumn({ section, onToggle, togglingId, readOnly = false }: ChecklistColumnProps) {
     const done = section.tasks.filter((t) => getTaskStatus(t) === "done").length;
 
     return (
@@ -28,7 +29,7 @@ export function ChecklistColumn({ section, onToggle, togglingId }: ChecklistColu
                         <li key={task.id} className="flex items-start gap-2.5">
                             <Checkbox
                                 checked={status === "done"}
-                                disabled={togglingId === task.id}
+                                disabled={readOnly || togglingId === task.id}
                                 onChange={() => onToggle(task.id)}
                                 className="mt-0.5"
                             />
