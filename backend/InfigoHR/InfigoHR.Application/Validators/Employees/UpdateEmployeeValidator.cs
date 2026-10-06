@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using InfigoHR.Application.Interfaces.Repositories;
-using InfigoHR.Application.Models;
+using InfigoHR.Application.Models.Employees;
 
-namespace InfigoHR.Application.Validators;
+namespace InfigoHR.Application.Validators.Employees;
 
 public class UpdateEmployeeModelValidator : AbstractValidator<UpdateEmployeeModel>
 {

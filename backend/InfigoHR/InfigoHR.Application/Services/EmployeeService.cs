@@ -1,10 +1,10 @@
-﻿using FluentValidation;
+using FluentValidation;
 using InfigoHR.Application.Common;
 using InfigoHR.Application.Exceptions;
 using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Mappers;
-using InfigoHR.Application.Models;
+using InfigoHR.Application.Models.Employees;
 using InfigoHR.Application.QueryParameters.Employees;
 
 namespace InfigoHR.Application.Services;
@@ -33,7 +33,7 @@ public class EmployeeService(
 
         var entity = EmployeeMapper.ToEntity(model);
         await repository.AddAsync(entity);
-
+        
         return entity.Id;
     }
 
