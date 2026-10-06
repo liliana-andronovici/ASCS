@@ -81,21 +81,21 @@ public static class OnboardingMapper
                 .ToList()
         };
     }
-    
-    public static OnboardingSummaryModel ToSummaryModel(OnboardingEntity onboarding)
+    public static OnboardingSummaryModel ToSummaryModel(EmployeeEntity employee, OnboardingEntity? onboarding)
     {
-        var employee = onboarding.Employee!;
+        var tasks = onboarding?.Tasks ?? new List<OnboardingTaskEntity>();
         return new OnboardingSummaryModel
         {
-            EmployeeId = onboarding.EmployeeId,
+            EmployeeId = employee.Id,
             FirstName = employee.FirstName,
             LastName = employee.LastName,
             Title = employee.Title,
             Department = employee.Department?.Name ?? "—",
             StartsOn = employee.StartedOnUtc,
-            CompletedTaskCount = onboarding.Tasks.Count(t => t.CompletedOnUtc != null),
-            TotalTaskCount = onboarding.Tasks.Count,
-            IsComplete = onboarding.Tasks.Count > 0 && onboarding.Tasks.All(t => t.CompletedOnUtc != null)
+            CompletedTaskCount = tasks.Count(t => t.CompletedOnUtc != null),
+            TotalTaskCount = tasks.Count,
+            IsComplete = tasks.Count > 0 && tasks.All(t => t.CompletedOnUtc != null)
         };
     }
+    
 }

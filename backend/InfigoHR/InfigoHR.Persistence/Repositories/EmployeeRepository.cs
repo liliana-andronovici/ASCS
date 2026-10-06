@@ -106,4 +106,13 @@ public class EmployeeRepository
                 ? employees.OrderByDescending(x => x.Id)
                 : employees.OrderBy(x => x.Id)
         };
+
+    public async Task<List<EmployeeEntity>> GetAllWithDepartmentAsync() =>
+        await Entities
+            .AsNoTracking()
+            .Include(x => x.Department)
+            .OrderBy(x => x.FirstName)
+            .ThenBy(x => x.LastName)
+            .ThenBy(x => x.Id)
+            .ToListAsync();
 }

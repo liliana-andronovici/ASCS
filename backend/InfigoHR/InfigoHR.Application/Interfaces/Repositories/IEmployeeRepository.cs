@@ -11,6 +11,8 @@ public interface IEmployeeRepository : IGenericRepository<EmployeeEntity>
         CancellationToken cancellationToken = default);
 
     Task<PagedList<EmployeeEntity>> SearchAsync(EmployeeParameters query);
+    
+    Task<List<EmployeeEntity>> GetAllWithDepartmentAsync();
 
     Task<bool> EmailExistsAsync(
         string email,

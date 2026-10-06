@@ -35,8 +35,5 @@ public class OnboardingRepository(AppDbContext dbContext)
     }
     
     public async Task<List<OnboardingEntity>> GetAllWithDetailsAsync() =>
-        await Entities
-            .Include(x => x.Employee!).ThenInclude(e => e!.Department)
-            .Include(x => x.Tasks)
-            .ToListAsync();
+        await Entities.Include(x => x.Tasks).ToListAsync();
 }

@@ -84,7 +84,16 @@ public class OnboardingService : IOnboardingService
     
     public async Task<List<OnboardingSummaryModel>> GetOnboardingSummariesAsync()
     {
+        var employees = await _employeeRepository.GetAllWithDepartmentAsync();
         var onboardings = await _onboardingRepository.GetAllWithDetailsAsync();
-        return onboardings.Select(OnboardingMapper.ToSummaryModel).ToList();
+        var onboardingByEmployeeId = onboardings.ToDictionary(o => o.EmployeeId);
+
+        return employees
+            .Select(employee =>
+            {
+                onboardingByEmployeeId.TryGetValue(employee.Id, out var onboarding);
+                return OnboardingMapper.ToSummaryModel(employee, onboarding);
+            })
+            .ToList();
     }
 }
