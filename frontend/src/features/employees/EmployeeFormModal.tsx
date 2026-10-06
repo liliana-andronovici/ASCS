@@ -1,8 +1,11 @@
-﻿import { useForm } from "react-hook-form";
+﻿import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Modal } from "../../components/Modal";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
+import { Select } from "../../components/Select";
+import { useDepartments } from "../departments/useDepartments";
 import { useCreateEmployee, useUpdateEmployee } from "./useEmployeeMutations";
 import { employeeFormSchema, type EmployeeFormValues } from "./employeeSchema";
 import type { Employee } from "./types";
@@ -15,6 +18,8 @@ type Props = {
 
 export function EmployeeFormModal({ open, onClose, employee }: Props) {
     const isEditing = !!employee;
+    const [departmentId, setDepartmentId] = useState<number | null>(employee?.departmentId ?? null);
+    const { data: departments, isLoading: isDepartmentsLoading, isError: isDepartmentsError } = useDepartments();
     const createMutation = useCreateEmployee();
     const updateMutation = useUpdateEmployee();
 
@@ -41,7 +46,7 @@ export function EmployeeFormModal({ open, onClose, employee }: Props) {
         const payload = {
             ...values,
             startedOnUtc: new Date(`${dateOnly}T00:00:00.000Z`).toISOString(),
-            departmentId: employee?.departmentId ?? null,
+            departmentId,
             locationId: employee?.locationId ?? null,
             managerId: employee?.managerId ?? null,
             status: employee?.status ?? ("Active" as const),
@@ -72,6 +77,28 @@ export function EmployeeFormModal({ open, onClose, employee }: Props) {
                 <div>
                     <Input label="Title" {...register("title")} />
                     {errors.title && <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>}
+                </div>
+                <div>
+                    <Select
+                        id="employee-department"
+                        label="Department"
+                        value={departmentId ?? ""}
+                        onChange={(event) => setDepartmentId(event.target.value ? Number(event.target.value) : null)}
+                        disabled={isDepartmentsLoading || isDepartmentsError || !departments || isPending}
+                        aria-describedby={isDepartmentsError ? "employee-department-error" : undefined}
+                        options={[
+                            { value: "", label: isDepartmentsLoading ? "Loading departments..." : "No department" },
+                            ...(departments ?? []).map((department) => ({
+                                value: String(department.id),
+                                label: department.name,
+                            })),
+                        ]}
+                    />
+                    {isDepartmentsError && (
+                        <p id="employee-department-error" role="alert" className="text-sm text-red-600 mt-1">
+                            {isEditing ? "Couldn't load departments. Please try again to change the department." : "Couldn't load departments. You can add this person without a department."}
+                        </p>
+                    )}
                 </div>
                 <div>
                     <Input label="Start date" type="date" {...register("startedOnUtc")} />
