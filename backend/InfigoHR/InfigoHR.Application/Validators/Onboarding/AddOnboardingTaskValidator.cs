@@ -9,6 +9,9 @@ public class AddOnboardingTaskValidator : AbstractValidator<AddOnboardingTaskMod
 
     public AddOnboardingTaskValidator()
     {
+        RuleFor(x => x.SectionKey)
+            .Must(key => ValidKeys.Contains(key))
+            .WithMessage("Invalid section.");
         RuleFor(x => x.DueDate)
             .Must(d => string.IsNullOrWhiteSpace(d) || DateTime.TryParse(d, out _))
             .WithMessage("Due date must be a valid date.");

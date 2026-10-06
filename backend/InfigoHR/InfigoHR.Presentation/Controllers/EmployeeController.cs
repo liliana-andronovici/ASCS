@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace InfigoHR.Presentation.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("api/[controller]")]
 public class EmployeeController(IEmployeeService service) : ControllerBase
 {
