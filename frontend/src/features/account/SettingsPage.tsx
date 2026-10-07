@@ -8,11 +8,14 @@ import { Badge } from "../../components/Badge";
 import { useCurrentEmployee } from "./useCurrentEmployee";
 import { useLocalAvatar } from "./useLocalAvatar";
 import { setLocalAvatar } from "../../lib/sessions";
+import { useLocalPreferences, type Preferences } from "./useLocalPreferences";
 import { useUpdateEmployee } from "../employees/useEmployeeMutations";
 import { employeeFormSchema, type EmployeeFormValues } from "../employees/employeeSchema";
 
 const TABS = [
     { id: "profile", label: "My profile" },
+    { id: "notifications", label: "Notifications" },
+    { id: "preferences", label: "Preferences" },
     { id: "security", label: "Security" },
 ] as const;
 
@@ -40,7 +43,12 @@ export default function SettingsPage() {
                     ))}
                 </nav>
 
-                <div className="flex-1 p-6">{tab === "profile" ? <ProfileTab /> : <SecurityTab />}</div>
+                <div className="flex-1 p-6">
+                    {tab === "profile" && <ProfileTab />}
+                    {tab === "notifications" && <NotificationsTab />}
+                    {tab === "preferences" && <PreferencesTab />}
+                    {tab === "security" && <SecurityTab />}
+                </div>
             </div>
         </div>
     );
@@ -191,6 +199,102 @@ function SecurityTab() {
             <Button disabled className="!w-auto px-4">
                 Update password
             </Button>
+        </div>
+    );
+}
+
+function ToggleRow({
+    label,
+    description,
+    checked,
+    onChange,
+}: {
+    label: string;
+    description: string;
+    checked: boolean;
+    onChange: (value: boolean) => void;
+}) {
+    return (
+        <label className="flex cursor-pointer items-start justify-between gap-4 border-b border-gray-100 py-3">
+            <span>
+                <span className="block text-sm font-medium text-navy">{label}</span>
+                <span className="block text-xs text-gray-500">{description}</span>
+            </span>
+            <input
+                type="checkbox"
+                checked={checked}
+                onChange={(e) => onChange(e.target.checked)}
+                className="mt-1 h-4 w-4 accent-[#e8594f]"
+            />
+        </label>
+    );
+}
+
+function LocalOnlyNote() {
+    return (
+        <div className="rounded-md bg-amber-50 px-4 py-2 text-sm text-amber-700">
+            Aceste setari se salveaza doar in acest browser, backend-ul nu are inca endpoint pentru ele.
+        </div>
+    );
+}
+
+function NotificationsTab() {
+    const { prefs, update } = useLocalPreferences();
+    return (
+        <div className="flex max-w-xl flex-col gap-4">
+            <h2 className="text-lg font-semibold text-navy">Notifications</h2>
+            <LocalOnlyNote />
+            <div>
+                <ToggleRow
+                    label="Email notifications"
+                    description="Receive important updates by email."
+                    checked={prefs.emailNotifications}
+                    onChange={(v) => update("emailNotifications", v)}
+                />
+                <ToggleRow
+                    label="Time off alerts"
+                    description="Get notified when a time off request needs attention."
+                    checked={prefs.timeOffAlerts}
+                    onChange={(v) => update("timeOffAlerts", v)}
+                />
+                <ToggleRow
+                    label="New hire alerts"
+                    description="Get notified when someone new joins the company."
+                    checked={prefs.newHireAlerts}
+                    onChange={(v) => update("newHireAlerts", v)}
+                />
+            </div>
+        </div>
+    );
+}
+
+function PreferencesTab() {
+    const { prefs, update } = useLocalPreferences();
+    return (
+        <div className="flex max-w-xl flex-col gap-4">
+            <h2 className="text-lg font-semibold text-navy">Preferences</h2>
+            <LocalOnlyNote />
+            <div className="flex flex-col gap-1">
+                <label htmlFor="pageSize" className="text-sm text-gray-700">
+                    Rows per page in tables
+                </label>
+                <select
+                    id="pageSize"
+                    value={prefs.pageSize}
+                    onChange={(e) => update("pageSize", Number(e.target.value) as Preferences["pageSize"])}
+                    className="w-40 rounded-md border border-gray-300 px-3 py-2 text-sm"
+                >
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                </select>
+            </div>
+            <ToggleRow
+                label="Compact tables"
+                description="Show more rows with tighter spacing."
+                checked={prefs.compactTables}
+                onChange={(v) => update("compactTables", v)}
+            />
         </div>
     );
 }
