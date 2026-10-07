@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<EmployeeEntity> Employees => Set<EmployeeEntity>();
     public DbSet<DepartmentEntity> Departments => Set<DepartmentEntity>();
     public DbSet<LocationEntity> Locations => Set<LocationEntity>();
+    public DbSet<LeaveRequestEntity> LeaveRequests => Set<LeaveRequestEntity>();
     public DbSet<AuthEntity> Auths => Set<AuthEntity>();
     public DbSet<TwoFactorAuthEntity> TwoFactorAuths => Set<TwoFactorAuthEntity>();
     public DbSet<TrustedDeviceEntity> TrustedDevices => Set<TrustedDeviceEntity>();
