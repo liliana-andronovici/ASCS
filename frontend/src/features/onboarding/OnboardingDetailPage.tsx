@@ -23,6 +23,10 @@ export default function OnboardingDetailPage() {
     const [addTaskOpen, setAddTaskOpen] = useState(false);
     const checklist = useOnboardingChecklistFor(id);
 
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        return <div className="p-6 text-sm text-coral">Invalid employee ID.</div>;
+    }
+
     if (checklist.isPending) {
         return <div className="p-6 text-sm text-gray-500">Loading onboarding…</div>;
     }

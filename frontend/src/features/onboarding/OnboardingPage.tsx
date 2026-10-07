@@ -1,8 +1,9 @@
+import { useParams } from "react-router-dom";
 import { Avatar } from "../../components/Avatar";
 import { PageHeader } from "../../layout/PageHeader";
 import { getErrorMessage } from "../../lib/errors";
 import { ChecklistColumn } from "./ChecklistColumn";
-import { useOnboardingChecklist, useToggleOnboardingTask } from "./useOnboarding";
+import { useOnboardingChecklistFor, useToggleOnboardingTask } from "./useOnboarding";
 import { getTaskStatus } from "./taskStatus";
 
 function formatStartDate(iso: string) {
@@ -14,8 +15,14 @@ function formatStartDate(iso: string) {
 }
 
 export default function OnboardingPage() {
-    const checklist = useOnboardingChecklist();
-    const toggle = useToggleOnboardingTask(["onboarding", "checklist"]);
+    const { employeeId } = useParams<{ employeeId: string }>();
+    const id = Number(employeeId);
+    const checklist = useOnboardingChecklistFor(id);
+    const toggle = useToggleOnboardingTask(id);
+
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        return <div className="p-6 text-sm text-coral">Invalid employee ID.</div>;
+    }
 
     if (checklist.isPending) {
         return <div className="p-6 text-sm text-gray-500">Loading onboarding…</div>;

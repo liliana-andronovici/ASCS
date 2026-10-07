@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using InfigoHR.Application.Interfaces.Services;
+﻿using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,15 +8,9 @@ namespace InfigoHR.Presentation.Controllers;
 [Route("api/[controller]")]
 public class OnboardingController(IOnboardingService service) : ControllerBase
 {
-    private const int DevFallbackEmployeeId = 14;
-
     [HttpGet]
     public async Task<ActionResult<List<OnboardingSummaryModel>>> GetAll() =>
         Ok(await service.GetOnboardingSummariesAsync());
-
-    [HttpGet("checklist")]
-    public async Task<ActionResult<OnboardingChecklistModel>> GetChecklist() =>
-        Ok(await service.GetChecklistAsync(GetCurrentEmployeeId()));
 
     [HttpGet("{employeeId:int}")]
     public async Task<ActionResult<OnboardingChecklistModel>> GetChecklistFor(int employeeId) =>
@@ -30,16 +23,10 @@ public class OnboardingController(IOnboardingService service) : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("tasks/{taskId:int}/toggle")]
-    public async Task<IActionResult> ToggleTask(int taskId)
+    [HttpPost("{employeeId:int}/tasks/{taskId:int}/toggle")]
+    public async Task<IActionResult> ToggleTask(int employeeId, int taskId)
     {
-        await service.ToggleTaskAsync(GetCurrentEmployeeId(), taskId);
+        await service.ToggleTaskAsync(employeeId, taskId);
         return NoContent();
-    }
-
-    private int GetCurrentEmployeeId()
-    {
-        var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-        return sub is not null ? int.Parse(sub) : DevFallbackEmployeeId;
     }
 }
