@@ -8,7 +8,7 @@ public class TimeOffEntityTypeConfiguration : IEntityTypeConfiguration<TimeOffEn
 {
     public void Configure(EntityTypeBuilder<TimeOffEntity> builder)
     {
-        builder.ToTable("TimeOffs");
+        builder.ToTable("LeaveRequests");
         builder.HasKey(l => l.Id);
 
         builder.Property(l => l.StartDateUtc)
