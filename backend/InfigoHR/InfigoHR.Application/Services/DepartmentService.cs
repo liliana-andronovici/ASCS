@@ -4,6 +4,8 @@ using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Mappers;
 using InfigoHR.Application.Models.Departments;
+using InfigoHR.Application.Common;
+using InfigoHR.Application.QueryParameters.Departments;
 
 namespace InfigoHR.Application.Services;
 
@@ -27,6 +29,12 @@ public class DepartmentService : IDepartmentService
     {
         var departments = await _departmentRepository.GetAllAsync();
         return departments.Select(DepartmentMapper.ToModel);
+    }
+    
+    public async Task<PagedResult<DepartmentModel>> GetPagedAsync(DepartmentParameters paginationParams)
+    {
+        var pagedEntities = await _departmentRepository.SearchAsync(paginationParams);
+        return pagedEntities.ToPagedResult(DepartmentMapper.ToModel);
     }
 
     public async Task<DepartmentModel> GetByIdAsync(int id)

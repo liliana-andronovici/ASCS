@@ -1,6 +1,6 @@
 ﻿using InfigoHR.Application.Common;
 using InfigoHR.Application.Interfaces.Services;
-using InfigoHR.Application.Models;
+using InfigoHR.Application.Models.Employees;
 using Microsoft.AspNetCore.Mvc;
 using InfigoHR.Application.QueryParameters.Employees;
 using Microsoft.AspNetCore.Authorization;

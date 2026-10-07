@@ -9,6 +9,7 @@ import OnboardingPage from "../features/onboarding/OnboardingPage";
 import OnboardingLandingPage from "../features/onboarding/OnboardingLandingPage";
 import OnboardingListPage from "../features/onboarding/OnboardingListPage";
 import OnboardingDetailPage from "../features/onboarding/OnboardingDetailPage";
+import LocationsPage from "../features/locations/LocationsPage";
 
 export const router = createBrowserRouter([
     {
@@ -17,6 +18,7 @@ export const router = createBrowserRouter([
         children: [
             { index: true, element: <PlaceholderPage title="Home" /> },
             { path: "people", element: <PeoplePage /> },
+            { path: "locations", element: <LocationsPage /> },
             { path: "orgChart", element: <PlaceholderPage title="Org chart" /> },
             { path: "timeOff", element: <TimeOffPage /> },
             { path: "rooms", element: <PlaceholderPage title="Rooms" /> },
