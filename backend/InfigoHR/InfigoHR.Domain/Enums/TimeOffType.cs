@@ -1,6 +1,6 @@
 namespace InfigoHR.Domain.Enums;
 
-public enum LeaveType
+public enum TimeOffType
 {
     Vacation = 0,
     Sick = 1,
