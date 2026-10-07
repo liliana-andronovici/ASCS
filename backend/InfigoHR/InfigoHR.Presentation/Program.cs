@@ -10,7 +10,6 @@ using InfigoHR.Authentication;
 using InfigoHR.Persistence;
 using InfigoHR.Persistence.Repositories;
 using InfigoHR.Presentation.Middleware;
-    
 using InfigoHR.EmailService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
