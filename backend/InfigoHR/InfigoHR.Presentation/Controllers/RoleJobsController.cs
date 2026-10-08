@@ -12,7 +12,6 @@ namespace InfigoHR.Presentation.Controllers;
 [Route("api/[controller]")]
 public class RoleJobsController(IBackgroundJobClient jobs, IRoleService roleService) : ControllerBase
 {
-    // Lista rolurilor cu permisiunile lor (ca sa vezi id-urile). Nu e job.
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await roleService.GetAllAsync());
 
@@ -38,7 +37,6 @@ public class RoleJobsController(IBackgroundJobClient jobs, IRoleService roleServ
         return Accepted(new { jobId });
     }
 
-    // Inlocuieste toate permisiunile rolului cu lista primita.
     [HttpPut("{id:int}/permissions")]
     public IActionResult SetPermissions(int id, List<string> permissions)
     {

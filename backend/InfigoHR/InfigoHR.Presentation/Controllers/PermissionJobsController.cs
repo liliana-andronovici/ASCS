@@ -12,7 +12,6 @@ namespace InfigoHR.Presentation.Controllers;
 [Route("api/[controller]")]
 public class PermissionJobsController(IBackgroundJobClient jobs, IPermissionService permissionService) : ControllerBase
 {
-    // Lista permisiunilor (ca sa vezi id-urile). Nu e job.
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await permissionService.GetAllAsync());
 

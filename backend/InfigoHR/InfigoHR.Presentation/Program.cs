@@ -14,6 +14,7 @@ using InfigoHR.Presentation.Middleware;
 using Npgsql;
 using InfigoHR.EmailService.Services;
 using InfigoHR.Presentation;
+using InfigoHR.Presentation.Dashboard;
 using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,7 +64,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHangfireDashboard("/hangfire");
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireDashboardBasicAuthFilter(builder.Configuration) }
+});
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
