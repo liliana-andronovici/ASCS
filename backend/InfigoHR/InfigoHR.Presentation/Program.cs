@@ -13,6 +13,8 @@ using InfigoHR.Persistence.Repositories;
 using InfigoHR.Presentation.Middleware;
 using Npgsql;
 using InfigoHR.EmailService.Services;
+using InfigoHR.Presentation;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,9 +36,11 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateLocationModelValidato
 
 builder.Services.AddAuthenticationServices(builder.Configuration);
 
-var app = builder.Build();
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddHangfireSetup(connectionString);
+
+var app = builder.Build();
 
 try
 {
@@ -58,6 +62,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseHangfireDashboard("/hangfire");
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
