@@ -7,7 +7,9 @@ public class RolePermissionModelValidator : AbstractValidator<RolePermissionMode
 {
     public RolePermissionModelValidator()
     {
-        RuleFor(x => x.PermissionName)
-            .NotEmpty().WithMessage("Permission name is required.");
+        RuleFor(x => x.RoleId).GreaterThan(0).WithMessage("Role id is required.");
+        RuleFor(x => x)
+            .Must(x => x.PermissionId > 0 || !string.IsNullOrWhiteSpace(x.PermissionName))
+            .WithMessage("Permission id or permission name is required.");
     }
 }

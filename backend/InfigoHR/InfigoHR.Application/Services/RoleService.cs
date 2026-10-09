@@ -4,6 +4,7 @@ using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Mappers;
 using InfigoHR.Application.Models.Roles;
+using InfigoHR.Domain.Entities;
 
 namespace InfigoHR.Application.Services;
 
@@ -19,6 +20,14 @@ public class RoleService(
     {
         var roles = await roleRepository.GetAllWithPermissionsAsync();
         return roles.Select(RoleMapper.ToModel).ToList();
+    }
+
+    public async Task<int> GetIdByNameAsync(string name)
+    {
+        var role = await roleRepository.GetByNameAsync(name)
+            ?? throw new NotFoundException($"Role '{name}' was not found.");
+
+        return role.Id;
     }
 
     public async Task<int> CreateAsync(CreateRoleModel model)
@@ -91,8 +100,7 @@ public class RoleService(
         var role = await roleRepository.GetWithPermissionsAsync(model.RoleId)
             ?? throw new NotFoundException($"Role with id {model.RoleId} was not found.");
 
-        var permission = await permissionRepository.GetByNameAsync(model.PermissionName)
-            ?? throw new NotFoundException($"Permission '{model.PermissionName}' was not found.");
+        var permission = await FindPermissionAsync(model);
 
         if (role.Permissions.Any(p => p.Id == permission.Id))
         {
@@ -111,11 +119,38 @@ public class RoleService(
         var role = await roleRepository.GetWithPermissionsAsync(model.RoleId)
             ?? throw new NotFoundException($"Role with id {model.RoleId} was not found.");
 
-        var permission = role.Permissions.FirstOrDefault(p => p.Name == model.PermissionName)
+        var permission = await FindPermissionAsync(model);
+        var rolePermission = role.Permissions.FirstOrDefault(p => p.Id == permission.Id)
             ?? throw new NotFoundException(
-                $"Role '{role.Name}' does not have permission '{model.PermissionName}'.");
+                $"Role '{role.Name}' does not have permission '{permission.Name}'.");
 
-        role.Permissions.Remove(permission);
+        role.Permissions.Remove(rolePermission);
         await roleRepository.UpdateAsync(role);
+    }
+
+    private async Task<PermissionEntity> FindPermissionAsync(RolePermissionModel model)
+    {
+        PermissionEntity? permission = null;
+
+        if (model.PermissionId > 0)
+        {
+            permission = await permissionRepository.GetByIdAsync(model.PermissionId.Value)
+                         ?? throw new NotFoundException($"Permission with id {model.PermissionId} was not found.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(model.PermissionName))
+        {
+            var byName = await permissionRepository.GetByNameAsync(model.PermissionName)
+                         ?? throw new NotFoundException($"Permission '{model.PermissionName}' was not found.");
+
+            if (permission != null && permission.Id != byName.Id)
+            {
+                throw new ConflictException("Permission id and permission name do not match.");
+            }
+
+            permission = byName;
+        }
+
+        return permission!;
     }
 }

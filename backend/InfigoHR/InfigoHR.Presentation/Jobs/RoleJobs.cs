@@ -7,6 +7,9 @@ namespace InfigoHR.Presentation.Jobs;
 [MissionLauncher(CategoryName = "Roles")]
 public class RoleJobs(IRoleService roleService)
 {
+    [Mission(Name = "Get role id")]
+    public async Task<int> GetIdByNameAsync(string name) => await roleService.GetIdByNameAsync(name);
+
     [Mission(Name = "Create role")]
     public async Task CreateAsync(CreateRoleModel model) => await roleService.CreateAsync(model);
 
@@ -20,11 +23,13 @@ public class RoleJobs(IRoleService roleService)
         await roleService.SetPermissionsAsync(model);
 
     [Mission(Name = "Set role permissions")]
-    public Task SetPermissionsMissionAsync(int roleId, string[] permissions) =>
+    public Task SetPermissionsMissionAsync(int roleId, string permissions) =>
         roleService.SetPermissionsAsync(new SetRolePermissionsModel
         {
             RoleId = roleId,
-            Permissions = permissions.ToList()
+            Permissions = permissions
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToList()
         });
 
     [Mission(Name = "Add role permission")]

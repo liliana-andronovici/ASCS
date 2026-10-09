@@ -7,6 +7,9 @@ namespace InfigoHR.Presentation.Jobs;
 [MissionLauncher(CategoryName = "Permissions")]
 public class PermissionJobs(IPermissionService permissionService)
 {
+    [Mission(Name = "Get permission id")]
+    public async Task<int> GetIdByNameAsync(string name) => await permissionService.GetIdByNameAsync(name);
+
     [Mission(Name = "Create permission")]
     public async Task CreateAsync(CreatePermissionModel model) => await permissionService.CreateAsync(model);
 

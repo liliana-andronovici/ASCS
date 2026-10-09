@@ -5,6 +5,7 @@ namespace InfigoHR.Application.Interfaces.Services;
 public interface IRoleService
 {
     Task<List<RoleModel>> GetAllAsync();
+    Task<int> GetIdByNameAsync(string name);
     Task<int> CreateAsync(CreateRoleModel model);
     Task UpdateAsync(UpdateRoleModel model);
     Task DeleteAsync(int id);

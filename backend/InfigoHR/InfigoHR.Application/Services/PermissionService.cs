@@ -18,6 +18,14 @@ public class PermissionService(
         return permissions.Select(PermissionMapper.ToModel).OrderBy(p => p.Name).ToList();
     }
 
+    public async Task<int> GetIdByNameAsync(string name)
+    {
+        var permission = await repository.GetByNameAsync(name)
+            ?? throw new NotFoundException($"Permission '{name}' was not found.");
+
+        return permission.Id;
+    }
+
     public async Task<int> CreateAsync(CreatePermissionModel model)
     {
         await createValidator.ValidateAndThrowAsync(model);
