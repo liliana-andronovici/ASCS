@@ -18,6 +18,8 @@ public class AppDbContext : DbContext
     public DbSet<TrustedDeviceEntity> TrustedDevices => Set<TrustedDeviceEntity>();
     public DbSet<OnboardingEntity> Onboardings => Set<OnboardingEntity>();
     public DbSet<OnboardingTaskEntity> OnboardingTasks => Set<OnboardingTaskEntity>();
+    public DbSet<RoomEntity> Rooms => Set<RoomEntity>();
+    public DbSet<RoomBookingEntity> RoomBookings => Set<RoomBookingEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
