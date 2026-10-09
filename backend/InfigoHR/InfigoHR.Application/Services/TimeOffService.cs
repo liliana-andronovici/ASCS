@@ -12,33 +12,39 @@ namespace InfigoHR.Application.Services;
 public class TimeOffService : ITimeOffService
 {
     private readonly ITimeOffRepository _repository;
+    private readonly ICurrentUser _currentUser;
     private readonly IValidator<CreateTimeOffModel> _createValidator;
     private readonly IValidator<UpdateTimeOffModel> _updateValidator;
 
     public TimeOffService(
         ITimeOffRepository repository,
+        ICurrentUser currentUser,
         IValidator<CreateTimeOffModel> createValidator,
         IValidator<UpdateTimeOffModel> updateValidator)
     {
         _repository = repository;
+        _currentUser = currentUser;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
     }
 
-    public async Task<IReadOnlyList<TimeOffModel>> GetAllAsync(int employeeId)
+    public async Task<IReadOnlyList<TimeOffModel>> GetAllAsync()
     {
+        var employeeId = _currentUser.EmployeeId;
         var requests = await _repository.GetByEmployeeAsync(employeeId);
+
         return requests.Select(TimeOffMapper.ToModel).ToList();
     }
 
-    public async Task<TimeOffModel> GetByIdAsync(int id, int employeeId)
+    public async Task<TimeOffModel> GetByIdAsync(int id)
     {
-        var entity = await GetOwnedRequestAsync(id, employeeId);
+        var entity = await GetOwnedRequestAsync(id);
         return TimeOffMapper.ToModel(entity);
     }
 
-    public async Task<int> CreateAsync(CreateTimeOffModel model, int employeeId)
+    public async Task<int> CreateAsync(CreateTimeOffModel model)
     {
+        var employeeId = _currentUser.EmployeeId;
         await _createValidator.ValidateAndThrowAsync(model);
 
         var entity = TimeOffMapper.ToEntity(model, employeeId);
@@ -47,9 +53,9 @@ public class TimeOffService : ITimeOffService
         return entity.Id;
     }
 
-    public async Task UpdateAsync(UpdateTimeOffModel model, int employeeId)
+    public async Task UpdateAsync(UpdateTimeOffModel model)
     {
-        var entity = await GetOwnedRequestAsync(model.Id, employeeId);
+        var entity = await GetOwnedRequestAsync(model.Id);
         await _updateValidator.ValidateAndThrowAsync(model);
         EnsurePending(entity);
 
@@ -57,16 +63,18 @@ public class TimeOffService : ITimeOffService
         await _repository.UpdateAsync(entity);
     }
 
-    public async Task DeleteAsync(int id, int employeeId)
+    public async Task DeleteAsync(int id)
     {
-        var entity = await GetOwnedRequestAsync(id, employeeId);
+        var entity = await GetOwnedRequestAsync(id);
         EnsurePending(entity);
-        
+
         await _repository.DeleteAsync(entity);
     }
 
-    private async Task<LeaveRequestEntity> GetOwnedRequestAsync(int id, int employeeId)
+    private async Task<LeaveRequestEntity> GetOwnedRequestAsync(int id)
     {
+        var employeeId = _currentUser.EmployeeId;
+
         if (id <= 0)
         {
             throw new Exceptions.ValidationException("Time-off request ID must be greater than zero.");
