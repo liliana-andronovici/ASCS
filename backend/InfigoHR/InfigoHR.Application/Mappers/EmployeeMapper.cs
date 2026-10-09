@@ -46,4 +46,13 @@ public static class EmployeeMapper
         entity.ManagerId = model.ManagerId;
         entity.Status = model.Status;
     }
+    
+    public static OrgChartEmployeeModel ToOrgChartModel(EmployeeEntity entity) =>
+        new()
+        {
+            Id = entity.Id,
+            FirstName = entity.FirstName,
+            LastName = entity.LastName,
+            Title = entity.Title
+        };
 }
