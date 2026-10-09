@@ -54,34 +54,4 @@ public class EmployeeService(
                      ?? throw new NotFoundException($"Employee with id {id} was not found.");
         await repository.DeleteAsync(entity);
     }
-    
-    public async Task<IEnumerable<OrgChartEmployeeModel>> GetOrgChartAsync()
-    {
-        var employees = (await repository.GetAllAsync()).ToList();
-
-        var employeeModels = employees.ToDictionary(
-            employee => employee.Id,
-            EmployeeMapper.ToOrgChartModel);
-
-        var roots = new List<OrgChartEmployeeModel>();
-
-        foreach (var employee in employees)
-        {
-            var employeeModel = employeeModels[employee.Id];
-
-            if (employee.ManagerId.HasValue &&
-                employeeModels.TryGetValue(employee.ManagerId.Value, out var manager))
-            {
-                manager.DirectReports.Add(employeeModel);
-            }
-            else
-            {
-                roots.Add(employeeModel);
-            }
-        }
-
-        return roots;
-    }
-    
-    
 }

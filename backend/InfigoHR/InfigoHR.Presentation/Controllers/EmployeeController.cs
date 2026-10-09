@@ -18,12 +18,6 @@ public class EmployeeController(IEmployeeService service) : ControllerBase
         return Ok(await service.GetAllAsync(query));
     }
     
-    [HttpGet("org-chart")]
-    public async Task<ActionResult<IEnumerable<OrgChartEmployeeModel>>> GetOrgChart()
-    {
-        return Ok(await service.GetOrgChartAsync());
-    }
-
     [HttpGet("{id:int}")]
     public async Task<ActionResult<EmployeeModel>> GetById(int id)
     {
