@@ -9,7 +9,7 @@ export interface OnboardingTask {
 }
 
 export interface OnboardingSection {
-    key: "beforeDayOne" | "firstWeek" | "firstMonth" | "other";
+    key: "BeforeDayOne" | "FirstWeek" | "FirstMonth" | "Other";
     title: string;
     tasks: OnboardingTask[];
 }

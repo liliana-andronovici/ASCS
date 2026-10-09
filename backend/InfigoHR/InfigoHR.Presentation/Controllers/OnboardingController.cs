@@ -9,12 +9,18 @@ namespace InfigoHR.Presentation.Controllers;
 public class OnboardingController(IOnboardingService service) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<OnboardingSummaryModel>>> GetAll() =>
-        Ok(await service.GetOnboardingSummariesAsync());
+    public async Task<ActionResult<List<OnboardingSummaryModel>>> GetAll()
+    {
+        var summaries = await service.GetOnboardingSummariesAsync();
+        return Ok(summaries);
+    }
 
     [HttpGet("{employeeId:int}")]
-    public async Task<ActionResult<OnboardingChecklistModel>> GetChecklistFor(int employeeId) =>
-        Ok(await service.GetChecklistAsync(employeeId));
+    public async Task<ActionResult<OnboardingChecklistModel>> GetChecklistFor(int employeeId)
+    {
+        var checklist = await service.GetChecklistAsync(employeeId);
+        return Ok(checklist);
+    }
 
     [HttpPost("{employeeId:int}/tasks")]
     public async Task<IActionResult> AddTask(int employeeId, AddOnboardingTaskModel model)

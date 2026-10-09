@@ -5,12 +5,11 @@ namespace InfigoHR.Application.Validators.Onboarding;
 
 public class AddOnboardingTaskValidator : AbstractValidator<AddOnboardingTaskModel>
 {
-    private static readonly string[] ValidKeys = ["beforeDayOne", "firstWeek", "firstMonth", "other"];
-
     public AddOnboardingTaskValidator()
     {
         RuleFor(x => x.SectionKey)
-            .Must(key => ValidKeys.Contains(key))
+            .NotNull()
+            .IsInEnum()
             .WithMessage("Invalid section.");
         RuleFor(x => x.DueDate)
             .Must(d => string.IsNullOrWhiteSpace(d) || DateTime.TryParse(d, out _))

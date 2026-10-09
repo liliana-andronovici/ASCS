@@ -11,22 +11,32 @@ namespace InfigoHR.Application.Services;
 public class OnboardingService : IOnboardingService
 {
     private readonly IOnboardingRepository _onboardingRepository;
+    private readonly IOnboardingTaskRepository _onboardingTaskRepository;
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IValidator<AddOnboardingTaskModel> _addTaskValidator;
 
     public OnboardingService(
         IOnboardingRepository onboardingRepository,
+        IOnboardingTaskRepository onboardingTaskRepository,
         IEmployeeRepository employeeRepository,
         IValidator<AddOnboardingTaskModel> addTaskValidator)
     {
         _onboardingRepository = onboardingRepository;
+        _onboardingTaskRepository = onboardingTaskRepository;
         _employeeRepository = employeeRepository;
         _addTaskValidator = addTaskValidator;
     }
 
     public async Task<OnboardingChecklistModel> GetChecklistAsync(int employeeId)
     {
-        var onboarding = await GetOrCreateOnboardingAsync(employeeId);
+        var onboarding = await _onboardingRepository.GetByEmployeeIdWithDetailsAsync(employeeId);
+        if (onboarding is null)
+        {
+            await GetOrCreateOnboardingAsync(employeeId);
+            onboarding = await _onboardingRepository.GetByEmployeeIdWithDetailsAsync(employeeId)
+                ?? throw new NotFoundException("Failed to create onboarding checklist.");
+        }
+
         return OnboardingMapper.ToChecklistModel(onboarding);
     }
 
@@ -36,21 +46,14 @@ public class OnboardingService : IOnboardingService
 
         var onboarding = await GetOrCreateOnboardingAsync(employeeId);
 
-        var task = new OnboardingTaskEntity
-        {
-            OnboardingId = onboarding.Id,
-            Section = OnboardingMapper.ParseSectionKey(model.SectionKey),
-            Title = model.Title,
-            Note = model.Note,
-            DueDateUtc = ParseDueDate(model.DueDate)
-        };
+        var task = OnboardingMapper.ToTaskEntity(model, onboarding.Id);
 
-        await _onboardingRepository.AddTaskAsync(task);
+        await _onboardingTaskRepository.AddAsync(task);
     }
 
     public async Task ToggleTaskAsync(int employeeId, int taskId)
     {
-        var task = await _onboardingRepository.GetTaskByIdAsync(taskId)
+        var task = await _onboardingTaskRepository.GetByIdWithOnboardingAsync(taskId)
             ?? throw new NotFoundException($"Task with id {taskId} was not found.");
 
         if (task.Onboarding is null || task.Onboarding.EmployeeId != employeeId)
@@ -59,7 +62,7 @@ public class OnboardingService : IOnboardingService
         }
 
         task.CompletedOnUtc = task.CompletedOnUtc is null ? DateTime.UtcNow : null;
-        await _onboardingRepository.UpdateTaskAsync(task);
+        await _onboardingTaskRepository.UpdateAsync(task);
     }
 
     private async Task<OnboardingEntity> GetOrCreateOnboardingAsync(int employeeId)
@@ -67,21 +70,15 @@ public class OnboardingService : IOnboardingService
         var onboarding = await _onboardingRepository.GetByEmployeeIdAsync(employeeId);
         if (onboarding is not null) return onboarding;
 
-        _ = await _employeeRepository.GetByIdAsync(employeeId)
-            ?? throw new NotFoundException($"Employee with id {employeeId} was not found.");
+        if (!await _employeeRepository.ExistsAsync(employeeId))
+            throw new NotFoundException($"Employee with id {employeeId} was not found.");
 
         var created = new OnboardingEntity { EmployeeId = employeeId };
         await _onboardingRepository.AddAsync(created);
 
-        return await _onboardingRepository.GetByEmployeeIdAsync(employeeId)
-            ?? throw new NotFoundException("Failed to create onboarding checklist.");
+        return created;
     }
 
-    private static DateTime? ParseDueDate(string? dueDate) =>
-        !string.IsNullOrWhiteSpace(dueDate) && DateTime.TryParse(dueDate, out var parsed)
-            ? DateTime.SpecifyKind(parsed.Date, DateTimeKind.Utc)
-            : null;
-    
     public async Task<List<OnboardingSummaryModel>> GetOnboardingSummariesAsync()
     {
         var employees = await _employeeRepository.GetAllWithDepartmentAsync();

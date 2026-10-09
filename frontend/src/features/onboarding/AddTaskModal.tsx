@@ -16,7 +16,7 @@ type AddTaskModalProps = {
 
 export function AddTaskModal({ employeeId, open, onClose, sections }: AddTaskModalProps) {
     const addTask = useAddOnboardingTaskFor(employeeId);
-    const [sectionKey, setSectionKey] = useState<OnboardingSection["key"]>(sections[0]?.key ?? "beforeDayOne");
+    const [sectionKey, setSectionKey] = useState<OnboardingSection["key"]>(sections[0]?.key ?? "BeforeDayOne");
     const [title, setTitle] = useState("");
     const [note, setNote] = useState("");
     const [dueDate, setDueDate] = useState("");

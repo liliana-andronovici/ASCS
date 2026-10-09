@@ -8,6 +8,9 @@ public class OnboardingRepository(AppDbContext dbContext)
     : GenericRepository<OnboardingEntity>(dbContext), IOnboardingRepository
 {
     public async Task<OnboardingEntity?> GetByEmployeeIdAsync(int employeeId) =>
+        await Entities.FirstOrDefaultAsync(x => x.EmployeeId == employeeId);
+
+    public async Task<OnboardingEntity?> GetByEmployeeIdWithDetailsAsync(int employeeId) =>
         await Entities
             .Include(x => x.Employee!).ThenInclude(e => e!.Department)
             .Include(x => x.Employee!).ThenInclude(e => e!.Location)
@@ -15,24 +18,6 @@ public class OnboardingRepository(AppDbContext dbContext)
             .Include(x => x.Buddy)
             .Include(x => x.Tasks)
             .FirstOrDefaultAsync(x => x.EmployeeId == employeeId);
-
-    public async Task<OnboardingTaskEntity?> GetTaskByIdAsync(int taskId) =>
-        await Context.Set<OnboardingTaskEntity>()
-            .Include(x => x.Onboarding)
-            .FirstOrDefaultAsync(x => x.Id == taskId);
-
-    public async Task AddTaskAsync(OnboardingTaskEntity task)
-    {
-        await Context.Set<OnboardingTaskEntity>().AddAsync(task);
-        await Context.SaveChangesAsync();
-    }
-
-    public async Task UpdateTaskAsync(OnboardingTaskEntity task)
-    {
-        task.UpdatedOnUtc = DateTime.UtcNow;
-        Context.Set<OnboardingTaskEntity>().Update(task);
-        await Context.SaveChangesAsync();
-    }
     
     public async Task<List<OnboardingEntity>> GetAllWithDetailsAsync() =>
         await Entities.Include(x => x.Tasks).ToListAsync();

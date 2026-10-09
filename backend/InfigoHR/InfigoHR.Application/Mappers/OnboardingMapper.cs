@@ -15,12 +15,12 @@ public static class OnboardingMapper
         OnboardingSection.Other
     };
 
-    public static string ToSectionKey(OnboardingSection section) => section switch
+    public static OnboardingSectionKey ToSectionKey(OnboardingSection section) => section switch
     {
-        OnboardingSection.BeforeDayOne => "beforeDayOne",
-        OnboardingSection.FirstWeek => "firstWeek",
-        OnboardingSection.FirstMonth => "firstMonth",
-        OnboardingSection.Other => "other",
+        OnboardingSection.BeforeDayOne => OnboardingSectionKey.BeforeDayOne,
+        OnboardingSection.FirstWeek => OnboardingSectionKey.FirstWeek,
+        OnboardingSection.FirstMonth => OnboardingSectionKey.FirstMonth,
+        OnboardingSection.Other => OnboardingSectionKey.Other,
         _ => throw new ArgumentOutOfRangeException(nameof(section))
     };
 
@@ -33,13 +33,13 @@ public static class OnboardingMapper
         _ => throw new ArgumentOutOfRangeException(nameof(section))
     };
 
-    public static OnboardingSection ParseSectionKey(string key) => key switch
+    public static OnboardingSection ParseSectionKey(OnboardingSectionKey key) => key switch
     {
-        "beforeDayOne" => OnboardingSection.BeforeDayOne,
-        "firstWeek" => OnboardingSection.FirstWeek,
-        "firstMonth" => OnboardingSection.FirstMonth,
-        "other" => OnboardingSection.Other,
-        _ => throw new ValidationException($"'{key}' is not a valid onboarding section.")
+        OnboardingSectionKey.BeforeDayOne => OnboardingSection.BeforeDayOne,
+        OnboardingSectionKey.FirstWeek => OnboardingSection.FirstWeek,
+        OnboardingSectionKey.FirstMonth => OnboardingSection.FirstMonth,
+        OnboardingSectionKey.Other => OnboardingSection.Other,
+        _ => throw new ArgumentOutOfRangeException(nameof(key))
     };
 
     public static OnboardingTaskModel ToTaskModel(OnboardingTaskEntity entity) =>
@@ -81,7 +81,7 @@ public static class OnboardingMapper
                 .ToList()
         };
     }
-    public static OnboardingSummaryModel ToSummaryModel(EmployeeEntity employee, OnboardingEntity? onboarding)
+    public static OnboardingSummaryModel ToSummaryModel(OnboardingEmployeeModel employee, OnboardingEntity? onboarding)
     {
         var tasks = onboarding?.Tasks ?? new List<OnboardingTaskEntity>();
         return new OnboardingSummaryModel
@@ -90,12 +90,27 @@ public static class OnboardingMapper
             FirstName = employee.FirstName,
             LastName = employee.LastName,
             Title = employee.Title,
-            Department = employee.Department?.Name ?? "—",
+            Department = employee.Department,
             StartsOn = employee.StartedOnUtc,
             CompletedTaskCount = tasks.Count(t => t.CompletedOnUtc != null),
             TotalTaskCount = tasks.Count,
             IsComplete = tasks.Count > 0 && tasks.All(t => t.CompletedOnUtc != null)
         };
     }
-    
+    public static OnboardingTaskEntity ToTaskEntity(
+        AddOnboardingTaskModel model,
+        int onboardingId) =>
+        new()
+        {
+            OnboardingId = onboardingId,
+            Section = ParseSectionKey(model.SectionKey!.Value),
+            Title = model.Title,
+            Note = model.Note,
+            DueDateUtc = ParseDueDate(model.DueDate)
+        };
+
+    private static DateTime? ParseDueDate(string? dueDate) =>
+        !string.IsNullOrWhiteSpace(dueDate) && DateTime.TryParse(dueDate, out var parsed)
+            ? DateTime.SpecifyKind(parsed.Date, DateTimeKind.Utc)
+            : null;
 }
