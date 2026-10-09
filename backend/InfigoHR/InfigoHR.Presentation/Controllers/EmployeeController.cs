@@ -16,7 +16,7 @@ public class EmployeeController(IEmployeeService service) : ControllerBase
     {
         return Ok(await service.GetAllAsync(query));
     }
-
+    
     [HttpGet("{id:int}")]
     public async Task<ActionResult<EmployeeModel>> GetById(int id)
     {

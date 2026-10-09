@@ -28,4 +28,6 @@ public class EmployeeEntity : BaseEntity
     public virtual ICollection<RoleEntity> Roles { get; set; } = new List<RoleEntity>();
     public virtual ICollection<TrustedDeviceEntity> TrustedDevices { get; set; } = new List<TrustedDeviceEntity>();
     public virtual ICollection<LeaveRequestEntity> LeaveRequests { get; set; } = new List<LeaveRequestEntity>();
+    
+    public virtual ICollection<RoomBookingEntity> RoomBookings { get; set; } = new List<RoomBookingEntity>();
 }
