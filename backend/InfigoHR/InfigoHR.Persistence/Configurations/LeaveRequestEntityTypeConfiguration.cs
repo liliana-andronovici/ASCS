@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InfigoHR.Persistence.Configurations;
 
-public class TimeOffEntityTypeConfiguration : IEntityTypeConfiguration<TimeOffEntity>
+public class LeaveRequestEntityTypeConfiguration : IEntityTypeConfiguration<LeaveRequestEntity>
 {
-    public void Configure(EntityTypeBuilder<TimeOffEntity> builder)
+    public void Configure(EntityTypeBuilder<LeaveRequestEntity> builder)
     {
         builder.ToTable("LeaveRequests");
         builder.HasKey(l => l.Id);
@@ -29,7 +29,7 @@ public class TimeOffEntityTypeConfiguration : IEntityTypeConfiguration<TimeOffEn
             .IsRequired();
 
         builder.HasOne(l => l.Employee)
-            .WithMany(e => e.TimeOffs)
+            .WithMany(e => e.LeaveRequests)
             .HasForeignKey(l => l.EmployeeId)
             .OnDelete(DeleteBehavior.Cascade);
     }

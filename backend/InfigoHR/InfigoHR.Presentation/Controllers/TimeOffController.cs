@@ -1,9 +1,11 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+using InfigoHR.Application.Exceptions;
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models.TimeOff;
+using InfigoHR.Presentation.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace InfigoHR.Presentation.Controllers;
 
@@ -22,21 +24,23 @@ public class TimeOffController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<TimeOffModel>>> GetAll()
     {
-        if (!TryGetEmployeeId(out var employeeId)) return Unauthorized();
-        return Ok(await _service.GetForEmployeeAsync(employeeId));
+        var employeeId = GetCurrentEmployeeId();
+        var requests = await _service.GetAllAsync(employeeId);
+        return Ok(requests);
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<TimeOffModel>> GetById(int id)
     {
-        if (!TryGetEmployeeId(out var employeeId)) return Unauthorized();
-        return Ok(await _service.GetForEmployeeByIdAsync(id, employeeId));
+        var employeeId = GetCurrentEmployeeId();
+        var request = await _service.GetByIdAsync(id, employeeId);
+        return Ok(request);
     }
 
     [HttpPost]
     public async Task<ActionResult<int>> Create(CreateTimeOffModel model)
     {
-        if (!TryGetEmployeeId(out var employeeId)) return Unauthorized();
+        var employeeId = GetCurrentEmployeeId();
         var id = await _service.CreateAsync(model, employeeId);
         return CreatedAtAction(nameof(GetById), new { id }, id);
     }
@@ -44,23 +48,40 @@ public class TimeOffController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, UpdateTimeOffModel model)
     {
-        if (!TryGetEmployeeId(out var employeeId)) return Unauthorized();
-        await _service.UpdateAsync(id, model, employeeId);
+        var employeeId = GetCurrentEmployeeId();
+
+        if (id != model.Id)
+        {
+            return BadRequest(new ErrorResponseModel
+            {
+                Message = "Route ID must match the model ID."
+            });
+        }
+
+        await _service.UpdateAsync(model, employeeId);
         return NoContent();
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        if (!TryGetEmployeeId(out var employeeId)) return Unauthorized();
+        var employeeId = GetCurrentEmployeeId();
         await _service.DeleteAsync(id, employeeId);
         return NoContent();
     }
 
-    private bool TryGetEmployeeId(out int employeeId)
+    private int GetCurrentEmployeeId()
     {
-        var subject = User.FindFirstValue(ClaimTypes.NameIdentifier)
-            ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-        return int.TryParse(subject, out employeeId) && employeeId > 0;
+        var subject = User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                      ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (User.Identity?.IsAuthenticated != true
+            || !int.TryParse(subject, out var employeeId)
+            || employeeId <= 0)
+        {
+            throw new UnauthorizedException("A valid authenticated employee is required.");
+        }
+
+        return employeeId;
     }
 }

@@ -4,8 +4,9 @@ namespace InfigoHR.Application.Models.TimeOff;
 
 public class UpdateTimeOffModel
 {
+    public int Id { get; set; }
     public DateTime StartDateUtc { get; set; }
     public DateTime EndDateUtc { get; set; }
     public string Note { get; set; } = string.Empty;
-    public TimeOffType Type { get; set; }
+    public LeaveType Type { get; set; }
 }

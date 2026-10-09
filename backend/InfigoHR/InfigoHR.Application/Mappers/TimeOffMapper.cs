@@ -6,7 +6,7 @@ namespace InfigoHR.Application.Mappers;
 
 public static class TimeOffMapper
 {
-    public static TimeOffModel ToModel(TimeOffEntity entity) => new()
+    public static TimeOffModel ToModel(LeaveRequestEntity entity) => new()
     {
         Id = entity.Id,
         StartDateUtc = entity.StartDateUtc,
@@ -18,17 +18,17 @@ public static class TimeOffMapper
         UpdatedOnUtc = entity.UpdatedOnUtc
     };
 
-    public static TimeOffEntity ToEntity(CreateTimeOffModel model, int employeeId) => new()
+    public static LeaveRequestEntity ToEntity(CreateTimeOffModel model, int employeeId) => new()
     {
         StartDateUtc = model.StartDateUtc,
         EndDateUtc = model.EndDateUtc,
         Note = model.Note,
         Type = model.Type,
-        Status = TimeOffStatus.Pending,
+        Status = LeaveRequestStatus.Pending,
         EmployeeId = employeeId
     };
 
-    public static void Apply(UpdateTimeOffModel model, TimeOffEntity entity)
+    public static void ToEntity(UpdateTimeOffModel model, LeaveRequestEntity entity)
     {
         entity.StartDateUtc = model.StartDateUtc;
         entity.EndDateUtc = model.EndDateUtc;

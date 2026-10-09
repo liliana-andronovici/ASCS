@@ -1,6 +1,6 @@
 namespace InfigoHR.Domain.Enums;
 
-public enum TimeOffStatus
+public enum LeaveRequestStatus
 {
     Pending = 0,
     Approved = 1,

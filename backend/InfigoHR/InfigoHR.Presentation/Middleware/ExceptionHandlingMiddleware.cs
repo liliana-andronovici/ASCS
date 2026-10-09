@@ -23,6 +23,17 @@ public class ExceptionHandlingMiddleware
             context.Response.StatusCode = StatusCodes.Status404NotFound;
             await context.Response.WriteAsJsonAsync(new ErrorResponseModel { Message = ex.Message });
         }
+        catch (UnauthorizedException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.Headers["WWW-Authenticate"] = "Bearer";
+            await context.Response.WriteAsJsonAsync(new ErrorResponseModel { Message = ex.Message });
+        }
+        catch (ForbiddenException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            await context.Response.WriteAsJsonAsync(new ErrorResponseModel { Message = ex.Message });
+        }
         catch (ConflictException ex)
         {
             context.Response.StatusCode = StatusCodes.Status409Conflict;
