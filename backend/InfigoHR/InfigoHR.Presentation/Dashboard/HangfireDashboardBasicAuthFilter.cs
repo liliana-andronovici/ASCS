@@ -14,7 +14,6 @@ public sealed class HangfireDashboardBasicAuthFilter(IConfiguration configuratio
     {
         var httpContext = context.GetHttpContext();
 
-        // A local HTTP connection is permitted for development; remote connections require HTTPS.
         if (!httpContext.Request.IsHttps && !IsLoopback(httpContext.Connection.RemoteIpAddress))
         {
             return false;
