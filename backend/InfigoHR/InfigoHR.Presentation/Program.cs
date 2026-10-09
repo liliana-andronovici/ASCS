@@ -1,3 +1,4 @@
+using EvolveDb;
 using FluentValidation;
 using InfigoHR.Application;
 using InfigoHR.EmailService.Configuration;
@@ -10,6 +11,7 @@ using InfigoHR.Authentication;
 using InfigoHR.Persistence;
 using InfigoHR.Persistence.Repositories;
 using InfigoHR.Presentation.Middleware;
+using Npgsql;
 using InfigoHR.EmailService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,7 +38,21 @@ var app = builder.Build();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-DatabaseSetup.MigrateDatabase(connectionString!);
+try
+{
+    using var connection = new NpgsqlConnection(connectionString);
+    var evolve = new Evolve(connection, msg => Console.WriteLine(msg))
+    {
+        Locations = new[] { Path.Combine(AppContext.BaseDirectory, "Migrations") },
+        IsEraseDisabled = true
+    };
+    evolve.Migrate();
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Database migration failed: " + ex.Message);
+    throw;
+}
 
 if (app.Environment.IsDevelopment())
 {
