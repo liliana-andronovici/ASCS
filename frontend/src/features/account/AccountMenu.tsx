@@ -8,11 +8,19 @@ import { clearToken } from "../../lib/sessions";
 type Props = { collapsed: boolean };
 
 export function AccountMenu({ collapsed }: Props) {
-    const { employee } = useCurrentEmployee();
+    const { employee, isLoading } = useCurrentEmployee();
     const photoUrl = useLocalAvatar();
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+    const displayName = employee
+        ? `${employee.firstName} ${employee.lastName}`
+        : isLoading
+          ? "Loading profile..."
+          : "Account unavailable";
+    const initials = employee
+        ? `${employee.firstName[0] ?? ""}${employee.lastName[0] ?? ""}`.toUpperCase()
+        : "?";
 
     useEffect(() => {
         function handleClick(e: MouseEvent) {
@@ -57,22 +65,23 @@ export function AccountMenu({ collapsed }: Props) {
                 className={`flex w-full items-center gap-3 rounded-md p-1 hover:bg-white/10 ${
                     collapsed ? "justify-center" : ""
                 }`}
-                title={collapsed ? `${employee.firstName} ${employee.lastName}` : undefined}
+                title={collapsed ? displayName : undefined}
             >
                 {photoUrl ? (
                     <img src={photoUrl} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
                 ) : (
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-coral text-xs font-bold text-white">
-                        {employee.firstName[0]}
-                        {employee.lastName[0]}
+                        {initials}
                     </span>
                 )}
                 {!collapsed && (
                     <span className="flex min-w-0 flex-col text-left leading-tight">
                         <span className="truncate text-sm font-semibold text-white">
-                            {employee.firstName} {employee.lastName}
+                            {displayName}
                         </span>
-                        <span className="truncate text-xs text-white/60">{employee.title}</span>
+                        <span className="truncate text-xs text-white/60">
+                            {employee?.title ?? (isLoading ? "Loading profile..." : "")}
+                        </span>
                     </span>
                 )}
             </button>

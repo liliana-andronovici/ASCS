@@ -6,6 +6,7 @@ import {
     ChevronLeft,
     Home,
     Users,
+    MapPin,
     Network,
     Calendar,
     DoorClosed,
@@ -17,6 +18,7 @@ import { AccountMenu } from "../features/account/AccountMenu";
 const NAV_ITEMS = [
     { label: "Home", href: "/", icon: Home },
     { label: "People", href: "/people", icon: Users },
+    { label: "Locations", href: "/locations", icon: MapPin },
     { label: "Org Chart", href: "/orgChart", icon: Network },
     { label: "Time Off", href: "/timeOff", icon: Calendar },
     { label: "Rooms", href: "/rooms", icon: DoorClosed },

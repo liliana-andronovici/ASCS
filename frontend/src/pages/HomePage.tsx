@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCurrentEmployee } from "../features/account/useCurrentEmployee";
-import { useHomeData, type LeaveType } from "../features/home/useHomeData";
+import { useHomeData } from "../features/home/useHomeData";
+import { buildMeetingsWeek, useMeetingsThisWeek } from "../features/home/useMeetings";
 
 function getGreeting(hour: number): string {
     if (hour < 12) return "Good morning";
@@ -8,11 +9,9 @@ function getGreeting(hour: number): string {
     return "Good evening";
 }
 
-const LEAVE_LABEL: Record<LeaveType, string> = {
-    Vacation: "Vacation",
-    Sick: "Sick",
-    Remote: "Remote",
-};
+function formatTime(iso: string): string {
+    return new Date(iso).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+}
 
 function Stat({ label, value, hint }: { label: string; value: string | number; hint: string }) {
     return (
@@ -27,6 +26,8 @@ function Stat({ label, value, hint }: { label: string; value: string | number; h
 export default function HomePage() {
     const { employee } = useCurrentEmployee();
     const home = useHomeData();
+    const meetingsQuery = useMeetingsThisWeek();
+    const meetingDays = buildMeetingsWeek(meetingsQuery.data ?? [], home.now);
 
     const dateLabel = home.now.toLocaleDateString("en-US", {
         weekday: "long",
@@ -41,7 +42,7 @@ export default function HomePage() {
             <header className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
                 <div className="flex items-baseline gap-3">
                     <h1 className="text-[24px] font-semibold text-navy">
-                        {getGreeting(home.now.getHours())}, {employee.firstName}
+                        {getGreeting(home.now.getHours())}, {employee?.firstName ?? "there"}
                     </h1>
                     <span className="text-sm text-gray-400">{dateLabel}</span>
                 </div>
@@ -78,11 +79,11 @@ export default function HomePage() {
             <div className="grid flex-1 grid-cols-1 lg:grid-cols-3">
                 <section className="border-gray-100 px-6 py-5 lg:col-span-2 lg:border-r">
                     <div className="mb-3 flex items-baseline justify-between">
-                        <h2 className="text-sm font-semibold text-navy">Who's out this week</h2>
+                        <h2 className="text-sm font-semibold text-navy">Meetings this week</h2>
                         <span className="text-xs text-gray-400">{weekRange}</span>
                     </div>
                     <div className="grid grid-cols-5 gap-2">
-                        {home.week.map((d) => (
+                        {meetingDays.map((d) => (
                             <div
                                 key={d.date.toISOString()}
                                 className={`flex min-h-[150px] flex-col gap-1.5 rounded-lg border p-2 ${
@@ -92,22 +93,27 @@ export default function HomePage() {
                                 <span className="text-[10px] uppercase tracking-wider text-gray-400">
                                     {d.label} <strong className="text-navy">{d.date.getDate()}</strong>
                                 </span>
-                                {d.out.map((o) => (
+                                {d.meetings.map((m) => (
                                     <span
-                                        key={o.id}
-                                        title={LEAVE_LABEL[o.type]}
-                                        className="border-l-2 border-navy bg-gray-50 px-1.5 py-1 text-[11px] leading-tight text-navy"
+                                        key={m.id}
+                                        className={`border-l-2 border-coral bg-gray-50 px-1.5 py-1 text-[11px] leading-tight text-navy ${
+                                            new Date(m.endUtc) < home.now ? "opacity-50" : ""
+                                        }`}
                                     >
-                                        {o.name}
-                                        <span className="block text-[10px] text-gray-400">{LEAVE_LABEL[o.type]}</span>
+                                        <span className="block font-semibold">{formatTime(m.startUtc)}</span>
+                                        {m.title}
+                                        {m.location && <span className="block text-[10px] text-gray-400">{m.location}</span>}
                                     </span>
                                 ))}
+                                {!meetingsQuery.isLoading && !meetingsQuery.isError && d.meetings.length === 0 && (
+                                    <span className="text-[11px] text-gray-300">No meetings</span>
+                                )}
                             </div>
                         ))}
                     </div>
-                    {!home.leaveAvailable && (
+                    {meetingsQuery.isError && (
                         <p className="mt-3 text-xs text-gray-400">
-                            Time off isn't available from the server yet. It will show up here once the time off API is connected.
+                            Meetings aren't available from the server yet.
                         </p>
                     )}
                 </section>

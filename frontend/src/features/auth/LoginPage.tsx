@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
@@ -23,7 +23,7 @@ export default function LoginPage() {
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        signInMutation.mutate({ email, password });
+        signInMutation.mutate({email, password});
     }
 
     return (
@@ -36,9 +36,9 @@ export default function LoginPage() {
             </Button>
 
             <div className="mb-4 flex items-center gap-3 text-xs text-gray-400">
-                <div className="h-px flex-1 bg-gray-200" />
+                <div className="h-px flex-1 bg-gray-200"/>
                 OR
-                <div className="h-px flex-1 bg-gray-200" />
+                <div className="h-px flex-1 bg-gray-200"/>
             </div>
 
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -75,7 +75,7 @@ export default function LoginPage() {
                             onClick={() => setShowPassword((v) => !v)}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                         >
-                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                            {showPassword ? <EyeOff size={16}/> : <Eye size={16}/>}
                         </button>
                     </div>
                 </div>

@@ -135,10 +135,10 @@ export default function RoomsPage() {
     const columnCount = view === "week" ? 5 : ROOMS.length;
 
     return (
-        <div className="p-6">
-            <div className="flex overflow-hidden rounded-lg border border-gray-200 bg-white shadow-card">
+        <div className="p-2 sm:p-4 lg:p-6">
+            <div className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-card xl:flex-row">
                 <div className="flex min-w-0 flex-1 flex-col">
-                    <div className="flex flex-wrap items-center gap-3 border-b border-gray-200 px-6 py-4">
+                    <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 px-3 py-3 sm:gap-3 sm:px-6 sm:py-4">
                         <h1 className="text-xl font-bold text-navy">Meeting rooms</h1>
 
                         <div className="flex items-center gap-1">
@@ -205,20 +205,20 @@ export default function RoomsPage() {
                     </div>
 
                     {view === "week" && (
-                        <div className="flex items-center gap-2 border-b border-gray-200 px-4 py-2">
+                        <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 px-3 py-2 sm:px-4">
                             <span className="mr-1 text-xs uppercase tracking-wide text-gray-400">Room</span>
                             {ROOMS.map((room) => (
                                 <button
                                     key={room.id}
                                     onClick={() => setSelectedRoomId(room.id)}
-                                    className={`rounded-full border px-3 py-1 text-sm font-semibold ${
+                                    className={`rounded-full border px-2 py-1 text-xs font-semibold sm:px-3 sm:text-sm ${
                                         room.id === selectedRoomId
                                             ? "border-navy bg-navy text-white"
                                             : "border-gray-300 bg-white text-navy"
                                     }`}
                                 >
                                     {room.name}
-                                    <span className="ml-1.5 font-normal opacity-70">
+                                    <span className="ml-1.5 hidden font-normal opacity-70 sm:inline">
                                         {roomFreePercent.get(room.id)}% free
                                     </span>
                                 </button>
@@ -226,8 +226,9 @@ export default function RoomsPage() {
                         </div>
                     )}
 
+                    <div className="overflow-x-auto border-b border-gray-200">
                     <div
-                        className="grid shrink-0 border-b border-gray-200 bg-gray-50"
+                        className="grid min-w-[520px] shrink-0 bg-gray-50"
                         style={{ gridTemplateColumns: `56px repeat(${columnCount}, 1fr)` }}
                     >
                         <div />
@@ -253,10 +254,11 @@ export default function RoomsPage() {
                                 </div>
                             ))}
                     </div>
+                    </div>
 
-                    <div className="relative flex-1 overflow-y-auto">
+                    <div className="relative flex-1 overflow-auto">
                         <div
-                            className="grid"
+                            className="grid min-w-[520px]"
                             style={{
                                 gridTemplateColumns: `56px repeat(${columnCount}, 1fr)`,
                                 gridAutoRows: `${ROW_HEIGHT}px`,
@@ -344,7 +346,7 @@ export default function RoomsPage() {
                     </div>
                 </div>
 
-                <aside className="flex w-[340px] shrink-0 flex-col gap-3.5 border-l border-gray-200 bg-[#f8fafc] p-5">
+                <aside className="flex w-full min-w-0 flex-col gap-3.5 border-t border-gray-200 bg-[#f8fafc] p-3 sm:p-5 xl:w-[340px] xl:shrink-0 xl:border-l xl:border-t-0">
                     {draftOpen ? (
                         <>
                             <div className="flex items-baseline justify-between">
