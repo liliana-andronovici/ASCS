@@ -5,6 +5,7 @@ import LoginPage from "../features/auth/LoginPage";
 import PlaceholderPage from "../pages/PlaceholderPage";
 import PeoplePage from "../features/employees/PeoplePage";
 import DepartmentsPage from "../features/departments/DepartmentsPage";
+import LocationsPage from "../features/locations/LocationsPage";
 
 export const router = createBrowserRouter([
     {
@@ -14,6 +15,7 @@ export const router = createBrowserRouter([
             { index: true, element: <PlaceholderPage title="Home" /> },
             { path: "people", element: <PeoplePage /> },
             { path: "departments", element: <DepartmentsPage /> },
+            { path: "locations", element: <LocationsPage /> },
             { path: "orgChart", element: <PlaceholderPage title="Org chart" /> },
             { path: "timeOff", element: <PlaceholderPage title="Time off" /> },
             { path: "rooms", element: <PlaceholderPage title="Rooms" /> },
