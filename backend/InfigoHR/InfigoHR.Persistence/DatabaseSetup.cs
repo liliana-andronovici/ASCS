@@ -18,7 +18,6 @@ public static class DatabaseSetup
             catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.InvalidCatalogName)
             {
                 CreateDatabase(connectionString);
-                connection.Open();
             }
 
             var evolve = new Evolve(connection, msg => Console.WriteLine(msg))
