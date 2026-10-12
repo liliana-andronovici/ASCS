@@ -1,0 +1,68 @@
+.org-chart-canvas {
+    background-color: white;
+    background-image: linear-gradient(#edf0f3 1px, transparent 1px), linear-gradient(90deg, #edf0f3 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+.org-chart-tree, .org-chart-children, .org-chart-leaves {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.org-chart-tree {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 48px;
+    width: max-content;
+    min-width: 100%;
+}
+.org-chart-branch {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+}
+.org-chart-children {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 64px;
+}
+.org-chart-children::before, .org-chart-leaves::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: 32px;
+    border-left: 2px solid #dfe5ec;
+}
+.org-chart-children > .org-chart-branch {
+    padding: 0 16px;
+}
+.org-chart-children > .org-chart-branch::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -32px;
+    border-top: 2px solid #dfe5ec;
+}
+.org-chart-children > .org-chart-branch:first-child::before { left: 50%; }
+.org-chart-children > .org-chart-branch:last-child::before { right: 50%; }
+.org-chart-children > .org-chart-branch::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -32px;
+    height: 32px;
+    border-left: 2px solid #dfe5ec;
+}
+.org-chart-leaves {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 24px;
+}
+.org-chart-leaves::before { height: 24px; }

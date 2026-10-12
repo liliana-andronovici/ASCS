@@ -30,6 +30,7 @@ const NAV_ITEMS = [
 export function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);
     const isDepartmentsPage = !!useMatch("/departments");
+    const isOrgChartPage = !!useMatch("/orgChart");
 
     return (
         <aside 
@@ -55,7 +56,7 @@ export function Sidebar() {
             <nav className="flex flex-col gap-1 px-2">
                 {NAV_ITEMS.map((item) => {
                     const Icon = item.icon;
-                    const isActive = item.href === "/departments" && isDepartmentsPage;
+                    const isActive = (item.href === "/departments" && isDepartmentsPage) || (item.href === "/orgChart" && isOrgChartPage);
 
                     return (
                         <Link to={item.href}
