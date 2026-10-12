@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="Migrations\*.sql" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="Migrations\**\*.sql" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>
