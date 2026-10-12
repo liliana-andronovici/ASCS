@@ -28,8 +28,8 @@ export interface CreateEmployeeInput {
 
 export type UpdateEmployeeInput = CreateEmployeeInput;
 
-export function createEmployee(input: CreateEmployeeInput): Promise<void> {
-    return apiFetch<void>("/employees", {
+export function createEmployee(input: CreateEmployeeInput): Promise<number> {
+    return apiFetch<number>("/employees", {
         method: "POST",
         body: JSON.stringify(input),
     });

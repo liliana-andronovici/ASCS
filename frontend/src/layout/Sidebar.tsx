@@ -1,5 +1,5 @@
 ﻿import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, useMatch } from "react-router-dom";
 import logoImage from "../assets/logo.svg";
 import {
     ChevronRight,
@@ -18,6 +18,7 @@ import { AccountMenu } from "../features/account/AccountMenu";
 const NAV_ITEMS = [
     { label: "Home", href: "/", icon: Home },
     { label: "People", href: "/people", icon: Users },
+    { label: "Departments", href: "/departments", icon: Calendar },
     { label: "Locations", href: "/locations", icon: MapPin },
     { label: "Org Chart", href: "/orgChart", icon: Network },
     { label: "Time Off", href: "/timeOff", icon: Calendar },
@@ -28,6 +29,7 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);
+    const isDepartmentsPage = !!useMatch("/departments");
 
     return (
         <aside
@@ -52,22 +54,15 @@ export function Sidebar() {
 
             <nav className="flex flex-col gap-1 px-2">
                 {NAV_ITEMS.map((item) => {
-                    const Icon = item.icon;
+                    const Icon = item.icon;const isActive = item.href === "/departments" && isDepartmentsPage;
 
                     return (
                         <NavLink
                             to={item.href}
                             end={item.href === "/"}
                             key={item.href}
-                            className={({ isActive }) =>
-                                `flex items-center gap-3 rounded-md py-2 text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-coral/60 ${
-                                    collapsed ? "justify-center px-3" : ""
-                                } ${
-                                    isActive
-                                        ? "border-l-2 border-coral bg-white/10 pl-[10px] pr-3 font-semibold text-white"
-                                        : "px-3 text-white/80 hover:bg-white/10"
-                                }`
-                            }
+                            className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm ${isActive ? "bg-white/15 text-white font-semibold" : "text-white/80 hover:bg-white/10"} ${collapsed ? "justify-center" : ""}`}
+                            aria-current={isActive ? "page" : undefined}
                             title={collapsed ? item.label : undefined}
                         >
                             <Icon size={20} />

@@ -10,16 +10,20 @@ export class ApiError extends Error {
     }
 }
 
-export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-    const token = getToken();
+export async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
+    const headers = new Headers(options?.headers);
+    if (!headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+    }
+
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken && !headers.has("Authorization")) {
+        headers.set("Authorization", "Bearer " + accessToken);
+    }
 
     const response = await fetch(`${BASE_URL}${path}`, {
         ...options,
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            ...options.headers,
-        },
+        headers,
     });
 
     if (!response.ok) {

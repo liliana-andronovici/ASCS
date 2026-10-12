@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { useEmployees, useEmployeeDirectory } from "./useEmployees";
 import { useDepartments } from "../departments/useDepartments";
+import { useLocations } from "../locations/useLocations";
 import { EmployeeFormModal } from "./EmployeeFormModal";
 import { DeleteEmployeeModal } from "./DeleteEmployeeModal";
 import { Avatar } from "../../components/Avatar";
@@ -9,6 +10,8 @@ import { Badge } from "../../components/Badge";
 import type { BadgeVariant } from "../../components/Badge";
 import { Checkbox } from "../../components/Checkbox";
 import { Button } from "../../components/Button";
+import { NameSortButton } from "../../components/NameSortButton";
+import type { NameSortDirection } from "../../components/NameSortButton";
 import type { Employee, EmployeeStatus } from "./types";
 
 const STATUS_BADGE: Record<EmployeeStatus, BadgeVariant> = {
@@ -24,8 +27,10 @@ export default function PeoplePage() {
     const [searchInput, setSearchInput] = useState("");
     const [search, setSearch] = useState("");
     const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
+    const [locationId, setLocationId] = useState<number | undefined>(undefined);
     const [status, setStatus] = useState<EmployeeStatus | undefined>("Active");
     const [page, setPage] = useState(1);
+    const [nameSort, setNameSort] = useState<NameSortDirection>(undefined);
     const [view, setView] = useState<"table" | "grid">("table");
     const [selected, setSelected] = useState<Set<number>>(new Set());
     const [formOpen, setFormOpen] = useState(false);
@@ -43,10 +48,14 @@ export default function PeoplePage() {
     const { data, isLoading, isError, error } = useEmployees({
         search: search || undefined,
         departmentId,
+        locationId,
         status,
+        sortBy: nameSort ? "FirstName" : undefined,
+        sortDirection: nameSort,
         page,
     });
     const { data: departments, isError: isDepartmentsError } = useDepartments();
+    const { data: locations, isLoading: isLocationsLoading, isError: isLocationsError } = useLocations();
     const { data: directory } = useEmployeeDirectory();
 
     const departmentNameById = useMemo(() => {
@@ -54,6 +63,12 @@ export default function PeoplePage() {
         departments?.forEach((d) => map.set(Number(d.id), d.name));
         return map;
     }, [departments]);
+
+    const locationNameById = useMemo(() => {
+        const map = new Map<number, string>();
+        locations?.forEach((location) => map.set(Number(location.id), location.name));
+        return map;
+    }, [locations]);
 
     const managerNameById = useMemo(() => {
         const map = new Map<number, string>();
@@ -74,11 +89,8 @@ export default function PeoplePage() {
     function toggleRow(id: number) {
         setSelected((prev) => {
             const next = new Set(prev);
-            if (next.has(id)) {
-                next.delete(id);
-            } else {
-                next.add(id);
-            }
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
             return next;
         });
     }
@@ -142,12 +154,25 @@ export default function PeoplePage() {
                             </select>
                         </label>
 
-                        <span
-                            title="Location filtering isn't available yet — no /api/locations endpoint."
-                            className="flex items-center gap-1 rounded-full border border-gray-200 px-4 py-2 text-sm text-gray-300"
-                        >
-                            Location <span className="font-semibold">All</span>
-                        </span>
+                        <label className="flex items-center gap-1 rounded-full border border-gray-300 px-4 py-2 text-sm text-gray-500">
+                            Location
+                            <select
+                                value={locationId ?? ""}
+                                onChange={(event) => {
+                                    setLocationId(event.target.value ? Number(event.target.value) : undefined);
+                                    setPage(1);
+                                }}
+                                disabled={isLocationsLoading || isLocationsError}
+                                className="bg-transparent font-semibold text-navy focus:outline-none disabled:cursor-not-allowed disabled:text-gray-300"
+                            >
+                                <option value="">{isLocationsLoading ? "Loading..." : "All"}</option>
+                                {locations?.map((location) => (
+                                    <option key={location.id} value={location.id}>
+                                        {location.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
 
                         <label
                             className={`flex items-center gap-1 rounded-full border px-4 py-2 text-sm ${
@@ -193,6 +218,12 @@ export default function PeoplePage() {
                     </div>
                 )}
 
+                {isLocationsError && (
+                    <div role="alert" className="mx-6 mb-4 rounded-md bg-amber-50 px-4 py-2 text-sm text-amber-700">
+                        Couldn't load locations — location filtering and names are unavailable.
+                    </div>
+                )}
+
                 <table className="w-full text-left text-sm">
                     <thead>
                     <tr className="border-y border-gray-200 text-gray-500">
@@ -202,7 +233,15 @@ export default function PeoplePage() {
                                 onChange={toggleAll}
                             />
                         </th>
-                        <th className="py-3 font-medium">Name</th>
+                        <th scope="col" aria-sort={nameSort === "Ascending" ? "ascending" : nameSort === "Descending" ? "descending" : "none"} className="py-3 pr-4 font-medium">
+                                <NameSortButton
+                                    direction={nameSort}
+                                    onClick={() => {
+                                        setNameSort((previous) => previous === "Ascending" ? "Descending" : "Ascending");
+                                        setPage(1);
+                                    }}
+                                />
+                            </th>
                         <th className="py-3 font-medium">Department</th>
                         <th className="py-3 font-medium">Location</th>
                         <th className="py-3 font-medium">Manager</th>
@@ -231,7 +270,9 @@ export default function PeoplePage() {
                             <td className="py-3 text-gray-700">
                                 {emp.departmentId ? departmentNameById.get(emp.departmentId) ?? "—" : "—"}
                             </td>
-                            <td className="py-3 text-gray-400">—</td>
+                            <td className="py-3 text-gray-700">
+                                {emp.locationId ? locationNameById.get(emp.locationId) ?? "—" : "—"}
+                            </td>
                             <td className="py-3 text-gray-700">
                                 {emp.managerId ? managerNameById.get(emp.managerId) ?? "—" : "—"}
                             </td>

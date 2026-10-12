@@ -1,6 +1,8 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { ApiError } from "../../lib/api";
+import { signIn } from "./api";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
@@ -11,19 +13,28 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isPending, setIsPending] = useState(false);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    const signInMutation = useMutation({
-        mutationFn: signIn,
-        onSuccess: (data) => {
-            setToken(data.accessToken);
-            navigate("/");
-        },
-    });
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        if (isPending) return;
 
-    function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        signInMutation.mutate({email, password});
+        setIsPending(true);
+        setError("");
+
+        try {
+            const response = await signIn({ email: email.trim(), password });
+            localStorage.setItem("accessToken", response.accessToken);
+            navigate("/", { replace: true });
+        } catch (error) {
+            setError(error instanceof ApiError && error.status === 401
+                ? "Invalid email or password."
+                : "Unable to sign in. Please try again.");
+        } finally {
+            setIsPending(false);
+        }
     }
 
     return (
@@ -41,15 +52,17 @@ export default function LoginPage() {
                 <div className="h-px flex-1 bg-gray-200"/>
             </div>
 
-            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <Input
                     id="email"
                     label="Work email"
                     type="email"
                     placeholder="ana.popescu@infigo.ro"
+                    autoComplete="username"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(event) => setEmail(event.target.value)}
                     required
+                    disabled={isPending}
                 />
 
                 <div>
@@ -64,6 +77,11 @@ export default function LoginPage() {
                     <div className="relative">
                         <input
                             id="password"
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={(event) => setPassword(event.target.value)}
+                            required
+                            disabled={isPending}
                             type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -80,14 +98,9 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                {signInMutation.isError && (
-                    <p className="text-sm text-red-600">
-                        Couldn't sign in. Check your email and password and try again.
-                    </p>
-                )}
-
-                <Button type="submit" disabled={signInMutation.isPending}>
-                    {signInMutation.isPending ? "Signing in..." : "Sign in"}
+                {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+                <Button type="submit" disabled={isPending}>
+                    {isPending ? "Signing in..." : "Sign in"}
                 </Button>
             </form>
 
