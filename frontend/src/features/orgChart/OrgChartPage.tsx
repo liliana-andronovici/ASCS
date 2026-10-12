@@ -18,6 +18,8 @@ export default function OrgChartPage() {
     const [view, setView] = useState<OrgChartView>("reporting");
     const [zoom, setZoom] = useState(100);
     const canvasRef = useRef<HTMLElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+    const manualZoomRef = useRef(false);
     const dragRef = useRef<{ id: number; x: number; y: number; left: number; top: number; moved: boolean } | null>(null);
     const suppressClickRef = useRef(false);
     const [isDragging, setIsDragging] = useState(false);
@@ -31,8 +33,9 @@ export default function OrgChartPage() {
             // Ordinary two-finger scrolling keeps the native canvas scrolling.
             if (!event.ctrlKey) return;
             event.preventDefault();
+            manualZoomRef.current = true;
             const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? canvas!.clientHeight : 1);
-            setZoom((value) => Math.max(50, Math.min(150, value * Math.exp(-delta * 0.01))));
+            setZoom((value) => Math.max(1, Math.min(150, value * Math.exp(-delta * 0.01))));
         }
 
         canvas.addEventListener("wheel", handleWheel, { passive: false });
@@ -61,6 +64,36 @@ export default function OrgChartPage() {
         return [...entries.values()];
     }, [view, departments.data, locations.data, employees.data]);
 
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const content = contentRef.current;
+        if (!canvas || !content || isLoading || error) return;
+
+        let frame = 0;
+        function fitChart() {
+            cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(() => {
+                if (manualZoomRef.current) return;
+                const style = getComputedStyle(canvas!);
+                const width = canvas!.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+                const height = canvas!.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+                if (width <= 0 || height <= 0 || !content!.offsetWidth || !content!.offsetHeight) return;
+                const scale = Math.min(1, width / content!.offsetWidth, height / content!.offsetHeight);
+                setZoom(Math.max(1, Math.floor(scale * 100)));
+                canvas!.scrollTo(0, 0);
+            });
+        }
+
+        fitChart();
+        const observer = new ResizeObserver(fitChart);
+        observer.observe(canvas);
+        observer.observe(content);
+        return () => {
+            cancelAnimationFrame(frame);
+            observer.disconnect();
+        };
+    }, [view, isLoading, error, hierarchy.data, groups]);
+
     function retry() {
         if (view === "reporting") {
             void hierarchy.refetch();
@@ -81,18 +114,18 @@ export default function OrgChartPage() {
                                 key={item.value}
                                 type="button"
                                 aria-pressed={view === item.value}
-                                onClick={() => setView(item.value)}
-                                className={"border-r border-gray-200 px-4 py-3 text-sm last:border-r-0 transition-colors " +
+                                onClick={() => { manualZoomRef.current = false; setView(item.value); }}
+                                className={"cursor-pointer border-r border-gray-200 px-4 py-3 text-sm last:border-r-0 transition-colors " +
                                     (view === item.value ? "bg-gray-100 font-semibold text-navy" : "text-gray-600 hover:bg-gray-50")}
                             >
                                 {item.label}
                             </button>
                         ))}
                     </div>
-                    <Button variant="secondary" className="!w-auto !p-3" aria-label="Zoom in" disabled={zoom >= 150} onClick={() => setZoom((value) => Math.min(150, value + 10))}>
+                    <Button variant="secondary" className="!w-auto !p-3 cursor-pointer" aria-label="Zoom in" disabled={zoom >= 150} onClick={() => { manualZoomRef.current = true; setZoom((value) => Math.min(150, value + 10)); }}>
                         <Plus size={20} />
                     </Button>
-                    <Button variant="secondary" className="!w-auto !p-3" aria-label="Zoom out" disabled={zoom <= 50} onClick={() => setZoom((value) => Math.max(50, value - 10))}>
+                    <Button variant="secondary" className="!w-auto !p-3 cursor-pointer" aria-label="Zoom out" disabled={zoom <= 1} onClick={() => { manualZoomRef.current = true; setZoom((value) => Math.max(1, value - 10)); }}>
                         <Minus size={20} />
                     </Button>
                     <span className="sr-only" role="status">Zoom {Math.round(zoom)}%</span>
@@ -176,14 +209,14 @@ export default function OrgChartPage() {
                     <p role="status" className="text-sm text-gray-500">Loading organization chart...</p>
                 ) : view === "reporting" ? (
                     hierarchy.data?.length ? (
-                        <div style={{ zoom: zoom / 100 }} className="w-max min-w-full">
+                        <div ref={contentRef} style={{ zoom: zoom / 100 }} className="mx-auto w-max">
                             <ul className="org-chart-tree">
                                 {hierarchy.data.map((employee) => <OrgChartBranch key={employee.id} employee={employee} root />)}
                             </ul>
                         </div>
                     ) : <p className="text-sm text-gray-500">No reporting structure available.</p>
                 ) : groups.length ? (
-                    <div style={{ zoom: zoom / 100 }} className="flex w-max min-w-full items-start justify-center gap-6">
+                    <div ref={contentRef} style={{ zoom: zoom / 100 }} className="mx-auto flex w-max items-start justify-center gap-6">
                         {groups.map((group) => (
                             <section key={group.id ?? "unassigned"} className="w-72 shrink-0">
                                 <h2 className="mb-6 rounded-lg bg-navy px-4 py-5 font-semibold text-white">

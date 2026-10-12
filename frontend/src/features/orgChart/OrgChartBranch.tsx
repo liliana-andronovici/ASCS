@@ -33,7 +33,7 @@ export function OrgChartBranch({ employee, root = false }: { employee: OrgChartE
                     onClick={() => setExpanded((value) => !value)}
                     aria-expanded={expanded}
                     aria-label={(expanded ? "Collapse reports for " : "Expand reports for ") + employee.firstName + " " + employee.lastName}
-                    className="rounded-lg transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-coral"
+                    className="cursor-pointer rounded-lg transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-coral"
                 >
                     <EmployeeCard employee={employee} root={root} />
                 </button>
