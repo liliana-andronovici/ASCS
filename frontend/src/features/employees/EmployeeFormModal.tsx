@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Modal } from "../../components/Modal";
@@ -6,6 +6,7 @@ import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { Select } from "../../components/Select";
 import { useDepartments } from "../departments/useDepartments";
+import { useLocations } from "../locations/useLocations";
 import { useCreateEmployee, useUpdateEmployee } from "./useEmployeeMutations";
 import { employeeFormSchema, type EmployeeFormValues } from "./employeeSchema";
 import type { Employee } from "./types";
@@ -19,7 +20,9 @@ type Props = {
 export function EmployeeFormModal({ open, onClose, employee }: Props) {
     const isEditing = !!employee;
     const [departmentId, setDepartmentId] = useState<number | null>(employee?.departmentId ?? null);
+    const [locationId, setLocationId] = useState<number | null>(employee?.locationId ?? null);
     const { data: departments, isLoading: isDepartmentsLoading, isError: isDepartmentsError } = useDepartments();
+    const { data: locations, isLoading: isLocationsLoading, isError: isLocationsError } = useLocations();
     const createMutation = useCreateEmployee();
     const updateMutation = useUpdateEmployee();
 
@@ -47,7 +50,7 @@ export function EmployeeFormModal({ open, onClose, employee }: Props) {
             ...values,
             startedOnUtc: new Date(`${dateOnly}T00:00:00.000Z`).toISOString(),
             departmentId,
-            locationId: employee?.locationId ?? null,
+            locationId,
             managerId: employee?.managerId ?? null,
             status: employee?.status ?? ("Active" as const),
         };
@@ -97,6 +100,28 @@ export function EmployeeFormModal({ open, onClose, employee }: Props) {
                     {isDepartmentsError && (
                         <p id="employee-department-error" role="alert" className="text-sm text-red-600 mt-1">
                             {isEditing ? "Couldn't load departments. Please try again to change the department." : "Couldn't load departments. You can add this person without a department."}
+                        </p>
+                    )}
+                </div>
+                <div>
+                    <Select
+                        id="employee-location"
+                        label="Location"
+                        value={locationId ?? ""}
+                        onChange={(event) => setLocationId(event.target.value ? Number(event.target.value) : null)}
+                        disabled={isLocationsLoading || isLocationsError || !locations || isPending}
+                        aria-describedby={isLocationsError ? "employee-location-error" : undefined}
+                        options={[
+                            { value: "", label: isLocationsLoading ? "Loading locations..." : "No location" },
+                            ...(locations ?? []).map((location) => ({
+                                value: String(location.id),
+                                label: location.name,
+                            })),
+                        ]}
+                    />
+                    {isLocationsError && (
+                        <p id="employee-location-error" role="alert" className="text-sm text-red-600 mt-1">
+                            {isEditing ? "Couldn't load locations. Please try again to change the location." : "Couldn't load locations. You can add this person without a location."}
                         </p>
                     )}
                 </div>
