@@ -7,27 +7,23 @@ import PlaceholderPage from "../pages/PlaceholderPage";
 import HomePage from "../pages/HomePage";
 import PeoplePage from "../features/employees/PeoplePage";
 import LocationsPage from "../features/locations/LocationsPage";
+import LocationsPage from "../features/locations/LocationsPage";
 import SettingsPage from "../features/account/SettingsPage";
 import RoomsPage from "../features/rooms/RoomsPage";
 
 export const router = createBrowserRouter([
     {
-        element: <RequireAuth />,
+        path: "/",
+        element: <App />,
         children: [
-            {
-                path: "/",
-                element: <App />,
-                children: [
-                    { index: true, element: <HomePage /> },
-                    { path: "people", element: <PeoplePage /> },
-                    { path: "locations", element: <LocationsPage /> },
-                    { path: "orgChart", element: <PlaceholderPage title="Org chart" /> },
-                    { path: "timeOff", element: <PlaceholderPage title="Time off" /> },
-                    { path: "rooms", element: <RoomsPage /> },
-                    { path: "onboarding", element: <PlaceholderPage title="Onboarding" /> },
-                    { path: "settings", element: <SettingsPage /> },
-                ],
-            },
+            { index: true, element: <PlaceholderPage title="Home" /> },
+            { path: "people", element: <PeoplePage /> },
+            { path: "locations", element: <LocationsPage /> },
+            { path: "orgChart", element: <PlaceholderPage title="Org chart" /> },
+            { path: "timeOff", element: <PlaceholderPage title="Time off" /> },
+            { path: "rooms", element: <PlaceholderPage title="Rooms" /> },
+            { path: "onboarding", element: <PlaceholderPage title="Onboarding" /> },
+            { path: "settings", element: <PlaceholderPage title="Settings" /> },
         ],
     },
     {
