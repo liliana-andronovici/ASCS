@@ -14,7 +14,17 @@ public class RoleRepository : GenericRepository<RoleEntity>, IRoleRepository
         await Entities.Include(r => r.Permissions).FirstOrDefaultAsync(r => r.Id == id);
 
     public async Task<List<RoleEntity>> GetAllWithPermissionsAsync() =>
-        await Entities.AsNoTracking().Include(r => r.Permissions).OrderBy(r => r.Id).ToListAsync();
+        await Entities.AsNoTracking()
+            .Include(r => r.Permissions)
+            .OrderBy(r => r.Id)
+            .ToListAsync();
+
+    public async Task<Dictionary<int, int>> GetEmployeeCountsAsync() =>
+        await Context.Set<EmployeeRoleEntity>()
+            .AsNoTracking()
+            .GroupBy(item => item.RoleId)
+            .Select(group => new { RoleId = group.Key, Count = group.Count() })
+            .ToDictionaryAsync(item => item.RoleId, item => item.Count);
 
     public async Task<RoleEntity?> GetByNameAsync(string name) =>
         await Entities.AsNoTracking().FirstOrDefaultAsync(r => r.Name == name);

@@ -19,7 +19,9 @@ public class RoleService(
     public async Task<List<RoleModel>> GetAllAsync()
     {
         var roles = await roleRepository.GetAllWithPermissionsAsync();
-        return roles.Select(RoleMapper.ToModel).ToList();
+        var employeeCounts = await roleRepository.GetEmployeeCountsAsync();
+        return roles.Select(role =>
+            RoleMapper.ToModel(role, employeeCounts.GetValueOrDefault(role.Id))).ToList();
     }
 
     public async Task<int> GetIdByNameAsync(string name)
