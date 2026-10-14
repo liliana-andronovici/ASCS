@@ -1,14 +1,13 @@
-﻿using InfigoHR.Application.Common;
+using InfigoHR.Application.Common;
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models.Employees;
 using Microsoft.AspNetCore.Mvc;
 using InfigoHR.Application.QueryParameters.Employees;
-using Microsoft.AspNetCore.Authorization;
 
 namespace InfigoHR.Presentation.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/employees")]
 public class EmployeeController(IEmployeeService service) : ControllerBase
 {
     [HttpGet]

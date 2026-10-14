@@ -9,6 +9,8 @@ import TimeOffPage from "../features/timeoff/TimeOffPage";
 import OnboardingPage from "../features/onboarding/OnboardingPage";
 import OnboardingListPage from "../features/onboarding/OnboardingListPage";
 import OnboardingDetailPage from "../features/onboarding/OnboardingDetailPage";
+import OrgChartPage from "../features/orgChart/OrgChartPage";
+import DepartmentsPage from "../features/departments/DepartmentsPage";
 import LocationsPage from "../features/locations/LocationsPage";
 
 export const router = createBrowserRouter([
@@ -18,8 +20,9 @@ export const router = createBrowserRouter([
         children: [
             { index: true, element: <PlaceholderPage title="Home" /> },
             { path: "people", element: <PeoplePage /> },
+            { path: "departments", element: <DepartmentsPage /> },
             { path: "locations", element: <LocationsPage /> },
-            { path: "orgChart", element: <PlaceholderPage title="Org chart" /> },
+            { path: "orgChart", element: <OrgChartPage /> },
             { path: "timeOff", element: <TimeOffPage /> },
             { path: "rooms", element: <PlaceholderPage title="Rooms" /> },
             { path: "settings", element: <PlaceholderPage title="Settings" /> },

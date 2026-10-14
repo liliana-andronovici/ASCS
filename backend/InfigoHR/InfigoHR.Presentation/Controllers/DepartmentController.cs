@@ -1,7 +1,5 @@
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models.Departments;
-using InfigoHR.Authentication.Authorization;
-using InfigoHR.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using InfigoHR.Application.Common;
 using InfigoHR.Application.QueryParameters.Departments;
@@ -19,7 +17,6 @@ public class DepartmentController : ControllerBase
         _departmentService = departmentService;
     }
 
-    [HasPermission(Permission.ReadDepartment)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<DepartmentModel>>> GetAll()
     {
@@ -27,7 +24,6 @@ public class DepartmentController : ControllerBase
         return Ok(departments);
     }
     
-    [HasPermission(Permission.ReadDepartment)]
     [HttpGet("paged")]
     public async Task<ActionResult<PagedResult<DepartmentModel>>> GetPaged(
         [FromQuery] DepartmentParameters paginationParams)
@@ -36,7 +32,6 @@ public class DepartmentController : ControllerBase
         return Ok(pagedDepartments);
     }
 
-    [HasPermission(Permission.ReadDepartment)]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<DepartmentModel>> GetById(int id)
     {
@@ -44,7 +39,6 @@ public class DepartmentController : ControllerBase
         return Ok(department);
     }
 
-    [HasPermission(Permission.ManageDepartment)]
     [HttpPost]
     public async Task<ActionResult<int>> Create(CreateDepartmentModel model)
     {
@@ -52,7 +46,6 @@ public class DepartmentController : ControllerBase
         return Ok(id);
     }
 
-    [HasPermission(Permission.ManageDepartment)]
     [HttpPut]
     public async Task<IActionResult> Update(UpdateDepartmentModel model)
     {
@@ -60,7 +53,6 @@ public class DepartmentController : ControllerBase
         return NoContent();
     }
 
-    [HasPermission(Permission.ManageDepartment)]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {

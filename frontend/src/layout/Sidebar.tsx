@@ -1,5 +1,5 @@
-﻿import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import logoImage from "../assets/logo.svg";
 import {
     ChevronRight,
@@ -18,6 +18,7 @@ import {
 const NAV_ITEMS = [
     { label: "Home", href: "/", icon: Home },
     { label: "People", href: "/people", icon: Users },
+    { label: "Departments", href: "/departments", icon: Calendar },
     { label: "Locations", href: "/locations", icon: MapPin },
     { label: "Org Chart", href: "/orgChart", icon: Network },
     { label: "Time Off", href: "/timeOff", icon: Calendar },
@@ -43,7 +44,7 @@ export function Sidebar() {
                 {!collapsed && <img src={logoImage} alt="logo" className="h-8 w-auto"/>}
                 <button
                     onClick={() => setCollapsed((v) => !v)}
-                    className="text-white/70 hover:text-white p-2 rounded-md hover:bg-coral"
+                    className="cursor-pointer text-white/70 hover:text-white p-2 rounded-md hover:bg-coral"
                     title={collapsed ? "open" : "close"}
                 >
                     {collapsed ? <ChevronRight size={20}/> : <ChevronLeft size={20}/>}
@@ -52,17 +53,18 @@ export function Sidebar() {
 
             <nav className="flex flex-col gap-1 px-2">
                 {NAV_ITEMS.map((item) => {
-                    const Icon = item.icon; 
+                    const Icon = item.icon;
 
                     return (
-                        <Link to={item.href}
+                        <NavLink to={item.href}
                             key={item.href}
-                            className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 ${collapsed ? "justify-center" : ""}`}
+                            className={({ isActive }) => `flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm ${isActive ? "bg-white/15 text-white font-semibold" : "text-white/80 hover:bg-white/10"} ${collapsed ? "justify-center" : ""}`}
+                            end={item.href === "/"}
                             title={collapsed ? item.label : undefined}
                         >
                             <Icon size={20} />
                             {!collapsed && <span>{item.label}</span>}
-                        </Link>
+                        </NavLink>
                     );
                 })}
             </nav>
