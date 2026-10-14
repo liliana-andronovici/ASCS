@@ -16,9 +16,9 @@ export async function apiFetch<T>(path: string, options?: RequestInit): Promise<
         headers.set("Content-Type", "application/json");
     }
 
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken && !headers.has("Authorization")) {
-        headers.set("Authorization", "Bearer " + accessToken);
+    const token = getToken();
+    if (token && !headers.has("Authorization")) {
+        headers.set("Authorization", `Bearer ${token}`);
     }
 
     const response = await fetch(`${BASE_URL}${path}`, {
@@ -41,6 +41,7 @@ export async function apiFetch<T>(path: string, options?: RequestInit): Promise<
         return undefined as T;
     }
 
-    return response.json() as Promise<T>;
+    const body = await response.text();
+    return body ? JSON.parse(body) as T : undefined as T;
 }
  

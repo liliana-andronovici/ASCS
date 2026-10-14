@@ -6,33 +6,39 @@ export interface SignInInput {
 }
 
 export interface AuthResponse {
-    accessToken: string;
+    accessToken?: string | null;
+    requiresTwoFactor?: boolean;
+    challengeToken?: string | null;
+    challengeExpiresAtUtc?: string | null;
 }
 
 export function signIn(input: SignInInput): Promise<AuthResponse> {
-    // Local demo login mirrors the mock API so sign-in works if its server is unavailable.
-    if (import.meta.env.DEV) {
-        const demoUsers: Record<string, number> = {
-            "test@infigo.ro": 1,
-            "ana.popescu@infigo.ro": 2,
-        };
-        const email = input.email.trim().toLowerCase();
-        const employeeId = demoUsers[email];
+    return apiFetch<AuthResponse>("/auth/sign-in", { method: "POST", body: JSON.stringify(input) });
+}
 
-        if (employeeId) {
-            const payload = btoa(JSON.stringify({ sub: String(employeeId), email }))
-                .replace(/=/g, "")
-                .replace(/\+/g, "-")
-                .replace(/\//g, "_");
+export function requestPasswordReset(email: string): Promise<void> {
+    return apiFetch<void>("/auth/password-reset/request", { method: "POST", body: JSON.stringify({ email }) });
+}
 
-            return Promise.resolve({
-                accessToken: `eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.${payload}.mock`,
-            });
-        }
-    }
-
-    return apiFetch<AuthResponse>("/auth/sign-in", {
-        method: "POST",
-        body: JSON.stringify(input),
+export function verifyPasswordReset(email: string, code: string): Promise<{ resetToken: string }> {
+    return apiFetch<{ resetToken: string }>("/auth/password-reset/verify", {
+        method: "POST", body: JSON.stringify({ email, code }),
     });
+}
+
+export function completePasswordReset(input: {
+    email: string;
+    resetToken: string;
+    newPassword: string;
+    confirmPassword: string;
+}): Promise<AuthResponse> {
+    return apiFetch<AuthResponse>("/auth/password-reset/complete", { method: "POST", body: JSON.stringify(input) });
+}
+
+export function verifyTwoFactor(input: {
+    challengeToken: string;
+    code?: string;
+    recoveryCode?: string;
+}): Promise<AuthResponse> {
+    return apiFetch<AuthResponse>("/auth/two-factor/verify", { method: "POST", body: JSON.stringify(input) });
 }
