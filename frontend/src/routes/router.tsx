@@ -7,6 +7,9 @@ import PlaceholderPage from "../pages/PlaceholderPage";
 import PeoplePage from "../features/employees/PeoplePage";
 import RolesPermissionsPage from "../features/roles/RolesPermissionsPage";
 import SettingsLayout from "../features/settings/SettingsLayout";
+import OrgChartPage from "../features/orgChart/OrgChartPage";
+import DepartmentsPage from "../features/departments/DepartmentsPage";
+import LocationsPage from "../features/locations/LocationsPage";
 
 export const router = createBrowserRouter([
     {
@@ -15,7 +18,9 @@ export const router = createBrowserRouter([
         children: [
             { index: true, element: <PlaceholderPage title="Home" /> },
             { path: "people", element: <PeoplePage /> },
-            { path: "orgChart", element: <PlaceholderPage title="Org chart" /> },
+            { path: "departments", element: <DepartmentsPage /> },
+            { path: "locations", element: <LocationsPage /> },
+            { path: "orgChart", element: <OrgChartPage /> },
             { path: "timeOff", element: <PlaceholderPage title="Time off" /> },
             { path: "rooms", element: <PlaceholderPage title="Rooms" /> },
             { path: "onboarding", element: <PlaceholderPage title="Onboarding" /> },
