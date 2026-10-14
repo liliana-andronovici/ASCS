@@ -13,6 +13,9 @@ public class RoleRepository : GenericRepository<RoleEntity>, IRoleRepository
     public async Task<RoleEntity?> GetWithPermissionsAsync(int id) =>
         await Entities.Include(r => r.Permissions).FirstOrDefaultAsync(r => r.Id == id);
 
+    public async Task<RoleEntity?> GetWithEmployeesAsync(int id) =>
+        await Entities.Include(r => r.Employees).FirstOrDefaultAsync(r => r.Id == id);
+
     public async Task<List<RoleEntity>> GetAllWithPermissionsAsync() =>
         await Entities.AsNoTracking()
             .Include(r => r.Permissions)

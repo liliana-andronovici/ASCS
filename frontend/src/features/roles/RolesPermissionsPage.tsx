@@ -1,22 +1,50 @@
 import { useState, type FormEvent } from "react";
-import { useCreateRole, usePermissions, useRoles, useSetRolePermissions } from "./useRolePermissions";
+import { useQuery } from "@tanstack/react-query";
+import { getEmployees } from "../employees/api";
+import { ApiError } from "../../lib/api";
+import { useAddRoleEmployee, useCreateRole, useDeleteRole, usePermissions, useRemoveRoleEmployee, useRenameRole, useRoleEmployees, useRoles, useSetRolePermissions } from "./useRolePermissions";
+
+function errorMessage(error: unknown, fallback: string): string {
+    if (!(error instanceof ApiError)) return fallback;
+    try {
+        const body = JSON.parse(error.message) as { message?: string; errors?: string[] };
+        return body.message ?? body.errors?.join(" ") ?? fallback;
+    } catch {
+        return fallback;
+    }
+}
 
 export default function RolesPermissionsPage() {
     const rolesQuery = useRoles();
     const permissionsQuery = usePermissions();
     const createRole = useCreateRole();
     const setPermissions = useSetRolePermissions();
+    const renameRole = useRenameRole();
+    const deleteRole = useDeleteRole();
+    const addEmployee = useAddRoleEmployee();
+    const removeEmployee = useRemoveRoleEmployee();
     const [isCreatingRole, setIsCreatingRole] = useState(false);
     const [roleName, setRoleName] = useState("");
     const [roleNameError, setRoleNameError] = useState<string | null>(null);
     const [editingRoleId, setEditingRoleId] = useState<number | null>(null);
     const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
     const [statusMessage, setStatusMessage] = useState<string | null>(null);
+    const [selectedRoleId, setSelectedRoleId] = useState<number | null>(null);
+    const [newRoleName, setNewRoleName] = useState("");
+    const [employeeSearch, setEmployeeSearch] = useState("");
+    const [confirmDelete, setConfirmDelete] = useState(false);
     const isLoading = rolesQuery.isLoading || permissionsQuery.isLoading;
     const isError = rolesQuery.isError || permissionsQuery.isError;
     const roles = rolesQuery.data ?? [];
     const permissions = permissionsQuery.data ?? [];
     const editingRole = roles.find((role) => role.id === editingRoleId);
+    const selectedRole = roles.find((role) => role.id === selectedRoleId);
+    const roleEmployees = useRoleEmployees(selectedRoleId);
+    const employeeResults = useQuery({
+        queryKey: ["role-employee-search", employeeSearch.trim()],
+        queryFn: () => getEmployees({ search: employeeSearch.trim(), pageSize: 20 }),
+        enabled: selectedRoleId !== null && employeeSearch.trim().length >= 2,
+    });
     const hasChanges = editingRole !== undefined &&
         (selectedPermissions.length !== editingRole.permissions.length ||
             selectedPermissions.some((name) => !editingRole.permissions.includes(name)));
@@ -38,7 +66,7 @@ export default function RolesPermissionsPage() {
         setRoleNameError(null);
         createRole.mutate(name, {
             onSuccess: () => {
-                setStatusMessage(`${name} was queued for creation. Reload later to confirm it was added.`);
+                setStatusMessage(`${name} was created.`);
                 setRoleName("");
                 setIsCreatingRole(false);
             },
@@ -57,11 +85,44 @@ export default function RolesPermissionsPage() {
             { roleId: editingRole.id, permissions: selectedPermissions },
             {
                 onSuccess: () => {
-                    setStatusMessage(`Changes for ${editingRole.name} were queued. Reload later to confirm they were applied.`);
+                    setStatusMessage(`Permissions for ${editingRole.name} were saved. Sign in again to refresh affected users' access.`);
                     setEditingRoleId(null);
                 },
             }
         );
+    }
+
+    function openRole(roleId: number, name: string) {
+        renameRole.reset();
+        deleteRole.reset();
+        addEmployee.reset();
+        removeEmployee.reset();
+        setSelectedRoleId(roleId);
+        setNewRoleName(name);
+        setEmployeeSearch("");
+        setConfirmDelete(false);
+        setStatusMessage(null);
+    }
+
+    function submitRename(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        if (!selectedRole) return;
+        const name = newRoleName.trim();
+        if (!name || name === selectedRole.name) return;
+        renameRole.mutate({ roleId: selectedRole.id, name }, {
+            onSuccess: () => setStatusMessage(`Role renamed to ${name}.`),
+        });
+    }
+
+    function submitDelete() {
+        if (!selectedRole) return;
+        deleteRole.mutate(selectedRole.id, {
+            onSuccess: () => {
+                setStatusMessage(`${selectedRole.name} was deleted.`);
+                setSelectedRoleId(null);
+                setConfirmDelete(false);
+            },
+        });
     }
 
     return (
@@ -130,7 +191,7 @@ export default function RolesPermissionsPage() {
                         </button>
                         {(roleNameError || createRole.isError) && (
                             <p role="alert" className="w-full text-sm text-[#b93f38]">
-                                {roleNameError ?? "Could not queue the new role."}
+                                {roleNameError ?? errorMessage(createRole.error, "Could not create the role.")}
                             </p>
                         )}
                     </form>
@@ -154,7 +215,9 @@ export default function RolesPermissionsPage() {
                     </p>
                 ) : isError ? (
                     <p role="alert" className="p-5 text-sm text-[#b93f38]">
-                        Could not load roles and permissions.
+                        {rolesQuery.error instanceof ApiError && rolesQuery.error.status === 403
+                            ? "Your account cannot manage roles and permissions."
+                            : "Could not load roles and permissions."}
                     </p>
                 ) : roles.length === 0 || permissions.length === 0 ? (
                     <p className="p-5 text-sm text-[#6b7a89]">
@@ -178,15 +241,25 @@ export default function RolesPermissionsPage() {
                                                         {role.employeeCount} {role.employeeCount === 1 ? "person" : "people"}
                                                     </span>
                                                 </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => startEditing(role.id, role.permissions)}
-                                                    disabled={setPermissions.isPending}
-                                                    className="text-xs font-medium text-[#b93f38] hover:underline disabled:opacity-50"
-                                                    aria-label={`Edit permissions for ${role.name}`}
-                                                >
-                                                    Edit
-                                                </button>
+                                                <span className="flex gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => startEditing(role.id, role.permissions)}
+                                                        disabled={setPermissions.isPending}
+                                                        className="text-xs font-medium text-[#b93f38] hover:underline disabled:opacity-50"
+                                                        aria-label={`Edit permissions for ${role.name}`}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openRole(role.id, role.name)}
+                                                        className="text-xs font-medium text-[#b93f38] hover:underline"
+                                                        aria-label={`Manage ${role.name} role and employees`}
+                                                    >
+                                                        Manage
+                                                    </button>
+                                                </span>
                                             </div>
                                         </th>
                                     ))}
@@ -245,7 +318,7 @@ export default function RolesPermissionsPage() {
                         <span className="mr-auto text-sm text-[#16232e]">Editing {editingRole.name}</span>
                         {setPermissions.isError && (
                             <span role="alert" className="text-sm text-[#b93f38]">
-                                Could not queue the permission changes.
+                                {errorMessage(setPermissions.error, "Could not save the permission changes.")}
                             </span>
                         )}
                         <button
@@ -267,6 +340,80 @@ export default function RolesPermissionsPage() {
                     </div>
                 )}
             </section>
+            {selectedRole && (
+                <section className="mt-5 rounded-xl border border-[#dfe5ec] bg-white p-5 shadow-card" aria-label={`Manage ${selectedRole.name}`}>
+                    <div className="flex items-start justify-between gap-4">
+                        <div>
+                            <h3 className="text-lg font-semibold text-[#16232e]">Manage {selectedRole.name}</h3>
+                            <p className="text-sm text-[#6b7a89]">Assign employees and update this role.</p>
+                        </div>
+                        <button type="button" onClick={() => setSelectedRoleId(null)} className="text-sm text-[#b93f38] hover:underline">Close</button>
+                    </div>
+
+                    <div className="mt-5 flex flex-wrap items-end gap-4 border-b border-[#e9edf2] pb-5">
+                        <form onSubmit={submitRename} className="flex flex-wrap items-end gap-2">
+                            <div>
+                                <label htmlFor="rename-role" className="mb-1 block text-sm font-medium">Role name</label>
+                                <input id="rename-role" value={newRoleName} onChange={(event) => setNewRoleName(event.target.value)} maxLength={100} required disabled={renameRole.isPending} className="rounded-lg border border-[#cfd7e0] px-3 py-2 text-sm" />
+                            </div>
+                            <button type="submit" disabled={renameRole.isPending || !newRoleName.trim() || newRoleName.trim() === selectedRole.name} className="rounded-lg border border-[#cfd7e0] px-3 py-2 text-sm font-semibold disabled:opacity-50">Rename</button>
+                        </form>
+                        {confirmDelete ? (
+                            <div className="flex items-center gap-2 text-sm">
+                                <span>Delete {selectedRole.name} and remove it from {selectedRole.employeeCount} {selectedRole.employeeCount === 1 ? "person" : "people"}?</span>
+                                <button type="button" onClick={submitDelete} disabled={deleteRole.isPending} className="rounded-lg bg-[#b93f38] px-3 py-2 font-semibold text-white disabled:opacity-50">Confirm delete</button>
+                                <button type="button" onClick={() => setConfirmDelete(false)} className="px-2 py-2">Cancel</button>
+                            </div>
+                        ) : (
+                            <button type="button" onClick={() => setConfirmDelete(true)} className="rounded-lg border border-[#eab7b4] px-3 py-2 text-sm text-[#b93f38]">Delete role</button>
+                        )}
+                    </div>
+                    {(renameRole.isError || deleteRole.isError) && (
+                        <p role="alert" className="mt-3 text-sm text-[#b93f38]">{errorMessage(renameRole.error ?? deleteRole.error, "Could not update this role.")}</p>
+                    )}
+
+                    <div className="mt-5 grid gap-6 md:grid-cols-2">
+                        <div>
+                            <h4 className="font-semibold text-[#16232e]">Assigned employees</h4>
+                            {roleEmployees.isLoading && <p role="status" className="mt-2 text-sm">Loading employees...</p>}
+                            {roleEmployees.isError && <p role="alert" className="mt-2 text-sm text-[#b93f38]">Could not load assigned employees.</p>}
+                            {roleEmployees.data?.length === 0 && <p className="mt-2 text-sm text-[#6b7a89]">No employees assigned.</p>}
+                            <ul className="mt-2 space-y-2">
+                                {roleEmployees.data?.map((employee) => (
+                                    <li key={employee.id} className="flex items-center justify-between gap-3 rounded-lg border border-[#e9edf2] px-3 py-2 text-sm">
+                                        <span>{employee.firstName} {employee.lastName}<span className="block text-xs text-[#6b7a89]">{employee.email}</span></span>
+                                        <button type="button" onClick={() => removeEmployee.mutate({ roleId: selectedRole.id, employeeId: employee.id })} disabled={removeEmployee.isPending} className="text-[#b93f38] disabled:opacity-50">Remove</button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div>
+                            <label htmlFor="role-employee-search" className="block font-semibold text-[#16232e]">Assign an employee</label>
+                            <input id="role-employee-search" value={employeeSearch} onChange={(event) => setEmployeeSearch(event.target.value)} placeholder="Search by name or email" className="mt-2 w-full rounded-lg border border-[#cfd7e0] px-3 py-2 text-sm" />
+                            {employeeSearch.trim().length >= 2 && (
+                                <div className="mt-2 text-sm">
+                                    {employeeResults.isLoading && <p role="status">Searching...</p>}
+                                    {employeeResults.isError && <p role="alert" className="text-[#b93f38]">Could not search employees.</p>}
+                                    {employeeResults.data?.items.length === 0 && <p>No matching employees.</p>}
+                                    <ul className="space-y-2">
+                                        {employeeResults.data?.items.filter((employee) => !roleEmployees.data?.some((assigned) => assigned.id === employee.id)).map((employee) => (
+                                            <li key={employee.id} className="flex items-center justify-between gap-3 rounded-lg border border-[#e9edf2] px-3 py-2">
+                                                <span>{employee.firstName} {employee.lastName}<span className="block text-xs text-[#6b7a89]">{employee.email}</span></span>
+                                                <button type="button" onClick={() => addEmployee.mutate({ roleId: selectedRole.id, employeeId: employee.id })} disabled={addEmployee.isPending} className="font-semibold text-[#b93f38] disabled:opacity-50">Assign</button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    {(employeeResults.data?.totalCount ?? 0) > 20 && <p className="mt-2 text-[#6b7a89]">Showing the first 20 matches. Refine your search to find someone else.</p>}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    {(addEmployee.isError || removeEmployee.isError) && (
+                        <p role="alert" className="mt-3 text-sm text-[#b93f38]">{errorMessage(addEmployee.error ?? removeEmployee.error, "Could not change this employee's role.")}</p>
+                    )}
+                    {(addEmployee.isSuccess || removeEmployee.isSuccess) && <p role="status" className="mt-3 text-sm text-[#16232e]">Assignment saved. The employee must sign in again for access changes to take effect.</p>}
+                </section>
+            )}
         </div>
     );
 }

@@ -9,3 +9,10 @@ export interface Permission {
     id: number;
     name: string;
 }
+
+export interface RoleEmployee {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+}

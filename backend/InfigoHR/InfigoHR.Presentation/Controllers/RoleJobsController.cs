@@ -2,13 +2,14 @@ using Hangfire;
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models.Roles;
 using InfigoHR.Presentation.Jobs;
-using Microsoft.AspNetCore.Authorization;
+using InfigoHR.Authentication.Authorization;
+using InfigoHR.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InfigoHR.Presentation.Controllers;
 
 [ApiController]
-[Authorize]
+[HasPermission(Permission.ManageRoles)]
 [Route("api/[controller]")]
 public class RoleJobsController(IBackgroundJobClient jobs, IRoleService roleService) : ControllerBase
 {
