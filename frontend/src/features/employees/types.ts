@@ -13,6 +13,16 @@ export interface Employee {
     status: EmployeeStatus;
 }
 
+export interface EmployeeEquipment {
+    id: number;
+    equipmentId: number;
+    name: string;
+    code: string;
+    typeName: string;
+    assignedOnUtc: string;
+    returnedOnUtc: string | null;
+}
+
 export interface PagedResult<T> {
     items: T[];
     totalCount: number;
