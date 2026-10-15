@@ -8,7 +8,6 @@ using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Services;
 using InfigoHR.Application.Validators.Locations;
 using InfigoHR.Authentication;
-using InfigoHR.Authentication.Services;
 using InfigoHR.Persistence;
 using InfigoHR.Persistence.Repositories;
 using InfigoHR.Presentation.Middleware;
@@ -34,9 +33,6 @@ builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateLocationModelValidator>();
 
 builder.Services.AddAuthenticationServices(builder.Configuration);
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
 var app = builder.Build();
 

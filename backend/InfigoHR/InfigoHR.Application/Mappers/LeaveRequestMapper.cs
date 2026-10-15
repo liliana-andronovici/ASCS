@@ -1,12 +1,12 @@
-using InfigoHR.Application.Models.TimeOff;
+using InfigoHR.Application.Models.LeaveRequests;
 using InfigoHR.Domain.Entities;
 using InfigoHR.Domain.Enums;
 
 namespace InfigoHR.Application.Mappers;
 
-public static class TimeOffMapper
+public static class LeaveRequestMapper
 {
-    public static TimeOffModel ToModel(LeaveRequestEntity entity) => new()
+    public static LeaveRequestModel ToModel(LeaveRequestEntity entity) => new()
     {
         Id = entity.Id,
         StartDateUtc = entity.StartDateUtc,
@@ -18,7 +18,7 @@ public static class TimeOffMapper
         UpdatedOnUtc = entity.UpdatedOnUtc
     };
 
-    public static LeaveRequestEntity ToEntity(CreateTimeOffModel model, int employeeId) => new()
+    public static LeaveRequestEntity ToEntity(CreateLeaveRequestModel model, int employeeId) => new()
     {
         StartDateUtc = model.StartDateUtc,
         EndDateUtc = model.EndDateUtc,
@@ -28,7 +28,7 @@ public static class TimeOffMapper
         EmployeeId = employeeId
     };
 
-    public static void ToEntity(UpdateTimeOffModel model, LeaveRequestEntity entity)
+    public static void ToEntity(UpdateLeaveRequestModel model, LeaveRequestEntity entity)
     {
         entity.StartDateUtc = model.StartDateUtc;
         entity.EndDateUtc = model.EndDateUtc;

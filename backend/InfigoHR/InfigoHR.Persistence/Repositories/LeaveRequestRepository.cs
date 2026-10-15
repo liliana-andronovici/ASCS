@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InfigoHR.Persistence.Repositories;
 
-public class TimeOffRepository : GenericRepository<LeaveRequestEntity>, ITimeOffRepository
+public class LeaveRequestRepository : GenericRepository<LeaveRequestEntity>, ILeaveRequestRepository
 {
-    public TimeOffRepository(AppDbContext dbContext) : base(dbContext)
+    public LeaveRequestRepository(AppDbContext dbContext) : base(dbContext)
     {
     }
 
-    public async Task<IReadOnlyList<LeaveRequestEntity>> GetByEmployeeAsync(int employeeId) =>
+    public async Task<IReadOnlyList<LeaveRequestEntity>> GetByEmployeeIdAsync(int employeeId) =>
         await Entities.AsNoTracking()
             .Where(x => x.EmployeeId == employeeId)
             .OrderBy(x => x.StartDateUtc)

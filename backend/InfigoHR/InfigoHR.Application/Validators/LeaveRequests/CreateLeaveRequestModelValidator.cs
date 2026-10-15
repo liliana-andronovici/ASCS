@@ -1,13 +1,12 @@
 using FluentValidation;
-using InfigoHR.Application.Models.TimeOff;
+using InfigoHR.Application.Models.LeaveRequests;
 
-namespace InfigoHR.Application.Validators.TimeOff;
+namespace InfigoHR.Application.Validators.LeaveRequests;
 
-public class UpdateTimeOffModelValidator : AbstractValidator<UpdateTimeOffModel>
+public class CreateLeaveRequestModelValidator : AbstractValidator<CreateLeaveRequestModel>
 {
-    public UpdateTimeOffModelValidator()
+    public CreateLeaveRequestModelValidator()
     {
-        RuleFor(x => x.Id).GreaterThan(0);
         RuleFor(x => x.StartDateUtc).Must(x => x.Kind == DateTimeKind.Utc).WithMessage("StartDateUtc must be UTC.");
         RuleFor(x => x.EndDateUtc).Must(x => x.Kind == DateTimeKind.Utc).WithMessage("EndDateUtc must be UTC.");
         RuleFor(x => x.StartDateUtc).LessThanOrEqualTo(x => x.EndDateUtc);

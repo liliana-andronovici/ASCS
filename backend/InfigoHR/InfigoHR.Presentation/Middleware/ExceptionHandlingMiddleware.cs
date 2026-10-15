@@ -26,7 +26,6 @@ public class ExceptionHandlingMiddleware
         catch (UnauthorizedException ex)
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            context.Response.Headers["WWW-Authenticate"] = "Bearer";
             await context.Response.WriteAsJsonAsync(new ErrorResponseModel { Message = ex.Message });
         }
         catch (ForbiddenException ex)

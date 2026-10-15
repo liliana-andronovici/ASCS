@@ -27,7 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         
         services.AddHttpContextAccessor();
-        services.AddScoped<ICurrentUser, CurrentUser>();
+        services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
 
         services.AddScoped<
             IPasswordHasher<AuthEntity>,

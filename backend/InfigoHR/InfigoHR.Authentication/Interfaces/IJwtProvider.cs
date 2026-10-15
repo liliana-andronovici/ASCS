@@ -6,5 +6,5 @@ public interface IJwtProvider
         int employeeId,
         string email,
         IEnumerable<string> permissions,
-        string role);
+        IEnumerable<string> roles);
 }

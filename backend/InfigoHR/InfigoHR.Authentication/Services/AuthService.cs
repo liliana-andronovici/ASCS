@@ -70,16 +70,17 @@ public class AuthService : IAuthService
             return null;
         }
 
-        var role = employee.Roles.Single();
+        var roles = employee.Roles;
 
-        var permissions = role.Permissions
+        var permissions = roles
+            .SelectMany(role => role.Permissions)
             .Select(permission => permission.Name);
 
         var accessToken = _jwtProvider.Generate(
             employee.Id,
             employee.Email,
             permissions,
-            role.Name);
+            roles.Select(role => role.Name));
 
         return new AuthResponse
         {

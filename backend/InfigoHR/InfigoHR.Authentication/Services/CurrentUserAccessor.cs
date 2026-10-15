@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace InfigoHR.Authentication.Services;
 
-public class CurrentUser : ICurrentUser
+public class CurrentUserAccessor : ICurrentUserAccessor
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public CurrentUser(IHttpContextAccessor httpContextAccessor)
+    public CurrentUserAccessor(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }
@@ -45,9 +45,19 @@ public class CurrentUser : ICurrentUser
         }
     }
 
-    public string Role =>
-        User.FindFirstValue("role")
-        ?? throw new UnauthorizedException("A user role is required.");
+    public IReadOnlyCollection<string> Roles
+    {
+        get
+        {
+            var roles = User.FindAll("role")
+                .Select(claim => claim.Value)
+                .ToArray();
+
+            return roles.Length > 0
+                ? roles
+                : throw new UnauthorizedException("A user role is required.");
+        }
+    }
 
     public bool IsInRole(string role) => User.IsInRole(role);
 }

@@ -1,8 +1,8 @@
 using InfigoHR.Domain.Enums;
 
-namespace InfigoHR.Application.Models.TimeOff;
+namespace InfigoHR.Application.Models.LeaveRequests;
 
-public class CreateTimeOffModel
+public class CreateLeaveRequestModel
 {
     public DateTime StartDateUtc { get; set; }
     public DateTime EndDateUtc { get; set; }

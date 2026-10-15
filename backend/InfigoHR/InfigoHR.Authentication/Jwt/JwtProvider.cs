@@ -20,7 +20,7 @@ public class JwtProvider: IJwtProvider
         int employeeId,
         string email,
         IEnumerable<string> permissions,
-        string role)
+        IEnumerable<string> roles)
     {
         var claims = new List<Claim>
         {
@@ -32,7 +32,9 @@ public class JwtProvider: IJwtProvider
             permissions.Distinct()
                 .Select(permission => new Claim("permissions", permission)));
         
-        claims.Add(new Claim("role", role));
+        claims.AddRange(
+            roles.Distinct()
+                .Select(role => new Claim("role", role)));
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_options.SecretKey));
