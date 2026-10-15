@@ -27,7 +27,7 @@ export async function apiFetch<T>(path: string, options?: RequestInit): Promise<
     });
 
     if (!response.ok) {
-        // token expirat sau invalid: stergem sesiunea si mergem la login
+        // Clear an expired or invalid session and return to sign in.
         if (response.status === 401 && token) {
             clearToken();
             window.location.assign("/sign-in");

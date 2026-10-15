@@ -1,5 +1,5 @@
 ﻿import { useState } from "react";
-import { NavLink, useMatch } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import logoImage from "../assets/logo.svg";
 import {
     ChevronRight,
@@ -29,7 +29,6 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);
-    const isDepartmentsPage = !!useMatch("/departments");
 
     return (
         <aside
@@ -54,15 +53,14 @@ export function Sidebar() {
 
             <nav className="flex flex-col gap-1 px-2">
                 {NAV_ITEMS.map((item) => {
-                    const Icon = item.icon;const isActive = item.href === "/departments" && isDepartmentsPage;
+                    const Icon = item.icon;
 
                     return (
                         <NavLink
                             to={item.href}
                             end={item.href === "/"}
                             key={item.href}
-                            className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm ${isActive ? "bg-white/15 text-white font-semibold" : "text-white/80 hover:bg-white/10"} ${collapsed ? "justify-center" : ""}`}
-                            aria-current={isActive ? "page" : undefined}
+                            className={({ isActive }) => `flex items-center gap-3 rounded-md px-3 py-2 text-sm ${isActive ? "bg-white/15 text-white font-semibold" : "text-white/80 hover:bg-white/10"} ${collapsed ? "justify-center" : ""}`}
                             title={collapsed ? item.label : undefined}
                         >
                             <Icon size={20} />

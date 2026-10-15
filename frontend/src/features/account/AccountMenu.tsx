@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { User, LogOut } from "lucide-react";
 import { useCurrentEmployee } from "./useCurrentEmployee";
 import { useLocalAvatar } from "./useLocalAvatar";
-import { clearToken } from "../../lib/sessions";
+import { clearToken, decodeToken, getToken } from "../../lib/sessions";
 
 type Props = { collapsed: boolean };
 
 export function AccountMenu({ collapsed }: Props) {
-    const { employee, isLoading } = useCurrentEmployee();
+    const { employee, isLoading, isError } = useCurrentEmployee();
+    const token = getToken();
+    const accountEmail = token ? decodeToken(token)?.email : undefined;
     const photoUrl = useLocalAvatar();
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
@@ -17,10 +19,10 @@ export function AccountMenu({ collapsed }: Props) {
         ? `${employee.firstName} ${employee.lastName}`
         : isLoading
           ? "Loading profile..."
-          : "Account unavailable";
+          : accountEmail || "Account unavailable";
     const initials = employee
         ? `${employee.firstName[0] ?? ""}${employee.lastName[0] ?? ""}`.toUpperCase()
-        : "?";
+        : accountEmail?.slice(0, 2).toUpperCase() || "?";
 
     useEffect(() => {
         function handleClick(e: MouseEvent) {
@@ -80,7 +82,12 @@ export function AccountMenu({ collapsed }: Props) {
                             {displayName}
                         </span>
                         <span className="truncate text-xs text-white/60">
-                            {employee?.title ?? (isLoading ? "Loading profile..." : "")}
+                            {employee?.title ??
+                                (isLoading
+                                    ? "Loading profile..."
+                                    : isError && accountEmail
+                                      ? "Profile details unavailable"
+                                      : "")}
                         </span>
                     </span>
                 )}

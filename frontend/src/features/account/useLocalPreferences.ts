@@ -27,7 +27,7 @@ function load(): Preferences {
     }
 }
 
-// Preferintele nu au endpoint in backend, deci se tin doar in acest browser.
+// Preferences have no backend endpoint, so they are stored only in this browser.
 export function useLocalPreferences() {
     const [prefs, setPrefs] = useState<Preferences>(load);
 

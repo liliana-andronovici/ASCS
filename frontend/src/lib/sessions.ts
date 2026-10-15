@@ -40,10 +40,10 @@ type Listener = () => void;
 const avatarListeners = new Set<Listener>();
 
 /**
- * Poza de profil nu are un endpoint real in backend, deci o tinem doar in
- * acest browser, in localStorage. subscribeLocalAvatar exista ca sa poata
- * si sidebar-ul (AccountMenu) sa se actualizeze imediat cand o schimbi din
- * Settings, fara sa fie nevoie de refresh la pagina.
+ * Profile photos have no backend endpoint, so they are stored only in
+ * this browser using localStorage. subscribeLocalAvatar lets the
+ * sidebar (AccountMenu) update immediately when the photo changes in
+ * Settings, without reloading the page.
  */
 export function getLocalAvatar(): string | null {
     return localStorage.getItem(AVATAR_KEY);

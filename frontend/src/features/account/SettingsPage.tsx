@@ -70,8 +70,8 @@ function SecurityTab() {
         <div className="flex max-w-md flex-col gap-4">
             <h2 className="text-lg font-semibold text-navy">Password & security</h2>
             <div className="rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                Schimbarea parolei si autentificarea in doi pasi nu sunt disponibile inca,
-                backend-ul nu expune un endpoint pentru asta, doar sign in si sign up.
+                Password changes and two-factor authentication are not available here yet.
+                The current backend only exposes sign-in and sign-up endpoints for authentication.
             </div>
             <div className="flex flex-col gap-1 opacity-50">
                 <label className="text-sm text-gray-700">Current password</label>
@@ -118,7 +118,7 @@ function ToggleRow({
 function LocalOnlyNote() {
     return (
         <div className="rounded-md bg-amber-50 px-4 py-2 text-sm text-amber-700">
-            Aceste setari se salveaza doar in acest browser, backend-ul nu are inca endpoint pentru ele.
+            These settings are saved only in this browser. The backend does not have an endpoint for them yet.
         </div>
     );
 }
