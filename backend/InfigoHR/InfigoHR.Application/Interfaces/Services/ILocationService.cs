@@ -1,4 +1,5 @@
 using InfigoHR.Application.Common;
+using InfigoHR.Application.Models.Employees;
 using InfigoHR.Application.Models.Locations;
 using InfigoHR.Application.QueryParameters.Locations;
 
@@ -12,4 +13,6 @@ public interface ILocationService
     Task<int> CreateAsync(CreateLocationModel model);
     Task UpdateAsync(UpdateLocationModel model);
     Task DeleteAsync(int id);
+    Task<byte[]> ExportCsvAsync();
+    Task<ImportResultModel> ImportCsvAsync(Stream csvStream);
 }
