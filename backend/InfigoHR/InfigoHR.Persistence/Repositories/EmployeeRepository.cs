@@ -1,4 +1,5 @@
 using InfigoHR.Application.Common;
+using InfigoHR.Application.Exceptions;
 using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Application.Models.Employees;
 using InfigoHR.Application.QueryParameters.Employees;
@@ -6,6 +7,7 @@ using InfigoHR.Domain.Common;
 using InfigoHR.Domain.Entities;
 using InfigoHR.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace InfigoHR.Persistence.Repositories;
 
@@ -48,6 +50,33 @@ public class EmployeeRepository
         employees = ApplySorting(employees, query.SortBy, descending);
 
         return await employees.ToPagedListAsync(query.Page, query.PageSize);
+    }
+
+    public Task<List<EmployeeEquipmentEntity>> GetEquipmentAsync(int employeeId) =>
+        Context.Set<EmployeeEquipmentEntity>()
+            .AsNoTracking()
+            .Include(assignment => assignment.Equipment)
+            .ThenInclude(equipment => equipment.EquipmentType)
+            .Where(equipment => equipment.EmployeeId == employeeId)
+            .OrderBy(equipment => equipment.ReturnedOnUtc != null)
+            .ThenByDescending(equipment => equipment.AssignedOnUtc)
+            .ToListAsync();
+
+    public async Task<int> AddEquipmentAsync(EmployeeEquipmentEntity equipment)
+    {
+        await Context.Set<EmployeeEquipmentEntity>().AddAsync(equipment);
+
+        try
+        {
+            await Context.SaveChangesAsync();
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException
+                   { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: "IX_EmployeeEquipment_ActiveAssignment" })
+        {
+            throw new ConflictException("This asset is already assigned to an employee.");
+        }
+
+        return equipment.Id;
     }
 
     public async Task<bool> EmailExistsAsync(string email) =>
