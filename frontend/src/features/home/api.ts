@@ -3,10 +3,10 @@ import { apiFetch } from "../../lib/api";
 import type { Employee } from "../employees/types";
 import { homeEmployeePageSchema, leaveSchema, meetingSchema } from "./contracts";
 
-export const HOME_LEAVE_PATH = import.meta.env.VITE_HOME_LEAVE_API_PATH?.trim() || "";
-export const HOME_MEETINGS_PATH = import.meta.env.VITE_HOME_MEETINGS_API_PATH?.trim() || "";
+export const HOME_LEAVE_PATH = import.meta.env.VITE_HOME_LEAVE_API_PATH?.trim() || "/LeaveRequests";
+export const HOME_MEETINGS_PATH = import.meta.env.VITE_HOME_MEETINGS_API_PATH?.trim() || "/RoomBookings";
 
-export async function getHomeEmployees(signal?: AbortSignal): Promise<Employee[]> {
+async function getHomeEmployeesFromApi(signal?: AbortSignal): Promise<Employee[]> {
     const employees: Employee[] = [];
     const ids = new Set<number>();
     let totalCount: number | undefined;
@@ -29,6 +29,10 @@ export async function getHomeEmployees(signal?: AbortSignal): Promise<Employee[]
     }
 }
 
+export async function getHomeEmployees(signal?: AbortSignal): Promise<Employee[]> {
+    return getHomeEmployeesFromApi(signal);
+}
+
 function feedPath(path: string, from: string, to: string) {
     if (!path) throw new Error("This dashboard feed is not configured.");
     return `${path}${path.includes("?") ? "&" : "?"}${new URLSearchParams({ from, to })}`;
@@ -39,5 +43,20 @@ export async function getHomeLeave(from: string, to: string, signal?: AbortSigna
 }
 
 export async function getHomeMeetings(from: string, to: string, signal?: AbortSignal) {
-    return z.array(meetingSchema).parse(await apiFetch<unknown>(feedPath(HOME_MEETINGS_PATH, from, to), { signal }));
+    const query = new URLSearchParams({ fromUtc: from, toUtc: to });
+    const bookings = z.array(z.object({
+        id: z.number().int().positive(),
+        title: z.string(),
+        roomName: z.string(),
+        startDateTimeUtc: z.iso.datetime({ offset: true }),
+        durationMinutes: z.number().int().positive(),
+    })).parse(await apiFetch<unknown>(`${HOME_MEETINGS_PATH}?${query}`, { signal }));
+
+    return bookings.map((booking) => meetingSchema.parse({
+        id: booking.id,
+        title: booking.title,
+        startUtc: booking.startDateTimeUtc,
+        endUtc: new Date(Date.parse(booking.startDateTimeUtc) + booking.durationMinutes * 60_000).toISOString(),
+        location: `Meeting room · ${booking.roomName}`,
+    }));
 }

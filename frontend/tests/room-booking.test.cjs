@@ -4,18 +4,20 @@ const assert = require('node:assert/strict');
 const root=require('node:path').resolve(__dirname, '..');
 const ts=require(root+'/node_modules/typescript');
 const zod=require(root+'/node_modules/zod');
-function load(file,imports={}) {
+function load(file,imports={},globals={}) {
  const source=fs.readFileSync(root+'/src/features/rooms/'+file,'utf8').replace(/import.meta.env.VITE_\w+/g,'undefined');
  const exports={};
  vm.runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,
- {exports,require:id=>{if(id==='zod')return zod; assert.ok(imports[id],id);return imports[id];},Date,Math,Map,Set,URLSearchParams});
+ {exports,require:id=>{if(id==='zod')return zod; assert.ok(imports[id],id);return imports[id];},Date,Math,Map,Set,URLSearchParams,...globals});
  return exports;
 }
 const contract=load('contract.ts');
 const calendar=load('calendar.ts');
 const calls=[];
 let response;
-const api=load('api.ts',{'./contract':contract,'../../lib/api':{apiFetch:async(...args)=>{calls.push(args);return response;}}});
+const storage=new Map();
+const localStorage={getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)};
+const api=load('api.ts',{'./contract':contract,'../../lib/api':{apiFetch:async(...args)=>{calls.push(args);return response;}}},{localStorage});
 async function run(){
  const now=new Date(2026,9,15,12);
  const dates=calendar.getWeekDates(0,now);

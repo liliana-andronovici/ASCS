@@ -96,11 +96,16 @@ export function ProfileTab() {
     }
 
     function onSubmit(values: EmployeeFormValues) {
+        const updated = {
+            ...currentEmployee,
+            ...values,
+            startedOnUtc: new Date(`${values.startedOnUtc}T00:00:00.000Z`).toISOString(),
+        };
         updateMutation.mutate({
             id: currentEmployee.id,
             input: {
                 ...values,
-                startedOnUtc: new Date(`${values.startedOnUtc}T00:00:00.000Z`).toISOString(),
+                startedOnUtc: updated.startedOnUtc,
                 departmentId: currentEmployee.departmentId,
                 locationId: currentEmployee.locationId,
                 managerId: currentEmployee.managerId,

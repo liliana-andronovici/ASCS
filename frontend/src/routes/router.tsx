@@ -21,21 +21,21 @@ import RoomsPage from "../features/rooms/RoomsPage";
 export const router = createBrowserRouter([
     {
         element: <RequireAuth />,
-        children: [
-            {
-                path: "/",
-                element: <App />,
-                children: [
-                    { index: true, element: <HomePage /> },
-                    { path: "people", element: <PeoplePage /> },
-                    { path: "departments", element: <DepartmentsPage /> },
-                    { path: "locations", element: <LocationsPage /> },
-                    { path: "orgChart", element: <OrgChartPage /> },
-                    {path: "timeOff", element: <PlaceholderPage title="Time off" />,},
-                    { path: "rooms", element: <RoomsPage /> },
-                    {path: "onboarding", element: <PlaceholderPage title="Onboarding" />,},
-                    { path: "settings", element: <SettingsPage /> },
-        ],
+        children: [{
+            path: "/",
+            element: <App />,
+            children: [
+                { index: true, element: <HomePage /> },
+                { path: "people", element: <PeoplePage /> },
+                { path: "departments", element: <DepartmentsPage /> },
+                { path: "locations", element: <LocationsPage /> },
+                { path: "orgChart", element: <OrgChartPage /> },
+                { path: "timeOff", element: <PlaceholderPage title="Time off" /> },
+                { path: "rooms", element: <RoomsPage /> },
+                { path: "onboarding", element: <PlaceholderPage title="Onboarding" /> },
+                { path: "settings", element: <SettingsPage /> },
+            ],
+        }],
     },
     {
         element: <AuthLayer />,

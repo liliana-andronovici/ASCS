@@ -15,7 +15,7 @@ export function useHomeData() {
     const leave = useQuery({
         queryKey: ["home-leave", HOME_LEAVE_PATH, from, to],
         queryFn: ({ signal }) => getHomeLeave(from, to, signal),
-        enabled: Boolean(HOME_LEAVE_PATH), retry: false, staleTime: 60_000,
+        retry: false, staleTime: 60_000,
     });
     const employees = directory.data ?? [];
     const week = buildWeek(leave.isSuccess ? leave.data : [], employees, now);
@@ -24,8 +24,8 @@ export function useHomeData() {
         retryEmployees: () => directory.refetch(), isRefreshingEmployees: directory.isFetching,
         ...employeeStats(employees, now), week, now,
         upcoming: directory.isSuccess ? buildUpcoming(employees, now) : [],
-        leaveConfigured: Boolean(HOME_LEAVE_PATH), leaveAvailable: leave.isSuccess,
-        leaveLoading: Boolean(HOME_LEAVE_PATH) && leave.isPending,
+        leaveConfigured: true, leaveAvailable: leave.isSuccess,
+        leaveLoading: leave.isPending,
         leaveError: leave.isError, retryLeave: () => leave.refetch(),
         outToday: absentEmployees(leave.isSuccess ? leave.data : [], employees, now).length,
     };

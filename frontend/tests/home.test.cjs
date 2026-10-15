@@ -2,14 +2,16 @@ const fs=require('node:fs');const path=require('node:path');const vm=require('no
 const root=path.resolve(__dirname,'..');
 const ts=require(path.join(root,'node_modules/typescript'));const zod=require(path.join(root,'node_modules/zod'));
 process.env.TZ='Europe/Chisinau';
-function load(file,imports={}){
+function load(file,imports={},globals={}){
  const source=fs.readFileSync(path.join(root,'src/features/home',file),'utf8').replace(/import.meta.env.VITE_\w+/g,'undefined');
  const exports={};vm.runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,
- {exports,require:id=>{if(id==='zod')return zod;assert.ok(imports[id],id);return imports[id];},Date,Map,Set,Math,Number,URLSearchParams});return exports;
+ {exports,require:id=>{if(id==='zod')return zod;assert.ok(imports[id],id);return imports[id];},Date,Map,Set,Math,Number,URLSearchParams,...globals});return exports;
 }
 const calendar=load('calendar.ts');const contracts=load('contracts.ts');
 const calculations=load('calculations.ts',{'./calendar':calendar});let request;
-const api=load('api.ts',{'./contracts':contracts,'../../lib/api':{apiFetch:(...args)=>request(...args)}});
+const storage=new Map();
+const localStorage={getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)};
+const api=load('api.ts',{'./contracts':contracts,'../../lib/api':{apiFetch:(...args)=>request(...args)}},{localStorage});
 const employee=(id,startedOnUtc='2020-01-01T00:00:00Z',status='Active')=>({id,firstName:'Test',lastName:String(id),email:`test-${id}@example.com`,title:'Test role',startedOnUtc,departmentId:null,locationId:null,managerId:null,status});
 async function run(){
  const now=new Date(2026,9,15,12);
@@ -38,8 +40,9 @@ async function run(){
  request=async()=>({items:[employee(1),employee(1)],page:1,pageSize:100,totalCount:2});await assert.rejects(()=>api.getHomeEmployees());
  request=async()=>({items:[{...employee(1),startedOnUtc:'invalid'}],page:1,pageSize:100,totalCount:1});await assert.rejects(()=>api.getHomeEmployees());
  console.log('PASS empty directory is valid; incomplete, duplicate and malformed results fail');
- assert.equal(api.HOME_LEAVE_PATH,'');assert.equal(api.HOME_MEETINGS_PATH,'');
- await assert.rejects(()=>api.getHomeMeetings(range.from,range.to));
- console.log('PASS unavailable feeds require explicit configuration instead of guessed endpoint calls');
+ assert.equal(api.HOME_LEAVE_PATH,'/LeaveRequests');assert.equal(api.HOME_MEETINGS_PATH,'/RoomBookings');
+ request=async route=>{const url=new URL(route,'http://test');assert.equal(url.pathname,'/RoomBookings');assert.equal(url.searchParams.get('fromUtc'),range.from);assert.equal(url.searchParams.get('toUtc'),range.to);return [{id:7,title:'Planning',roomName:'Loft',startDateTimeUtc:'2026-10-15T10:00:00.000Z',durationMinutes:30}];};
+ const meetings=await api.getHomeMeetings(range.from,range.to);assert.equal(meetings.length,1);assert.equal(meetings[0].endUtc,'2026-10-15T10:30:00.000Z');assert.equal(meetings[0].location,'Meeting room · Loft');
+ console.log('PASS dashboard defaults to backend leave and booking feeds; room bookings map into meetings');
 }
 run().catch(error=>{console.error(error);process.exitCode=1;});

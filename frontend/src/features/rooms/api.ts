@@ -5,7 +5,6 @@ import { bookingSchema, roomSchema, type CreateRoomBookingInput } from "./contra
 // Provisional paths: configurable until the backend endpoints are agreed.
 const ROOMS_PATH = (import.meta.env.VITE_ROOMS_API_PATH ?? "/Rooms").replace(/\/$/, "");
 const BOOKINGS_PATH = (import.meta.env.VITE_ROOM_BOOKINGS_API_PATH ?? "/RoomBookings").replace(/\/$/, "");
-
 export async function getRooms(signal?: AbortSignal) {
     return z.array(roomSchema).parse(await apiFetch<unknown>(ROOMS_PATH, { signal }));
 }

@@ -2,7 +2,6 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "./layout/Sidebar";
 
 export default function App() {
-    const isOrgChartPage = !!useMatch("/orgChart");
     return (
         <div className="flex h-screen bg-gray-50 font-sans">
             <Sidebar />
