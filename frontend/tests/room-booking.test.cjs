@@ -4,8 +4,8 @@ const assert = require('node:assert/strict');
 const root=require('node:path').resolve(__dirname, '..');
 const ts=require(root+'/node_modules/typescript');
 const zod=require(root+'/node_modules/zod');
-function load(file,imports={},globals={}) {
- const source=fs.readFileSync(root+'/src/features/rooms/'+file,'utf8').replace(/import.meta.env.VITE_\w+/g,'undefined');
+function load(file,imports={},globals={},env={}) {
+ const source=fs.readFileSync(root+'/src/features/rooms/'+file,'utf8').replace(/import.meta.env.(VITE_\w+)/g,(_,key)=>JSON.stringify(env[key]) ?? 'undefined');
  const exports={};
  vm.runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,
  {exports,require:id=>{if(id==='zod')return zod; assert.ok(imports[id],id);return imports[id];},Date,Math,Map,Set,URLSearchParams,...globals});
@@ -50,5 +50,22 @@ async function run(){
  response={items:[]};await assert.rejects(()=>api.getRooms());
  assert.throws(()=>contract.bookingSchema.parse({...record,startDateTimeUtc:'2026-10-15T14:00:00'}));
  console.log('PASS incompatible response and timezone-free timestamp are rejected');
+ const customApi=load('api.ts',{'./contract':contract,'../../lib/api':{apiFetch:async(...args)=>{calls.push(args);return args[1]?.method==='POST'?undefined:[];}}},{},{VITE_ROOMS_API_PATH:'/custom/rooms/'});
+ await customApi.getRooms();assert.equal(calls.at(-1)[0],'/custom/rooms');
+ const roomInput={name:'New room',locationId:1,floor:2,seats:6};
+ await customApi.createRoom(roomInput);assert.equal(calls.at(-1)[0],'/custom/rooms');assert.equal(calls.at(-1)[1].method,'POST');assert.deepEqual(JSON.parse(calls.at(-1)[1].body),roomInput);
+ console.log('PASS room creation and listing share the configured API route');
+ const {QueryClient,MutationObserver}=require(root+'/node_modules/@tanstack/react-query');
+ const client=new QueryClient({defaultOptions:{queries:{retry:false},mutations:{retry:false}}});
+ const roomKey=['room-bookings','from','to'];const homeKey=['home-meetings','/RoomBookings','from','to'];const unrelatedKey=['employees'];
+ client.setQueryData(roomKey,[]);client.setQueryData(homeKey,[]);client.setQueryData(unrelatedKey,[]);
+ const hooks=load('useRooms.ts',{'@tanstack/react-query':{useQueryClient:()=>client,useMutation:options=>options},'./api':{createRoomBooking:async()=>undefined}});
+ try {
+  await new MutationObserver(client,hooks.useCreateRoomBooking()).mutate(input);
+  assert.equal(client.getQueryState(roomKey).isInvalidated,true);
+  assert.equal(client.getQueryState(homeKey).isInvalidated,true);
+  assert.equal(client.getQueryState(unrelatedKey).isInvalidated,false);
+ } finally {client.clear();}
+ console.log('PASS successful booking invalidates both calendar and Home meeting caches');
 }
 run().catch(error=>{console.error(error);process.exitCode=1;});

@@ -44,4 +44,3 @@ export async function apiFetch<T>(path: string, options?: RequestInit): Promise<
     const body = await response.text();
     return body ? JSON.parse(body) as T : undefined as T;
 }
- 

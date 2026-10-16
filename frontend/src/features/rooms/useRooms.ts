@@ -18,7 +18,10 @@ export function useCreateRoomBooking() {
     return useMutation({
         mutationFn: createRoomBooking,
         retry: false,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["room-bookings"] }),
+        onSuccess: () => Promise.all([
+            queryClient.invalidateQueries({ queryKey: ["room-bookings"] }),
+            queryClient.invalidateQueries({ queryKey: ["home-meetings"] }),
+        ]),
         onError: () => queryClient.invalidateQueries({ queryKey: ["room-bookings"] }),
     });
 }

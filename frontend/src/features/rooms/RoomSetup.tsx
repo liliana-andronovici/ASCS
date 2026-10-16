@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "../../lib/api";
+import { createRoom } from "./api";
 import { getLocations } from "../locations/api";
 import { Link } from "react-router-dom";
 
@@ -13,9 +13,9 @@ export function RoomSetup({ onClose }: { onClose?: () => void }) {
     const [seats, setSeats] = useState(6);
     const selectedOffice = office || String(offices.data?.[0]?.id ?? "");
     const create = useMutation({
-        mutationFn: () => apiFetch("/Rooms", { method: "POST", body: JSON.stringify({
+        mutationFn: () => createRoom({
             name: name.trim(), locationId: Number(selectedOffice), floor, seats,
-        }) }),
+        }),
         onSuccess: async () => {
             await client.invalidateQueries({ queryKey: ["rooms"] });
             onClose?.();
