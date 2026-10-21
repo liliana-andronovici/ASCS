@@ -1,5 +1,5 @@
-import { apiFetch } from "../../lib/api";
-import type { Employee, PagedResult, EmployeeQuery } from "./types";
+﻿import { apiFetch } from "../../lib/api";
+import type { Employee, EmployeeEquipment, PagedResult, EmployeeQuery } from "./types";
 
 export function getEmployees(query: EmployeeQuery = {}): Promise<PagedResult<Employee>> {
     const params = new URLSearchParams();
@@ -12,6 +12,22 @@ export function getEmployees(query: EmployeeQuery = {}): Promise<PagedResult<Emp
 
 export function getEmployeeById(id: number): Promise<Employee> {
     return apiFetch<Employee>(`/employees/${id}`);
+}
+
+export function getEmployeeEquipment(id: number): Promise<EmployeeEquipment[]> {
+    return apiFetch<EmployeeEquipment[]>(`/employees/${id}/equipment`);
+}
+
+export interface CreateEmployeeEquipmentInput {
+    equipmentId: number;
+    assignedOn: string;
+}
+
+export function addEmployeeEquipment(id: number, input: CreateEmployeeEquipmentInput): Promise<number> {
+    return apiFetch<number>(`/employees/${id}/equipment`, {
+        method: "POST",
+        body: JSON.stringify(input),
+    });
 }
 
 export interface CreateEmployeeInput {

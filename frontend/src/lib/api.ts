@@ -32,12 +32,10 @@ export async function apiFetch<T>(path: string, options?: ApiRequestOptions): Pr
     });
 
     if (!response.ok) {
-        // Clear an expired or invalid session and return to sign in.
         if (response.status === 401 && token &&
             headers.get("Authorization") === `Bearer ${token}` && clearToken(token)) {
             window.location.assign("/sign-in");
         }
-
         const text = await response.text().catch(() => "");
         throw new ApiError(response.status, text || response.statusText);
     }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, LogOut } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { User, LogIn, LogOut } from "lucide-react";
 import { useCurrentEmployee } from "./useCurrentEmployee";
 import { useLocalAvatar } from "./useLocalAvatar";
 import { clearToken, decodeToken, getToken } from "../../lib/sessions";
@@ -15,11 +16,12 @@ export function AccountMenu({ collapsed }: Props) {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const displayName = employee
         ? `${employee.firstName} ${employee.lastName}`
         : isLoading
           ? "Loading profile..."
-          : accountEmail || "Account unavailable";
+          : accountEmail || "Sign in";
     const initials = employee
         ? `${employee.firstName[0] ?? ""}${employee.lastName[0] ?? ""}`.toUpperCase()
         : accountEmail?.slice(0, 2).toUpperCase() || "?";
@@ -36,6 +38,7 @@ export function AccountMenu({ collapsed }: Props) {
 
     function handleSignOut() {
         clearToken();
+        queryClient.clear();
         setOpen(false);
         navigate("/sign-in");
     }
@@ -44,21 +47,35 @@ export function AccountMenu({ collapsed }: Props) {
         <div ref={ref} className="relative mt-auto border-t border-white/10 p-3">
             {open && (
                 <div className="absolute bottom-full left-3 mb-2 w-48 overflow-hidden rounded-md border border-gray-200 bg-white py-1 text-sm text-navy shadow-card">
-                    <button
-                        onClick={() => {
-                            setOpen(false);
-                            navigate("/settings");
-                        }}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
-                    >
-                        <User size={15} /> My profile
-                    </button>
-                    <button
-                        onClick={handleSignOut}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-red-600 hover:bg-gray-50"
-                    >
-                        <LogOut size={15} /> Sign out
-                    </button>
+                    {token ? (
+                        <>
+                            <button
+                                onClick={() => {
+                                    setOpen(false);
+                                    navigate("/settings/personal");
+                                }}
+                                className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
+                            >
+                                <User size={15} /> My profile
+                            </button>
+                            <button
+                                onClick={handleSignOut}
+                                className="flex w-full items-center gap-2 px-3 py-2 text-left text-red-600 hover:bg-gray-50"
+                            >
+                                <LogOut size={15} /> Sign out
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            onClick={() => {
+                                setOpen(false);
+                                navigate("/sign-in");
+                            }}
+                            className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
+                        >
+                            <LogIn size={15} /> Sign in
+                        </button>
+                    )}
                 </div>
             )}
 

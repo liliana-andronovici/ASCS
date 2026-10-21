@@ -1,12 +1,12 @@
-﻿type PageHeaderProps = { title: string; subtitle?: string };
+﻿import type { ReactNode } from "react";
 
-export function PageHeader({ title, subtitle }: PageHeaderProps) {
+type PageHeaderProps = { title: string; children?: ReactNode };
+
+export function PageHeader({ title, children }: PageHeaderProps) {
     return (
         <header className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-            <div className="flex items-baseline gap-3">
-                <h1 className="text-lg text-[24px] font-semibold text-navy">{title}</h1>
-                {subtitle && <span className="text-sm text-gray-400">{subtitle}</span>}
-            </div>
+            <h1 className="text-lg text-[24px] font-semibold text-navy">{title}</h1>
+            {children}
         </header>
     );
 }

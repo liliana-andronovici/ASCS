@@ -40,9 +40,11 @@ async function run(){
  request=async()=>({items:[employee(1),employee(1)],page:1,pageSize:100,totalCount:2});await assert.rejects(()=>api.getHomeEmployees());
  request=async()=>({items:[{...employee(1),startedOnUtc:'invalid'}],page:1,pageSize:100,totalCount:1});await assert.rejects(()=>api.getHomeEmployees());
  console.log('PASS empty directory is valid; incomplete, duplicate and malformed results fail');
- assert.equal(api.HOME_LEAVE_PATH,'/LeaveRequests');assert.equal(api.HOME_MEETINGS_PATH,'/RoomBookings');
- request=async route=>{const url=new URL(route,'http://test');assert.equal(url.pathname,'/RoomBookings');assert.equal(url.searchParams.get('fromUtc'),range.from);assert.equal(url.searchParams.get('toUtc'),range.to);return [{id:7,title:'Planning',roomName:'Loft',startDateTimeUtc:'2026-10-15T10:00:00.000Z',durationMinutes:30}];};
- const meetings=await api.getHomeMeetings(range.from,range.to);assert.equal(meetings.length,1);assert.equal(meetings[0].endUtc,'2026-10-15T10:30:00.000Z');assert.equal(meetings[0].location,'Meeting room · Loft');
- console.log('PASS dashboard defaults to backend leave and booking feeds; room bookings map into meetings');
+ assert.equal(api.HOME_LEAVE_PATH,'/TimeOff/out-today');assert.equal(api.HOME_MEETINGS_PATH,'/RoomBookings');
+ request=async route=>{const url=new URL(route,'http://test');assert.equal(url.pathname,'/TimeOff/out-today');assert.equal(url.searchParams.get('date'),'2026-10-15');return {count:2};};
+ assert.equal((await api.getHomeOutToday('2026-10-15')).count,2);
+ request=async route=>{const url=new URL(route,'http://test');assert.equal(url.pathname,'/RoomBookings');assert.equal(url.searchParams.get('fromUtc'),range.from);assert.equal(url.searchParams.get('toUtc'),range.to);return [{id:7,title:'Planning',roomName:'Loft',organizerEmployeeId:32,startDateTimeUtc:'2026-10-15T10:00:00.000Z',durationMinutes:30},{id:8,title:'Someone else',roomName:'Loft',organizerEmployeeId:2,startDateTimeUtc:'2026-10-15T11:00:00.000Z',durationMinutes:30}];};
+ const meetings=await api.getHomeMeetings(range.from,range.to,32);assert.equal(meetings.length,1);assert.equal(meetings[0].endUtc,'2026-10-15T10:30:00.000Z');assert.equal(meetings[0].location,'Meeting room · Loft');
+ console.log('PASS dashboard uses the time off count and room booking feeds');
 }
 run().catch(error=>{console.error(error);process.exitCode=1;});

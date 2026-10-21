@@ -2,7 +2,6 @@ import { z } from "zod";
 import { apiFetch } from "../../lib/api";
 import { bookingSchema, roomSchema, type CreateRoomBookingInput } from "./contract";
 
-// Paths are relative to the /api base URL and match RoomsController/RoomBookingsController.
 const ROOMS_PATH = (import.meta.env.VITE_ROOMS_API_PATH?.trim() || "/Rooms").replace(/\/+$/, "");
 const BOOKINGS_PATH = (import.meta.env.VITE_ROOM_BOOKINGS_API_PATH?.trim() || "/RoomBookings").replace(/\/+$/, "");
 export async function createRoom(input: Pick<z.infer<typeof roomSchema>, "name" | "locationId" | "floor" | "seats">): Promise<void> {
@@ -19,6 +18,5 @@ export async function getRoomBookings(fromUtc: string, toUtc: string, signal?: A
 }
 
 export async function createRoomBooking(input: CreateRoomBookingInput): Promise<void> {
-    // The created record is loaded from the list endpoint; POST may return an id, a record, or no body.
     await apiFetch<unknown>(BOOKINGS_PATH, { method: "POST", body: JSON.stringify(input) });
 }

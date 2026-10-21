@@ -136,7 +136,9 @@ export function RoomsSchedule({ rooms, officeSelector }: { rooms: Room[]; office
             setJustBooked(true);
             setDraftOpen(false);
             setTitle("");
-        } catch { /* The mutation error is displayed next to the booking form. */ }
+        } catch {
+            setJustBooked(false);
+        }
     }
 
     const roomFreePercent = useMemo(() => {

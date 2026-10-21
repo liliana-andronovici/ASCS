@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "../../components/Button";
-import { PageHeader } from "../../layout/PageHeader";
 import { ProfileTab } from "./ProfileTab";
 import { useLocalPreferences, type Preferences } from "./useLocalPreferences";
 
@@ -27,9 +26,8 @@ export default function SettingsPage() {
     const [tab, setTab] = useState<TabId>("profile");
 
     return (
-        <div>
-            <PageHeader title="Settings" subtitle="Manage your profile and how Infigo HR works for you." />
-            <div className="p-6">
+        <div className="p-6">
+            <p className="mb-4 text-sm text-gray-500">Manage your profile and preferences.</p>
                 <div className="flex overflow-hidden rounded-lg border border-gray-200 bg-white shadow-card">
                     <nav className="w-56 shrink-0 border-r border-gray-200 py-4">
                         {GROUPS.map((group) => (
@@ -60,7 +58,6 @@ export default function SettingsPage() {
                         {tab === "display" && <DisplayTab />}
                     </div>
                 </div>
-            </div>
         </div>
     );
 }
@@ -71,7 +68,6 @@ function SecurityTab() {
             <h2 className="text-lg font-semibold text-navy">Password & security</h2>
             <div className="rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-700">
                 Password changes and two-factor authentication are not available here yet.
-                The current backend only exposes sign-in and sign-up endpoints for authentication.
             </div>
             <div className="flex flex-col gap-1 opacity-50">
                 <label className="text-sm text-gray-700">Current password</label>
@@ -118,7 +114,7 @@ function ToggleRow({
 function LocalOnlyNote() {
     return (
         <div className="rounded-md bg-amber-50 px-4 py-2 text-sm text-amber-700">
-            These settings are saved only in this browser. The backend does not have an endpoint for them yet.
+            These preferences are saved only in this browser and are not applied across the app yet.
         </div>
     );
 }

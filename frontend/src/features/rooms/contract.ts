@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Matches RoomModel and RoomBookingModel returned by the ASCS Rooms API.
 export const roomSchema = z.object({
     id: z.number().int().positive(),
     name: z.string().min(1),

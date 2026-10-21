@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { getCurrentEmployeeId } from "../../lib/sessions";
 
 export interface Preferences {
     emailNotifications: boolean;
@@ -10,6 +11,10 @@ export interface Preferences {
 
 const KEY = "infigohr_preferences";
 
+function storageKey(): string {
+    return `${KEY}_${getCurrentEmployeeId() ?? "guest"}`;
+}
+
 const DEFAULTS: Preferences = {
     emailNotifications: true,
     timeOffAlerts: true,
@@ -20,21 +25,20 @@ const DEFAULTS: Preferences = {
 
 function load(): Preferences {
     try {
-        const raw = localStorage.getItem(KEY);
+        const raw = localStorage.getItem(storageKey());
         return raw ? { ...DEFAULTS, ...JSON.parse(raw) } : DEFAULTS;
     } catch {
         return DEFAULTS;
     }
 }
 
-// Preferences have no backend endpoint, so they are stored only in this browser.
 export function useLocalPreferences() {
     const [prefs, setPrefs] = useState<Preferences>(load);
 
     const update = useCallback(<K extends keyof Preferences>(key: K, value: Preferences[K]) => {
         setPrefs((prev) => {
             const next = { ...prev, [key]: value };
-            localStorage.setItem(KEY, JSON.stringify(next));
+            localStorage.setItem(storageKey(), JSON.stringify(next));
             return next;
         });
     }, []);

@@ -17,12 +17,12 @@ export function signIn(input: SignInInput): Promise<AuthResponse> {
 }
 
 export function requestPasswordReset(email: string): Promise<void> {
-    return apiFetch<void>("/auth/password-reset/request", { method: "POST", body: JSON.stringify({ email }) });
+    return apiFetch<void>("/auth/password-reset/request", { auth: "public", method: "POST", body: JSON.stringify({ email }) });
 }
 
 export function verifyPasswordReset(email: string, code: string): Promise<{ resetToken: string }> {
     return apiFetch<{ resetToken: string }>("/auth/password-reset/verify", {
-        method: "POST", body: JSON.stringify({ email, code }),
+        auth: "public", method: "POST", body: JSON.stringify({ email, code }),
     });
 }
 
@@ -32,7 +32,7 @@ export function completePasswordReset(input: {
     newPassword: string;
     confirmPassword: string;
 }): Promise<AuthResponse> {
-    return apiFetch<AuthResponse>("/auth/password-reset/complete", { method: "POST", body: JSON.stringify(input) });
+    return apiFetch<AuthResponse>("/auth/password-reset/complete", { auth: "public", method: "POST", body: JSON.stringify(input) });
 }
 
 export function verifyTwoFactor(input: {
@@ -40,5 +40,5 @@ export function verifyTwoFactor(input: {
     code?: string;
     recoveryCode?: string;
 }): Promise<AuthResponse> {
-    return apiFetch<AuthResponse>("/auth/two-factor/verify", { method: "POST", body: JSON.stringify(input) });
+    return apiFetch<AuthResponse>("/auth/two-factor/verify", { auth: "public", method: "POST", body: JSON.stringify(input) });
 }

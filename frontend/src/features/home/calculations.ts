@@ -38,7 +38,7 @@ export function buildUpcoming(employees: Employee[], now: Date, days = 45) {
         const years = next.getFullYear() - started.getFullYear();
         if (years >= 1 && next.getTime() <= limit) items.push({ id: `anniversary-${employee.id}`, date: next, what: `${years}-year work anniversary`, who: name });
     }
-    return items.sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 6);
+    return items.sort((a, b) => a.date.getTime() - b.date.getTime());
 }
 
 export function employeeStats(employees: Employee[], now: Date) {

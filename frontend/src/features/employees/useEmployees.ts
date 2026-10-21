@@ -1,5 +1,5 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { getEmployees, getEmployeeById } from "./api";
+﻿import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { getEmployeeById, getEmployees } from "./api";
 import type { EmployeeQuery } from "./types";
 
 export function useEmployees(query: EmployeeQuery = {}) {
@@ -20,8 +20,8 @@ export function useEmployeeDirectory() {
 
 export function useEmployeeById(id: number | null) {
     return useQuery({
-        queryKey: ["employees", "byId", id],
-        queryFn: () => getEmployeeById(id as number),
+        queryKey: ["employees", id],
+        queryFn: () => getEmployeeById(id!),
         enabled: id !== null,
     });
 }

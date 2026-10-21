@@ -12,7 +12,6 @@ export const homeEmployeePageSchema = z.object({
     page: z.number().int().positive(), pageSize: z.number().int().positive(),
 });
 
-// Optional dashboard feeds are proposed contracts, not endpoints in the current backend.
 export const leaveSchema = z.object({
     id: z.number().int().positive(), employeeId: z.number().int().positive(),
     startDateUtc: dateString, endDateUtc: dateString,

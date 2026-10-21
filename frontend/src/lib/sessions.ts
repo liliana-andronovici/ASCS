@@ -28,7 +28,7 @@ export function decodeToken(token: string): DecodedToken | null {
         const payload = token.split(".")[1];
         const json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
         const employeeId = Number(json.sub);
-        if (!employeeId || Number.isNaN(employeeId)) return null;
+        if (!Number.isInteger(employeeId) || employeeId <= 0) return null;
         return { employeeId, email: json.email ?? "" };
     } catch {
         return null;
@@ -44,18 +44,15 @@ export function getCurrentEmployeeId(): number | null {
 type Listener = () => void;
 const avatarListeners = new Set<Listener>();
 
-/**
- * Profile photos have no backend endpoint, so they are stored only in
- * this browser using localStorage. subscribeLocalAvatar lets the
- * sidebar (AccountMenu) update immediately when the photo changes in
- * Settings, without reloading the page.
- */
 export function getLocalAvatar(): string | null {
-    return localStorage.getItem(AVATAR_KEY);
+    const employeeId = getCurrentEmployeeId();
+    return employeeId === null ? null : localStorage.getItem(`${AVATAR_KEY}_${employeeId}`);
 }
 
 export function setLocalAvatar(dataUrl: string): void {
-    localStorage.setItem(AVATAR_KEY, dataUrl);
+    const employeeId = getCurrentEmployeeId();
+    if (employeeId === null) return;
+    localStorage.setItem(`${AVATAR_KEY}_${employeeId}`, dataUrl);
     avatarListeners.forEach((listen) => listen());
 }
 

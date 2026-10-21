@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import logoImage from "../assets/logo.svg";
+import { AccountMenu } from "../features/account/AccountMenu";
 import {
     ChevronRight,
     ChevronLeft,
@@ -11,13 +12,15 @@ import {
     Calendar,
     DoorClosed,
     UserPlus,
+    Laptop,
     Settings,
 } from "lucide-react";
-import { AccountMenu } from "../features/account/AccountMenu";
+
 
 const NAV_ITEMS = [
     { label: "Home", href: "/", icon: Home },
     { label: "People", href: "/people", icon: Users },
+    { label: "Assets", href: "/assets", icon: Laptop },
     { label: "Departments", href: "/departments", icon: Calendar },
     { label: "Locations", href: "/locations", icon: MapPin },
     { label: "Org Chart", href: "/orgChart", icon: Network },
@@ -56,8 +59,7 @@ export function Sidebar() {
                     const Icon = item.icon;
 
                     return (
-                        <NavLink
-                            to={item.href}
+                        <NavLink to={item.href}
                             key={item.href}
                             className={({ isActive }) => `flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm ${isActive ? "bg-white/15 text-white font-semibold" : "text-white/80 hover:bg-white/10"} ${collapsed ? "justify-center" : ""}`}
                             end={item.href === "/"}
@@ -69,7 +71,6 @@ export function Sidebar() {
                     );
                 })}
             </nav>
-
             <AccountMenu collapsed={collapsed} />
         </aside>
     );

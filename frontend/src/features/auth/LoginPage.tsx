@@ -28,7 +28,7 @@ export default function LoginPage() {
             completeAuthentication(response, navigate);
         } catch (error) {
             setError(error instanceof ApiError && error.status === 401
-                ? "Invalid email or password ."
+                ? "Invalid email or password."
                 : "Unable to sign in. Please try again.");
         } finally {
             setIsPending(false);

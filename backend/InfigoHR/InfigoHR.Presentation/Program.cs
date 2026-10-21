@@ -1,4 +1,3 @@
-using EvolveDb;
 using FluentValidation;
 using InfigoHR.Application;
 using InfigoHR.EmailService.Configuration;
@@ -14,6 +13,10 @@ using InfigoHR.Presentation.Middleware;
 using InfigoHR.EmailService.Services;
 using InfigoHR.Presentation;
 using Hangfire;
+using Hangfire.Dashboard;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +51,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHangfireDashboard("/hangfire");
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = [new DashboardBasicAuth(builder.Configuration)]
+});
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -61,3 +67,29 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+sealed class DashboardBasicAuth(IConfiguration configuration) : IDashboardAuthorizationFilter
+{
+    public bool Authorize(DashboardContext context)
+    {
+        var http = context.GetHttpContext();
+        var remote = http.Connection.RemoteIpAddress;
+        if (!http.Request.IsHttps && (remote is null ||
+            !IPAddress.IsLoopback(remote) &&
+            (!remote.IsIPv4MappedToIPv6 || !IPAddress.IsLoopback(remote.MapToIPv4()))))
+            return false;
+
+        var username = configuration["HangfireDashboard:Username"];
+        var password = configuration["HangfireDashboard:Password"];
+        var expected = Encoding.UTF8.GetBytes("Basic " + Convert.ToBase64String(
+            Encoding.UTF8.GetBytes($"{username}:{password}")));
+        var actual = Encoding.UTF8.GetBytes(http.Request.Headers["Authorization"].ToString());
+        if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrEmpty(password) &&
+            CryptographicOperations.FixedTimeEquals(actual, expected))
+            return true;
+
+        http.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        http.Response.Headers["WWW-Authenticate"] = "Basic realm=\"InfigoHR Hangfire\", charset=\"UTF-8\"";
+        return false;
+    }
+}
