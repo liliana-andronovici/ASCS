@@ -6,6 +6,7 @@ using InfigoHR.Domain.Common;
 using InfigoHR.Domain.Entities;
 using InfigoHR.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
+using InfigoHR.Application.Models;
 
 namespace InfigoHR.Persistence.Repositories;
 
@@ -38,6 +39,9 @@ public class EmployeeRepository
             employee => employee.Email == email,
             cancellationToken);
     }
+
+    public Task<bool> ExistsAsync(int id) =>
+        Entities.AnyAsync(employee => employee.Id == id);
 
     public async Task<PagedList<EmployeeEntity>> SearchAsync(
         EmployeeParameters query)
@@ -106,4 +110,21 @@ public class EmployeeRepository
                 ? employees.OrderByDescending(x => x.Id)
                 : employees.OrderBy(x => x.Id)
         };
+
+    public async Task<List<OnboardingEmployeeModel>> GetAllWithDepartmentAsync() =>
+        await Entities
+            .AsNoTracking()
+            .OrderBy(x => x.FirstName)
+            .ThenBy(x => x.LastName)
+            .ThenBy(x => x.Id)
+            .Select(x => new OnboardingEmployeeModel
+            {
+                Id = x.Id,
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                Title = x.Title,
+                Department = x.Department != null ? x.Department.Name : "—",
+                StartedOnUtc = x.StartedOnUtc
+            })
+            .ToListAsync();
 }

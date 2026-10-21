@@ -1,12 +1,9 @@
 import { NavLink, Outlet } from "react-router-dom";
 
 const sections = [
+    { label: "Personal", href: "/settings/personal" },
     { label: "Company", href: "/settings/company" },
     { label: "Roles & permissions", href: "/settings/roles-permissions" },
-    { label: "Time off policies", href: "/settings/time-off-policies" },
-    { label: "Authentication", href: "/settings/authentication" },
-    { label: "Integrations", href: "/settings/integrations" },
-    { label: "Billing", href: "/settings/billing" },
 ];
 
 export default function SettingsLayout() {

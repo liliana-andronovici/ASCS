@@ -19,17 +19,22 @@ public class JwtProvider: IJwtProvider
     public string Generate(
         int employeeId,
         string email,
-        IEnumerable<string> permissions)
+        IEnumerable<string> permissions,
+        IEnumerable<string> roles)
     {
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, employeeId.ToString()),
             new(JwtRegisteredClaimNames.Email, email)
         };
-        
+
         claims.AddRange(
             permissions.Distinct()
                 .Select(permission => new Claim("permissions", permission)));
+
+        claims.AddRange(
+            roles.Distinct()
+                .Select(role => new Claim("role", role)));
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_options.SecretKey));

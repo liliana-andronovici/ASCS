@@ -40,16 +40,6 @@ export default function LoginPage() {
             <h2 className="text-xl font-semibold text-navy">Sign in</h2>
             <p className="mb-6 text-sm text-gray-500">Use your work account.</p>
 
-            <Button variant="secondary" className="mb-4">
-                Continue with Google
-            </Button>
-
-            <div className="mb-4 flex items-center gap-3 text-xs text-gray-400">
-                <div className="h-px flex-1 bg-gray-200" />
-                OR
-                <div className="h-px flex-1 bg-gray-200" />
-            </div>
-
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <Input
                     id="email"

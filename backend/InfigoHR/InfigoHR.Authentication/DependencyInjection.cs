@@ -1,4 +1,5 @@
 using FluentValidation;
+using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Authentication.Interfaces;
 using InfigoHR.Authentication.Jwt;
 using InfigoHR.Authentication.Models;
@@ -24,6 +25,9 @@ public static class DependencyInjection
 
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<IAuthService, AuthService>();
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
 
         services.AddScoped<
             IPasswordHasher<AuthEntity>,
