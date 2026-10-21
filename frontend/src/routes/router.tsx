@@ -4,7 +4,6 @@ import { Navigate } from "react-router-dom";
 import { AuthLayer } from "../features/auth/AuthLayer";
 import {
     AcceptInvitePage,
-    MagicLinkPage,
     ResetPasswordPage,
     TwoFactorPage,
 } from "../features/auth/AuthFlowPages";
@@ -71,7 +70,6 @@ export const router = createBrowserRouter([
             { path: "accept-invite", element: <AcceptInvitePage /> },
             { path: "reset-password", element: <ResetPasswordPage /> },
             { path: "forgot-password", element: <Navigate to="/reset-password" replace /> },
-            { path: "magic-link", element: <MagicLinkPage /> },
         ],
     },
 ]);

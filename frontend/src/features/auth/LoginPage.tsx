@@ -92,9 +92,6 @@ export default function LoginPage() {
             </form>
 
             <Link to="/sign-up" className="mt-4 block text-center text-sm text-coral hover:underline">New here? Create an account</Link>
-            <Link to="/magic-link" className="mt-4 block text-center text-sm text-coral hover:underline">
-                Email me a magic link instead
-            </Link>
             <Link to="/two-factor" className="mt-3 block text-center text-sm text-gray-500 hover:underline">
                 Have a verification code?
             </Link>
