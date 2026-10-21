@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import logoImage from "../assets/logo.svg";
+import { AccountMenu } from "../features/account/AccountMenu";
 import {
     ChevronRight,
     ChevronLeft,
@@ -70,6 +71,7 @@ export function Sidebar() {
                     );
                 })}
             </nav>
+            <AccountMenu collapsed={collapsed} />
         </aside>
     );
 }

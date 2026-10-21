@@ -1,6 +1,7 @@
 using InfigoHR.Application.Common;
 using InfigoHR.Application.Exceptions;
 using InfigoHR.Application.Interfaces.Repositories;
+using InfigoHR.Application.Models;
 using InfigoHR.Application.Models.Employees;
 using InfigoHR.Application.QueryParameters.Employees;
 using InfigoHR.Domain.Common;
@@ -41,6 +42,9 @@ public class EmployeeRepository
             cancellationToken);
     }
 
+    public Task<bool> ExistsAsync(int id) =>
+        Entities.AnyAsync(employee => employee.Id == id);
+
     public async Task<PagedList<EmployeeEntity>> SearchAsync(
         EmployeeParameters query)
     {
@@ -78,9 +82,6 @@ public class EmployeeRepository
 
         return equipment.Id;
     }
-
-    public async Task<bool> EmailExistsAsync(string email) =>
-        await Entities.AnyAsync(x => x.Email == email);
 
     private static IQueryable<EmployeeEntity> ApplyFilters(
         IQueryable<EmployeeEntity> employees, EmployeeParameters query)
@@ -135,4 +136,20 @@ public class EmployeeRepository
                 ? employees.OrderByDescending(x => x.Id)
                 : employees.OrderBy(x => x.Id)
         };
+    public async Task<List<OnboardingEmployeeModel>> GetAllWithDepartmentAsync() =>
+        await Entities
+            .AsNoTracking()
+            .OrderBy(x => x.FirstName)
+            .ThenBy(x => x.LastName)
+            .ThenBy(x => x.Id)
+            .Select(x => new OnboardingEmployeeModel
+            {
+                Id = x.Id,
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                Title = x.Title,
+                Department = x.Department != null ? x.Department.Name : "—",
+                StartedOnUtc = x.StartedOnUtc
+            })
+            .ToListAsync();
 }

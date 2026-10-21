@@ -2,5 +2,9 @@ namespace InfigoHR.Authentication.Interfaces;
 
 public interface IJwtProvider
 {
-    string Generate(int employeeId, string email, IEnumerable<string> permissions);
+    string Generate(
+        int employeeId,
+        string email,
+        IEnumerable<string> permissions,
+        IEnumerable<string> roles);
 }

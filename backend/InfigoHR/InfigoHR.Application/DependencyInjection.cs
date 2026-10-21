@@ -14,6 +14,10 @@ public static class DependencyInjection
         services.AddScoped<IEquipmentTypeService, EquipmentTypeService>();
         services.AddScoped<IOrgChartService, OrgChartService>();
         services.AddScoped<IDepartmentService, DepartmentService>();
+        services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IPermissionService, PermissionService>();
+        services.AddScoped<IOnboardingService, OnboardingService>();
+        services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 

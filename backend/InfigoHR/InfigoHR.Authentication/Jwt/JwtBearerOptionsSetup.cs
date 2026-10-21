@@ -30,6 +30,8 @@ public class JwtBearerOptionsSetup : IConfigureNamedOptions<JwtBearerOptions>
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            RoleClaimType = "role",
+
             ValidateIssuer = true,
             ValidIssuer = _options.Issuer,
 
