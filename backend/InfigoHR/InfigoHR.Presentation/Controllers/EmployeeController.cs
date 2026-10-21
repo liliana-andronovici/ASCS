@@ -3,6 +3,7 @@ using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models.Employees;
 using InfigoHR.Presentation.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using InfigoHR.Application.QueryParameters.Employees;
 
 namespace InfigoHR.Presentation.Controllers;
@@ -40,6 +41,20 @@ public class EmployeeController(IEmployeeService service) : ControllerBase
         await using var stream = file.OpenReadStream();
         var result = await service.ImportCsvAsync(stream);
         return Ok(result);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{id:int}/equipment")]
+    public async Task<ActionResult<List<EmployeeEquipmentModel>>> GetEquipment(int id)
+    {
+        return Ok(await service.GetEquipmentAsync(id));
+    }
+
+    [AllowAnonymous]
+    [HttpPost("{id:int}/equipment")]
+    public async Task<ActionResult<int>> AddEquipment(int id, CreateEmployeeEquipmentModel model)
+    {
+        return Ok(await service.AddEquipmentAsync(id, model));
     }
 
     [HttpPost]

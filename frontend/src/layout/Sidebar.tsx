@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import logoImage from "../assets/logo.svg";
+import { AccountMenu } from "../features/account/AccountMenu";
 import {
     ChevronRight,
     ChevronLeft,
@@ -11,6 +12,7 @@ import {
     Calendar,
     DoorClosed,
     UserPlus,
+    Laptop,
     Settings,
 } from "lucide-react";
 
@@ -18,6 +20,7 @@ import {
 const NAV_ITEMS = [
     { label: "Home", href: "/", icon: Home },
     { label: "People", href: "/people", icon: Users },
+    { label: "Assets", href: "/assets", icon: Laptop },
     { label: "Departments", href: "/departments", icon: Calendar },
     { label: "Locations", href: "/locations", icon: MapPin },
     { label: "Org Chart", href: "/orgChart", icon: Network },
@@ -31,12 +34,12 @@ export function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);
 
     return (
-        <aside 
+        <aside
             className={`
             sticky top-0 h-screen bg-navy text-white flex flex-col transition-all duration-300 ease-in-out shrink-0 z-30 ${collapsed ? "w-16" : "w-52"}
             `}
         >
-            <div 
+            <div
                 className={`
                 flex items-center border-b border-white/20 p-4 h-16 ${collapsed ? "justify-center" : "justify-between"}
                 `}
@@ -68,6 +71,7 @@ export function Sidebar() {
                     );
                 })}
             </nav>
+            <AccountMenu collapsed={collapsed} />
         </aside>
     );
 }

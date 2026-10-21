@@ -1,11 +1,14 @@
 using InfigoHR.Application.Common;
+using InfigoHR.Application.Exceptions;
 using InfigoHR.Application.Interfaces.Repositories;
+using InfigoHR.Application.Models;
 using InfigoHR.Application.Models.Employees;
 using InfigoHR.Application.QueryParameters.Employees;
 using InfigoHR.Domain.Common;
 using InfigoHR.Domain.Entities;
 using InfigoHR.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace InfigoHR.Persistence.Repositories;
 
@@ -47,6 +50,9 @@ public class EmployeeRepository
             cancellationToken);
     }
 
+    public Task<bool> ExistsAsync(int id) =>
+        Entities.AnyAsync(employee => employee.Id == id);
+
     public async Task<PagedList<EmployeeEntity>> SearchAsync(
         EmployeeParameters query)
     {
@@ -58,8 +64,32 @@ public class EmployeeRepository
         return await employees.ToPagedListAsync(query.Page, query.PageSize);
     }
 
-    public async Task<bool> EmailExistsAsync(string email) =>
-        await Entities.AnyAsync(x => x.Email == email);
+    public Task<List<EmployeeEquipmentEntity>> GetEquipmentAsync(int employeeId) =>
+        Context.Set<EmployeeEquipmentEntity>()
+            .AsNoTracking()
+            .Include(assignment => assignment.Equipment)
+            .ThenInclude(equipment => equipment.EquipmentType)
+            .Where(equipment => equipment.EmployeeId == employeeId)
+            .OrderBy(equipment => equipment.ReturnedOnUtc != null)
+            .ThenByDescending(equipment => equipment.AssignedOnUtc)
+            .ToListAsync();
+
+    public async Task<int> AddEquipmentAsync(EmployeeEquipmentEntity equipment)
+    {
+        await Context.Set<EmployeeEquipmentEntity>().AddAsync(equipment);
+
+        try
+        {
+            await Context.SaveChangesAsync();
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException
+                   { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: "IX_EmployeeEquipment_ActiveAssignment" })
+        {
+            throw new ConflictException("This asset is already assigned to an employee.");
+        }
+
+        return equipment.Id;
+    }
 
     private static IQueryable<EmployeeEntity> ApplyFilters(
         IQueryable<EmployeeEntity> employees, EmployeeParameters query)
@@ -114,4 +144,20 @@ public class EmployeeRepository
                 ? employees.OrderByDescending(x => x.Id)
                 : employees.OrderBy(x => x.Id)
         };
+    public async Task<List<OnboardingEmployeeModel>> GetAllWithDepartmentAsync() =>
+        await Entities
+            .AsNoTracking()
+            .OrderBy(x => x.FirstName)
+            .ThenBy(x => x.LastName)
+            .ThenBy(x => x.Id)
+            .Select(x => new OnboardingEmployeeModel
+            {
+                Id = x.Id,
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                Title = x.Title,
+                Department = x.Department != null ? x.Department.Name : "—",
+                StartedOnUtc = x.StartedOnUtc
+            })
+            .ToListAsync();
 }
