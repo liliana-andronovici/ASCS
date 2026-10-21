@@ -79,6 +79,7 @@ public class AuthService : IAuthService
         var accessToken = _jwtProvider.Generate(
             employee.Id,
             employee.Email,
+            auth.TokenVersion,
             permissions,
             roles.Select(role => role.Name));
 

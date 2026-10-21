@@ -9,11 +9,13 @@
     <ItemGroup>
         <ProjectReference Include="..\InfigoHR.Domain\InfigoHR.Domain.csproj" />
         <ProjectReference Include="..\InfigoHR.Application\InfigoHR.Application.csproj" />
+        <ProjectReference Include="..\InfigoHR.EmailService\InfigoHR.EmailService.csproj" />
+        <ProjectReference Include="..\InfigoHR.EmailTemplates\InfigoHR.EmailTemplates.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
         <PackageReference Include="FluentValidation" Version="12.1.1" />
     </ItemGroup>
-    
+
 </Project>

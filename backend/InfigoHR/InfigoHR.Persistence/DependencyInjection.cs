@@ -17,6 +17,7 @@ public static class DependencyInjection
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
+        services.AddScoped<IAuthRepository, AuthRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IEquipmentRepository, EquipmentRepository>();
         services.AddScoped<IEquipmentTypeRepository, EquipmentTypeRepository>();

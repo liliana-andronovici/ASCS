@@ -8,6 +8,7 @@ using InfigoHR.Application.Services;
 using InfigoHR.Application.Validators.Locations;
 using InfigoHR.Authentication;
 using InfigoHR.Persistence;
+using InfigoHR.Presentation.Configurations;
 using InfigoHR.Persistence.Repositories;
 using InfigoHR.Presentation.Middleware;
 using InfigoHR.EmailService.Services;
@@ -38,7 +39,11 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateLocationModelValidato
 
 builder.Services.AddAuthenticationServices(builder.Configuration);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddRateLimiter(_ => { });
+builder.Services.ConfigureOptions<PasswordResetRateLimiterSetup>();
+
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddHangfireSetup(connectionString);
 
@@ -60,6 +65,9 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseCors(corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseHttpsRedirection();
+
+app.UseRouting();
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

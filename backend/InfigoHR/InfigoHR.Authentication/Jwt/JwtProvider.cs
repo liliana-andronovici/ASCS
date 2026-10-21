@@ -19,11 +19,13 @@ public class JwtProvider: IJwtProvider
     public string Generate(
         int employeeId,
         string email,
+        Guid tokenVersion,
         IEnumerable<string> permissions,
         IEnumerable<string> roles)
     {
         var claims = new List<Claim>
         {
+            new("token_version", tokenVersion.ToString()),
             new(JwtRegisteredClaimNames.Sub, employeeId.ToString()),
             new(JwtRegisteredClaimNames.Email, email)
         };

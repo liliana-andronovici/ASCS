@@ -1,7 +1,9 @@
 using Ardalis.GuardClauses;
+using System.Linq.Expressions;
 using InfigoHR.Application.Interfaces.Repositories;
 using InfigoHR.Domain.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace InfigoHR.Persistence.Repositories;
 
@@ -32,6 +34,16 @@ public class GenericRepository<TEntity>(AppDbContext dbContext) : IGenericReposi
         entity.UpdatedOnUtc = DateTime.UtcNow;
         Entities.Update(entity);
         await Context.SaveChangesAsync();
+    }
+
+    protected Task<int> UpdateAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        Action<UpdateSettersBuilder<TEntity>> setProperties,
+        CancellationToken cancellationToken = default)
+    {
+        return Entities
+            .Where(predicate)
+            .ExecuteUpdateAsync(setProperties, cancellationToken);
     }
 
     public async Task DeleteAsync(TEntity entity)

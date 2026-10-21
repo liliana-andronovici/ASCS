@@ -18,5 +18,7 @@ public class AuthEntityTypeConfiguration : IEntityTypeConfiguration<AuthEntity>
             .HasForeignKey<AuthEntity>(x => x.EmployeeId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
+        builder.Property(auth => auth.ResetCodeHash).HasMaxLength(64);
+        builder.Property(auth => auth.ConcurrencyVersion).IsConcurrencyToken();
     }
 }
