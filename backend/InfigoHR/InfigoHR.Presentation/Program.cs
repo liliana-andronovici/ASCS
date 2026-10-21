@@ -41,6 +41,9 @@ builder.Services.AddAuthenticationServices(builder.Configuration);
 
 builder.Services.AddRateLimiter(_ => { });
 builder.Services.ConfigureOptions<PasswordResetRateLimiterSetup>();
+builder.Services.ConfigureOptions<TwoFactorRateLimiterSetup>();
+
+builder.Services.AddInfigoDataProtection(builder.Configuration, builder.Environment);
 
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection");

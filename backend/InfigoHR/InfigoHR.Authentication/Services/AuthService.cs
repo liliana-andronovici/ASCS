@@ -13,20 +13,20 @@ public class AuthService : IAuthService
 {
     private readonly IEmployeeRepository _repository;
     private readonly IPasswordHasher<AuthEntity> _passwordHasher;
-    private readonly IJwtProvider _jwtProvider;
+    private readonly ISignInCompletionService _signInCompletion;
     private readonly IValidator<SignInRequest> _signInValidator;
     private readonly IValidator<SignUpRequest> _signUpValidator;
 
     public AuthService(
         IEmployeeRepository repository,
         IPasswordHasher<AuthEntity> passwordHasher,
-        IJwtProvider jwtProvider,
+        ISignInCompletionService signInCompletion,
         IValidator<SignInRequest> signInValidator,
         IValidator<SignUpRequest> signUpValidator)
     {
         _repository = repository;
         _passwordHasher = passwordHasher;
-        _jwtProvider = jwtProvider;
+        _signInCompletion = signInCompletion;
         _signInValidator = signInValidator;
         _signUpValidator = signUpValidator;
     }
@@ -70,23 +70,9 @@ public class AuthService : IAuthService
             return null;
         }
 
-        var roles = employee.Roles;
-
-        var permissions = roles
-            .SelectMany(role => role.Permissions)
-            .Select(permission => permission.Name);
-
-        var accessToken = _jwtProvider.Generate(
-            employee.Id,
-            employee.Email,
-            auth.TokenVersion,
-            permissions,
-            roles.Select(role => role.Name));
-
-        return new AuthResponse
-        {
-            AccessToken = accessToken
-        };
+        return await _signInCompletion.CompleteAsync(
+            employee,
+            cancellationToken);
     }
 
     public async Task SignUpAsync(

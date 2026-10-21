@@ -5,7 +5,7 @@ namespace InfigoHR.Authentication.Exceptions;
 
 public class PasswordResetException : ValidationException
 {
-    private PasswordResetException(string propertyName, string message) 
+    private PasswordResetException(string propertyName, string message)
         : base(new[]
         {
             new ValidationFailure(propertyName, message)

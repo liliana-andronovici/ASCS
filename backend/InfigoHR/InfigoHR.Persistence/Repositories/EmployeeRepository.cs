@@ -26,6 +26,7 @@ public class EmployeeRepository
         return Entities
             .AsNoTracking()
             .Include(employee => employee.Auth)
+            .Include(employee => employee.TwoFactorAuth)
             .Include(employee => employee.Roles)
             .ThenInclude(role => role.Permissions)
             .SingleOrDefaultAsync(
@@ -56,7 +57,6 @@ public class EmployeeRepository
         return await employees.ToPagedListAsync(query.Page, query.PageSize);
     }
 
-<<<<<<< HEAD
     public Task<List<EmployeeEquipmentEntity>> GetEquipmentAsync(int employeeId) =>
         Context.Set<EmployeeEquipmentEntity>()
             .AsNoTracking()
@@ -84,12 +84,6 @@ public class EmployeeRepository
         return equipment.Id;
     }
 
-||||||| parent of 97bc4fd (Merge pull request #19 from infigomd/refactor/reset-password)
-    public async Task<bool> EmailExistsAsync(string email) =>
-        await Entities.AnyAsync(x => x.Email == email);
-
-=======
->>>>>>> 97bc4fd (Merge pull request #19 from infigomd/refactor/reset-password)
     private static IQueryable<EmployeeEntity> ApplyFilters(
         IQueryable<EmployeeEntity> employees, EmployeeParameters query)
     {

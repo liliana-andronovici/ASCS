@@ -58,11 +58,6 @@ public class JwtBearerOptionsSetup : IConfigureNamedOptions<JwtBearerOptions>
             OnTokenValidated = ValidateSessionAsync
         };
     }
-<<<<<<< HEAD
-}
-||||||| parent of 97bc4fd (Merge pull request #19 from infigomd/refactor/reset-password)
-}
-=======
 
     private static async Task ValidateSessionAsync(
         TokenValidatedContext context)
@@ -94,4 +89,3 @@ public class JwtBearerOptionsSetup : IConfigureNamedOptions<JwtBearerOptions>
         }
     }
 }
->>>>>>> 97bc4fd (Merge pull request #19 from infigomd/refactor/reset-password)

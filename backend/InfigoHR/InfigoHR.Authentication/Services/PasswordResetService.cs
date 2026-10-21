@@ -17,7 +17,7 @@ public class PasswordResetService : IPasswordResetService
     private readonly IEmployeeRepository _repository;
     private readonly IPasswordResetTokenProvider _tokenProvider;
     private readonly IPasswordHasher<AuthEntity> _passwordHasher;
-    private readonly IJwtProvider _jwtProvider;
+    private readonly ISignInCompletionService _signInCompletion;
     private readonly IPasswordResetEmailService _emailService;
     private readonly PasswordResetOptions _options;
     private readonly IValidator<RequestPasswordResetRequest> _requestValidator;
@@ -29,7 +29,7 @@ public class PasswordResetService : IPasswordResetService
         IEmployeeRepository repository,
         IPasswordResetTokenProvider tokenProvider,
         IPasswordHasher<AuthEntity> passwordHasher,
-        IJwtProvider jwtProvider,
+        ISignInCompletionService signInCompletion,
         IPasswordResetEmailService emailService,
         IOptions<PasswordResetOptions> options,
         IValidator<RequestPasswordResetRequest> requestValidator,
@@ -40,7 +40,7 @@ public class PasswordResetService : IPasswordResetService
         _repository = repository;
         _tokenProvider = tokenProvider;
         _passwordHasher = passwordHasher;
-        _jwtProvider = jwtProvider;
+        _signInCompletion = signInCompletion;
         _emailService = emailService;
         _options = options.Value;
         _requestValidator = requestValidator;
@@ -202,16 +202,6 @@ public class PasswordResetService : IPasswordResetService
 
         ApplyPasswordChange(auth, request.NewPassword);
 
-        var permissions = employee.Roles
-            .SelectMany(role => role.Permissions)
-            .Select(permission => permission.Name);
-
-        var accessToken = _jwtProvider.Generate(
-            employee.Id,
-            employee.Email,
-            auth.TokenVersion,
-            permissions);
-
         var saved = await TrySaveAuthenticationAsync(auth, cancellationToken);
 
         if (!saved)
@@ -223,10 +213,9 @@ public class PasswordResetService : IPasswordResetService
             employee.Email,
             cancellationToken);
 
-        return new AuthResponse
-        {
-            AccessToken = accessToken
-        };
+        return await _signInCompletion.CompleteAsync(
+            employee,
+            cancellationToken);
     }
 
     private void ApplyPasswordChange(AuthEntity auth, string newPassword)

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace InfigoHR.Presentation.Controllers;
 
 [ApiController]
+[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 [AllowAnonymous]
 [Route("api/auth/password-reset")]
 [EnableRateLimiting("password-reset")]

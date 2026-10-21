@@ -2,10 +2,12 @@ using InfigoHR.Authentication.Interfaces;
 using InfigoHR.Authentication.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace InfigoHR.Presentation.Controllers;
 
 [ApiController]
+[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 [Authorize]
 [Route("api/auth")]
 public class AuthController : ControllerBase
@@ -19,6 +21,7 @@ public class AuthController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("sign-in")]
+    [EnableRateLimiting("two-factor")]
     public async Task<ActionResult<AuthResponse>> SignIn(
         SignInRequest request,
         CancellationToken cancellationToken)

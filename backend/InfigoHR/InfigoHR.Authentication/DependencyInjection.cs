@@ -88,18 +88,43 @@ public static class DependencyInjection
         services.AddScoped<
             IValidator<CompletePasswordResetRequest>,
             CompletePasswordResetRequestValidator>();
-        
+
         services.AddScoped<
             IPasswordResetEmailService,
             PasswordResetEmailService>();
-        
+
+        services.AddOptions<TwoFactorOptions>()
+            .Bind(configuration.GetSection(nameof(TwoFactorOptions)));
+        services.AddDataProtection();
+
+        services.AddScoped<
+            ITwoFactorTokenProvider,
+            TwoFactorTokenProvider>();
+
+        services.AddScoped<
+            ISignInCompletionService,
+            SignInCompletionService>();
+
+        services.AddScoped<ITwoFactorService, TwoFactorService>();
+        services.AddScoped<
+            IValidator<TwoFactorSetupRequest>,
+            TwoFactorSetupRequestValidator>();
+
+        services.AddScoped<
+            IValidator<TwoFactorEnableRequest>,
+            TwoFactorEnableRequestValidator>();
+
+        services.AddScoped<
+            IValidator<TwoFactorChallengeRequest>,
+            TwoFactorChallengeRequestValidator>();
+
+        services.AddScoped<
+            IValidator<TwoFactorManagementRequest>,
+            TwoFactorManagementRequestValidator>();
+
+
         return services;
     }
-<<<<<<< HEAD
-}
-||||||| parent of 97bc4fd (Merge pull request #19 from infigomd/refactor/reset-password)
-}
-=======
 
     private static bool HasValidCodeHashKey(PasswordResetOptions options)
     {
@@ -118,4 +143,3 @@ public static class DependencyInjection
         }
     }
 }
->>>>>>> 97bc4fd (Merge pull request #19 from infigomd/refactor/reset-password)
