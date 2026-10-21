@@ -14,7 +14,7 @@ export default {
                 lg: "16px",
             },
             fontFamily: {
-                sans: ["Plus Jakarta Sans", "sans-serif"],
+                sans: ["Plus Jakarta Sans Variable", "sans-serif"],
             },
             boxShadow: {
                 card: "0 1px 3px rgba(14, 42, 59, 0.08)",  

@@ -12,4 +12,7 @@ public interface IRoleService
     Task SetPermissionsAsync(SetRolePermissionsModel model);
     Task AddPermissionAsync(RolePermissionModel model);
     Task RemovePermissionAsync(RolePermissionModel model);
+    Task<List<RoleEmployeeModel>> GetEmployeesAsync(int roleId);
+    Task AddEmployeeAsync(int roleId, int employeeId);
+    Task RemoveEmployeeAsync(int roleId, int employeeId);
 }

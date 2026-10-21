@@ -18,7 +18,7 @@ public class OnboardingRepository(AppDbContext dbContext)
             .Include(x => x.Buddy)
             .Include(x => x.Tasks)
             .FirstOrDefaultAsync(x => x.EmployeeId == employeeId);
-    
+
     public async Task<List<OnboardingEntity>> GetAllWithDetailsAsync() =>
         await Entities.Include(x => x.Tasks).ToListAsync();
 }

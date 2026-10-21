@@ -5,11 +5,12 @@ namespace InfigoHR.Application.Mappers;
 
 public static class RoleMapper
 {
-    public static RoleModel ToModel(RoleEntity entity) =>
+    public static RoleModel ToModel(RoleEntity entity, int employeeCount) =>
         new()
         {
             Id = entity.Id,
             Name = entity.Name,
+            EmployeeCount = employeeCount,
             Permissions = entity.Permissions.Select(p => p.Name).OrderBy(n => n).ToList()
         };
 

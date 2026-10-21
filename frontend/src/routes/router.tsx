@@ -5,6 +5,9 @@ import { AuthLayer } from "../features/auth/AuthLayer";
 import LoginPage from "../features/auth/LoginPage";
 import HomePage from "../pages/HomePage";
 import PeoplePage from "../features/employees/PeoplePage";
+import RolesPermissionsPage from "../features/roles/RolesPermissionsPage";
+import SettingsLayout from "../features/settings/SettingsLayout";
+import CompanySettingsPage from "../features/settings/CompanySettingsPage";
 import TimeOffPage from "../features/timeoff/TimeOffPage";
 import OnboardingPage from "../features/onboarding/OnboardingPage";
 import OnboardingListPage from "../features/onboarding/OnboardingListPage";
@@ -27,7 +30,16 @@ export const router = createBrowserRouter([
             { path: "orgChart", element: <OrgChartPage /> },
             { path: "timeOff", element: <TimeOffPage /> },
             { path: "rooms", element: <RoomsPage /> },
-            { path: "settings", element: <SettingsPage /> },
+            {
+                path: "settings",
+                element: <SettingsLayout />,
+                children: [
+                    { index: true, element: <Navigate to="personal" replace /> },
+                    { path: "personal", element: <SettingsPage /> },
+                    { path: "company", element: <CompanySettingsPage /> },
+                    { path: "roles-permissions", element: <RolesPermissionsPage /> },
+                ],
+            },
             { path: "onboarding", element: <OnboardingListPage /> },
             { path: "onboarding/team", element: <Navigate to="/onboarding" replace /> },
             { path: "onboarding/:employeeId", element: <OnboardingPage /> },

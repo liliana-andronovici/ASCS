@@ -10,6 +10,7 @@ namespace InfigoHR.Application.Services;
 
 public class RoleService(
     IRoleRepository roleRepository,
+    IEmployeeRepository employeeRepository,
     IPermissionRepository permissionRepository,
     IValidator<CreateRoleModel> createValidator,
     IValidator<UpdateRoleModel> updateValidator,
@@ -19,7 +20,9 @@ public class RoleService(
     public async Task<List<RoleModel>> GetAllAsync()
     {
         var roles = await roleRepository.GetAllWithPermissionsAsync();
-        return roles.Select(RoleMapper.ToModel).ToList();
+        var employeeCounts = await roleRepository.GetEmployeeCountsAsync();
+        return roles.Select(role =>
+            RoleMapper.ToModel(role, employeeCounts.GetValueOrDefault(role.Id))).ToList();
     }
 
     public async Task<int> GetIdByNameAsync(string name)
@@ -125,6 +128,49 @@ public class RoleService(
                 $"Role '{role.Name}' does not have permission '{permission.Name}'.");
 
         role.Permissions.Remove(rolePermission);
+        await roleRepository.UpdateAsync(role);
+    }
+
+    public async Task<List<RoleEmployeeModel>> GetEmployeesAsync(int roleId)
+    {
+        var role = await roleRepository.GetWithEmployeesAsync(roleId)
+            ?? throw new NotFoundException($"Role with id {roleId} was not found.");
+
+        return role.Employees
+            .OrderBy(employee => employee.LastName)
+            .ThenBy(employee => employee.FirstName)
+            .Select(employee => new RoleEmployeeModel
+            {
+                Id = employee.Id,
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                Email = employee.Email
+            })
+            .ToList();
+    }
+
+    public async Task AddEmployeeAsync(int roleId, int employeeId)
+    {
+        var role = await roleRepository.GetWithEmployeesAsync(roleId)
+            ?? throw new NotFoundException($"Role with id {roleId} was not found.");
+        var employee = await employeeRepository.GetByIdAsync(employeeId)
+            ?? throw new NotFoundException($"Employee with id {employeeId} was not found.");
+
+        if (role.Employees.Any(item => item.Id == employeeId))
+            throw new ConflictException("This employee already has the role.");
+
+        role.Employees.Add(employee);
+        await roleRepository.UpdateAsync(role);
+    }
+
+    public async Task RemoveEmployeeAsync(int roleId, int employeeId)
+    {
+        var role = await roleRepository.GetWithEmployeesAsync(roleId)
+            ?? throw new NotFoundException($"Role with id {roleId} was not found.");
+        var employee = role.Employees.FirstOrDefault(item => item.Id == employeeId)
+            ?? throw new NotFoundException("This employee does not have the role.");
+
+        role.Employees.Remove(employee);
         await roleRepository.UpdateAsync(role);
     }
 

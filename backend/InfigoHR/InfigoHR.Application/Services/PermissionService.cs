@@ -47,6 +47,9 @@ public class PermissionService(
         var permission = await repository.GetByIdAsync(model.Id)
             ?? throw new NotFoundException($"Permission with id {model.Id} was not found.");
 
+        if (permission.Name == "ManageRoles")
+            throw new ConflictException("ManageRoles cannot be renamed.");
+
         var existing = await repository.GetByNameAsync(model.Name);
         if (existing != null && existing.Id != model.Id)
         {
@@ -61,6 +64,9 @@ public class PermissionService(
     {
         var permission = await repository.GetByIdAsync(id)
             ?? throw new NotFoundException($"Permission with id {id} was not found.");
+
+        if (permission.Name == "ManageRoles")
+            throw new ConflictException("ManageRoles cannot be deleted.");
 
         await repository.DeleteAsync(permission);
     }
