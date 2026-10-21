@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build
 WORKDIR /src
 COPY . .
-RUN dotnet restore InfigoHR.sln
-RUN dotnet publish InfigoHR.Presentation/InfigoHR.Presentation.csproj -c Release -o /app/publish
+RUN dotnet restore InfigoHR.sln /p:NuGetAudit=false
+RUN dotnet publish InfigoHR.Presentation/InfigoHR.Presentation.csproj -c Release -o /app/publish /p:NuGetAudit=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS final
 WORKDIR /app
