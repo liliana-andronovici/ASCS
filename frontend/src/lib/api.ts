@@ -1,4 +1,5 @@
-const BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
+const BASE_URL = import.meta.env.VITE_API_URL ??
+    (import.meta.env.PROD ? "https://ascs-bk.onrender.com/api" : "/api");
 
 export class ApiError extends Error {
     status: number;
@@ -9,9 +10,19 @@ export class ApiError extends Error {
 }
 
 export async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
+    const headers = new Headers(options?.headers);
+    if (!headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+    }
+
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken && !headers.has("Authorization")) {
+        headers.set("Authorization", "Bearer " + accessToken);
+    }
+
     const response = await fetch(`${BASE_URL}${path}`, {
-        headers: { "Content-Type": "application/json", ...options?.headers },
         ...options,
+        headers,
     });
 
     if (!response.ok) {
