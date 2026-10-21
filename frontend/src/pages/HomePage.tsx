@@ -4,12 +4,6 @@ import { useHomeData } from "../features/home/useHomeData";
 import { buildMeetingsWeek, useMeetingsThisWeek, useUpcomingMeetings } from "../features/home/useMeetings";
 import { useUpcomingOnboardingTasks } from "../features/onboarding/useOnboarding";
 
-function getGreeting(hour: number): string {
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
-}
-
 function formatTime(iso: string): string {
     return new Date(iso).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
@@ -23,7 +17,7 @@ function Stat({ label, value, hint }: { label: string; value: string | number; h
 }
 
 export default function HomePage() {
-    const { id: employeeId, employee } = useCurrentEmployee();
+    const { id: employeeId } = useCurrentEmployee();
     const home = useHomeData();
     const meetings = useMeetingsThisWeek(home.now, employeeId);
     const upcomingMeetings = useUpcomingMeetings(home.now, employeeId);
@@ -58,7 +52,7 @@ export default function HomePage() {
         <div className="flex h-full flex-col">
             <header className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-6 py-4">
                 <div className="flex flex-wrap items-baseline gap-3">
-                    <h1 className="text-[24px] font-semibold text-navy">{getGreeting(home.now.getHours())}, {employee?.firstName ?? "there"}</h1>
+                    <h1 className="text-[24px] font-semibold text-navy">Home</h1>
                     <span className="text-sm text-gray-400">{dateLabel}</span>
                 </div>
                 <Link to="/people" className="rounded-md bg-coral px-4 py-2 text-sm font-semibold text-white hover:opacity-90">View people</Link>

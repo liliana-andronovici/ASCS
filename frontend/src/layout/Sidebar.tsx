@@ -34,12 +34,12 @@ export function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);
 
     return (
-        <aside 
+        <aside
             className={`
             sticky top-0 h-screen bg-navy text-white flex flex-col transition-all duration-300 ease-in-out shrink-0 z-30 ${collapsed ? "w-16" : "w-52"}
             `}
         >
-            <div 
+            <div
                 className={`
                 flex items-center border-b border-white/20 p-4 h-16 ${collapsed ? "justify-center" : "justify-between"}
                 `}

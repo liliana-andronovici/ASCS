@@ -1,4 +1,4 @@
-﻿import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createEmployee, updateEmployee, deleteEmployee } from "./api";
 import type { CreateEmployeeInput, UpdateEmployeeInput } from "./api";
 

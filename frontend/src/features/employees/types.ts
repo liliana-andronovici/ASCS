@@ -1,4 +1,4 @@
-﻿export type EmployeeStatus = "Active" | "Inactive";
+export type EmployeeStatus = "Active" | "Inactive";
 
 export interface Employee {
     id: number;
