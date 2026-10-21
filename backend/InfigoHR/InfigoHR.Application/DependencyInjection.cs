@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<IPermissionService, PermissionService>();
         services.AddScoped<IOnboardingService, OnboardingService>();
         services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+        services.AddScoped<IRoomService, RoomService>();
 
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
