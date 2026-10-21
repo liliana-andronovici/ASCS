@@ -11,26 +11,30 @@ export class ApiError extends Error {
     }
 }
 
-export async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
-    const headers = new Headers(options?.headers);
+type ApiRequestOptions = RequestInit & { auth?: "session" | "public" };
+
+export async function apiFetch<T>(path: string, options?: ApiRequestOptions): Promise<T> {
+    const { auth = "session", ...requestOptions } = options ?? {};
+    const headers = new Headers(requestOptions.headers);
     if (!headers.has("Content-Type")) {
         headers.set("Content-Type", "application/json");
     }
 
-    const token = getToken();
+    const token = auth === "session" ? getToken() : null;
+    if (auth === "public") headers.delete("Authorization");
     if (token && !headers.has("Authorization")) {
         headers.set("Authorization", `Bearer ${token}`);
     }
 
     const response = await fetch(`${BASE_URL}/${path.replace(/^\/+/, "")}`, {
-        ...options,
+        ...requestOptions,
         headers,
     });
 
     if (!response.ok) {
         // Clear an expired or invalid session and return to sign in.
-        if (response.status === 401 && token) {
-            clearToken();
+        if (response.status === 401 && token &&
+            headers.get("Authorization") === `Bearer ${token}` && clearToken(token)) {
             window.location.assign("/sign-in");
         }
 
