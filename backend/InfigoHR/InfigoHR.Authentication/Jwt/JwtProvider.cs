@@ -27,11 +27,11 @@ public class JwtProvider: IJwtProvider
             new(JwtRegisteredClaimNames.Sub, employeeId.ToString()),
             new(JwtRegisteredClaimNames.Email, email)
         };
-        
+
         claims.AddRange(
             permissions.Distinct()
                 .Select(permission => new Claim("permissions", permission)));
-        
+
         claims.AddRange(
             roles.Distinct()
                 .Select(role => new Claim("role", role)));
