@@ -12,6 +12,7 @@ import {
     Calendar,
     DoorClosed,
     UserPlus,
+    Laptop,
     Settings,
 } from "lucide-react";
 
@@ -19,6 +20,7 @@ import {
 const NAV_ITEMS = [
     { label: "Home", href: "/", icon: Home },
     { label: "People", href: "/people", icon: Users },
+    { label: "Assets", href: "/assets", icon: Laptop },
     { label: "Departments", href: "/departments", icon: Calendar },
     { label: "Locations", href: "/locations", icon: MapPin },
     { label: "Org Chart", href: "/orgChart", icon: Network },

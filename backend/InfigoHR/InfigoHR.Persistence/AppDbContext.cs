@@ -10,6 +10,9 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<EmployeeEntity> Employees => Set<EmployeeEntity>();
+    public DbSet<EquipmentEntity> Equipment => Set<EquipmentEntity>();
+    public DbSet<EquipmentTypeEntity> EquipmentTypes => Set<EquipmentTypeEntity>();
+    public DbSet<EmployeeEquipmentEntity> EmployeeEquipment => Set<EmployeeEquipmentEntity>();
     public DbSet<DepartmentEntity> Departments => Set<DepartmentEntity>();
     public DbSet<LocationEntity> Locations => Set<LocationEntity>();
     public DbSet<LeaveRequestEntity> LeaveRequests => Set<LeaveRequestEntity>();

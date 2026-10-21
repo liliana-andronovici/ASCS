@@ -5,6 +5,8 @@ import { AuthLayer } from "../features/auth/AuthLayer";
 import LoginPage from "../features/auth/LoginPage";
 import HomePage from "../pages/HomePage";
 import PeoplePage from "../features/employees/PeoplePage";
+import EmployeeProfilePage from "../features/employees/EmployeeProfilePage";
+import EquipmentPage from "../features/equipment/EquipmentPage";
 import RolesPermissionsPage from "../features/roles/RolesPermissionsPage";
 import SettingsLayout from "../features/settings/SettingsLayout";
 import CompanySettingsPage from "../features/settings/CompanySettingsPage";
@@ -25,6 +27,9 @@ export const router = createBrowserRouter([
         children: [
             { index: true, element: <HomePage /> },
             { path: "people", element: <PeoplePage /> },
+            { path: "people/:employeeId", element: <EmployeeProfilePage /> },
+            { path: "assets", element: <EquipmentPage /> },
+            { path: "equipment", element: <Navigate to="/assets" replace /> },
             { path: "departments", element: <DepartmentsPage /> },
             { path: "locations", element: <LocationsPage /> },
             { path: "orgChart", element: <OrgChartPage /> },

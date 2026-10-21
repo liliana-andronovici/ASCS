@@ -13,6 +13,8 @@ public interface IEmployeeRepository : IGenericRepository<EmployeeEntity>
 
     Task<PagedList<EmployeeEntity>> SearchAsync(EmployeeParameters query);
 
+    Task<List<EmployeeEquipmentEntity>> GetEquipmentAsync(int employeeId);
+    Task<int> AddEquipmentAsync(EmployeeEquipmentEntity equipment);
     Task<List<OnboardingEmployeeModel>> GetAllWithDepartmentAsync();
     Task<bool> ExistsAsync(int id);
 
