@@ -1,4 +1,4 @@
-﻿export type EmployeeStatus = "Active" | "Inactive";
+export type EmployeeStatus = "Active" | "Inactive";
 
 export interface Employee {
     id: number;
@@ -11,6 +11,16 @@ export interface Employee {
     locationId: number | null;
     managerId: number | null;
     status: EmployeeStatus;
+}
+
+export interface EmployeeEquipment {
+    id: number;
+    equipmentId: number;
+    name: string;
+    code: string;
+    typeName: string;
+    assignedOnUtc: string;
+    returnedOnUtc: string | null;
 }
 
 export interface PagedResult<T> {

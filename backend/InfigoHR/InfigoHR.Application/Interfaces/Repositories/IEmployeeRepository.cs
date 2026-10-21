@@ -1,6 +1,7 @@
 using InfigoHR.Application.QueryParameters.Employees;
 using InfigoHR.Domain.Common;
 using InfigoHR.Domain.Entities;
+using InfigoHR.Application.Models;
 
 namespace InfigoHR.Application.Interfaces.Repositories;
 
@@ -11,6 +12,11 @@ public interface IEmployeeRepository : IGenericRepository<EmployeeEntity>
         CancellationToken cancellationToken = default);
 
     Task<PagedList<EmployeeEntity>> SearchAsync(EmployeeParameters query);
+
+    Task<List<EmployeeEquipmentEntity>> GetEquipmentAsync(int employeeId);
+    Task<int> AddEquipmentAsync(EmployeeEquipmentEntity equipment);
+    Task<List<OnboardingEmployeeModel>> GetAllWithDepartmentAsync();
+    Task<bool> ExistsAsync(int id);
 
     Task<bool> EmailExistsAsync(
         string email,
