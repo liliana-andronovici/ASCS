@@ -1,8 +1,12 @@
 import { apiFetch } from "../../lib/api";
-import type { AddTaskInput, OnboardingChecklist, OnboardingSummary } from "./types";
+import type { AddTaskInput, OnboardingChecklist, OnboardingSummary, UpcomingOnboardingTask } from "./types";
 
 export function getSummaries(): Promise<OnboardingSummary[]> {
     return apiFetch<OnboardingSummary[]>("/Onboarding");
+}
+
+export function getUpcomingTasks(): Promise<UpcomingOnboardingTask[]> {
+    return apiFetch<UpcomingOnboardingTask[]>("/Onboarding/upcoming");
 }
 
 export function getChecklistFor(employeeId: number): Promise<OnboardingChecklist> {

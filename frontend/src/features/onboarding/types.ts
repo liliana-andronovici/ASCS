@@ -44,3 +44,10 @@ export interface OnboardingSummary {
     totalTaskCount: number;
     isComplete: boolean;
 }
+
+export interface UpcomingOnboardingTask {
+    id: number;
+    employeeId: number;
+    title: string;
+    dueDate: string;
+}

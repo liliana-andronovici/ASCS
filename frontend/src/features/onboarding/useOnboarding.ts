@@ -1,9 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addTaskFor, getChecklistFor, getSummaries, toggleTask } from "./api";
+import { addTaskFor, getChecklistFor, getSummaries, getUpcomingTasks, toggleTask } from "./api";
 import type { AddTaskInput } from "./types";
 
 export function useOnboardingSummaries() {
     return useQuery({ queryKey: ["onboarding", "summaries"], queryFn: getSummaries });
+}
+
+export function useUpcomingOnboardingTasks(employeeId: number | null) {
+    return useQuery({
+        queryKey: ["onboarding", "upcoming", employeeId],
+        queryFn: getUpcomingTasks,
+        enabled: employeeId !== null,
+        staleTime: 60_000,
+    });
 }
 
 export function useOnboardingChecklistFor(employeeId: number) {
@@ -22,6 +31,7 @@ export function useToggleOnboardingTask(employeeId: number) {
             await Promise.all([
                 queryClient.invalidateQueries({ queryKey: ["onboarding", "checklist", employeeId] }),
                 queryClient.invalidateQueries({ queryKey: ["onboarding", "summaries"] }),
+                queryClient.invalidateQueries({ queryKey: ["onboarding", "upcoming"] }),
             ]);
         },
     });
@@ -35,6 +45,7 @@ export function useAddOnboardingTaskFor(employeeId: number) {
             await Promise.all([
                 queryClient.invalidateQueries({ queryKey: ["onboarding", "checklist", employeeId] }),
                 queryClient.invalidateQueries({ queryKey: ["onboarding", "summaries"] }),
+                queryClient.invalidateQueries({ queryKey: ["onboarding", "upcoming"] }),
             ]);
         },
     });
