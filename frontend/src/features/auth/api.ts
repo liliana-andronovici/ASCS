@@ -11,6 +11,7 @@ export interface AuthResponse {
 
 export function signIn(input: SignInInput): Promise<AuthResponse> {
     return apiFetch<AuthResponse>("/auth/sign-in", {
+        auth: "public",
         method: "POST",
         body: JSON.stringify(input),
     });

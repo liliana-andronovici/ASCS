@@ -29,7 +29,13 @@ export default function LoginPage() {
         } catch (error) {
             setError(error instanceof ApiError && error.status === 401
                 ? "Invalid email or password."
-                : "Unable to sign in. Please try again.");
+                : error instanceof ApiError && (error.status === 404 || error.status === 405)
+                  ? "The sign-in service is unavailable at this address."
+                  : error instanceof ApiError && error.status >= 500
+                    ? "The sign-in service is unavailable. Please try again shortly."
+                    : error instanceof TypeError
+                      ? "Cannot connect to the sign-in service. Check your connection and try again."
+                      : "Unable to sign in. Please try again.");
         } finally {
             setIsPending(false);
         }
