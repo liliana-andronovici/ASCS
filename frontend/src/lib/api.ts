@@ -1,6 +1,7 @@
 import { clearToken, getToken } from "./sessions";
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
+const BASE_URL = (import.meta.env.VITE_API_URL?.trim() ||
+    (import.meta.env.PROD ? "https://ascs-bk.onrender.com/api" : "/api")).replace(/\/+$/, "");
 
 export class ApiError extends Error {
     status: number;
@@ -21,7 +22,7 @@ export async function apiFetch<T>(path: string, options?: RequestInit): Promise<
         headers.set("Authorization", `Bearer ${token}`);
     }
 
-    const response = await fetch(`${BASE_URL}${path}`, {
+    const response = await fetch(`${BASE_URL}/${path.replace(/^\/+/, "")}`, {
         ...options,
         headers,
     });

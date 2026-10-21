@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Proposed API contract based on the domain entities; confirm with the backend implementation.
+// Matches RoomModel and RoomBookingModel returned by the ASCS Rooms API.
 export const roomSchema = z.object({
     id: z.number().int().positive(),
     name: z.string().min(1),

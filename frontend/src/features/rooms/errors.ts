@@ -10,6 +10,7 @@ export function roomErrorMessage(error: unknown): string {
         if (error.status === 401) return "Your session has expired. Please sign in again.";
         if (error.status === 429) return "Too many requests. Please wait and try again.";
         if (error.status === 400) return "The booking could not be accepted. Check the room, title, date, and duration.";
+        if (error.status >= 500) return "The server could not load or save meeting rooms. Please try again shortly.";
     }
     return "Unable to reach the room booking service. Please try again.";
 }
