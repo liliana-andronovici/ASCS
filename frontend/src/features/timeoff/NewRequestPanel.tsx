@@ -4,13 +4,12 @@ import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { getErrorMessage } from "../../lib/errors";
 import { TIME_OFF_TYPES } from "./types";
-import type { TimeOffPreviewInput, TimeOffRequestInput } from "./types";
-import { useCreateTimeOffRequest, useRequestPreview } from "./useTimeOff";
+import type { TimeOffRequestInput } from "./types";
+import { useCreateTimeOffRequest } from "./useTimeOff";
 
 type NewRequestPanelProps = {
     open: boolean;
     onClose: () => void;
-    approverName: string;
 };
 
 const emptyForm: TimeOffRequestInput = {
@@ -20,7 +19,7 @@ const emptyForm: TimeOffRequestInput = {
     note: "",
 };
 
-export function NewRequestPanel({ open, onClose, approverName }: NewRequestPanelProps) {
+export function NewRequestPanel({ open, onClose }: NewRequestPanelProps) {
     const [form, setForm] = useState<TimeOffRequestInput>(emptyForm);
     const create = useCreateTimeOffRequest();
 
@@ -32,13 +31,6 @@ export function NewRequestPanel({ open, onClose, approverName }: NewRequestPanel
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [open, onClose]);
-
-    const previewInput: TimeOffPreviewInput | null =
-        form.startDate && form.endDate && form.endDate >= form.startDate
-            ? { type: form.type, startDate: form.startDate, endDate: form.endDate }
-            : null;
-
-    const preview = useRequestPreview(previewInput);
 
     function update<K extends keyof TimeOffRequestInput>(key: K, value: TimeOffRequestInput[K]) {
         setForm((previous) => ({ ...previous, [key]: value }));
@@ -125,48 +117,24 @@ export function NewRequestPanel({ open, onClose, approverName }: NewRequestPanel
                     />
                 </div>
 
-                <div className="flex justify-between rounded-md border border-gray-200 bg-white px-3 py-2.5 text-sm">
-                    {!previewInput && <span className="text-gray-500">Select dates to see a summary</span>}
-                    {previewInput && preview.isPending && (
-                        <span className="text-gray-500">Calculating…</span>
-                    )}
-                    {preview.isError && <span className="text-coral">{getErrorMessage(preview.error)}</span>}
-                    {preview.data && (
-                        <>
-                            <span>
-                                {preview.data.workingDays}{" "}
-                                {preview.data.workingDays === 1 ? "working day" : "working days"}
-                            </span>
-                            {preview.data.remainingAfter !== null && (
-                                <span className="text-gray-500">{preview.data.remainingAfter} will remain</span>
-                            )}
-                        </>
-                    )}
-                </div>
-
                 <div className="flex flex-col gap-1">
                     <label htmlFor="time-off-note" className="text-sm text-gray-700">
-                        Note for {approverName} (optional)
+                        Note
                     </label>
                     <textarea
                         id="time-off-note"
                         rows={3}
                         value={form.note}
                         onChange={(event) => update("note", event.target.value)}
+                        required
+                        maxLength={500}
                         className="min-h-[70px] rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-navy focus:outline-none"
                     />
                 </div>
 
-                {preview.data && preview.data.overlappingPeople.length > 0 && (
-                    <p className="border-t border-gray-200 pt-3 text-xs leading-relaxed text-gray-500">
-                        Also out that week:{" "}
-                        <strong className="text-navy">{preview.data.overlappingPeople.join(", ")}</strong>
-                    </p>
-                )}
-
                 {create.isError && <p className="text-sm text-coral">{getErrorMessage(create.error)}</p>}
 
-                <Button type="submit" disabled={!preview.data || create.isPending}>
+                <Button type="submit" disabled={create.isPending}>
                     {create.isPending ? "Submitting…" : "Submit request"}
                 </Button>
             </form>

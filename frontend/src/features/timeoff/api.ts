@@ -1,37 +1,22 @@
 import { apiFetch } from "../../lib/api";
-import type {
-    TimeOffOverview,
-    TimeOffPreview,
-    TimeOffPreviewInput,
-    TimeOffRequest,
-    TimeOffRequestInput,
-} from "./types";
-
-export function getOverview(): Promise<TimeOffOverview> {
-    return apiFetch<TimeOffOverview>("/TimeOff/overview");
-}
+import type { TimeOffRequest, TimeOffRequestInput } from "./types";
 
 export function getMyRequests(): Promise<TimeOffRequest[]> {
-    return apiFetch<TimeOffRequest[]>("/TimeOff/requests");
-}
-
-export function previewRequest(input: TimeOffPreviewInput): Promise<TimeOffPreview> {
-    return apiFetch<TimeOffPreview>("/TimeOff/requests/preview", {
-        method: "POST",
-        body: JSON.stringify(input),
-    });
+    return apiFetch<TimeOffRequest[]>("/LeaveRequest");
 }
 
 export function createTimeOffRequest(input: TimeOffRequestInput): Promise<number> {
-    return apiFetch<number>("/TimeOff/requests", {
+    return apiFetch<number>("/LeaveRequest", {
         method: "POST",
-        body: JSON.stringify(input),
+        body: JSON.stringify({
+            type: input.type,
+            startDateUtc: `${input.startDate}T00:00:00.000Z`,
+            endDateUtc: `${input.endDate}T00:00:00.000Z`,
+            note: input.note,
+        }),
     });
 }
 
-export function withdrawRequest(id: number): Promise<void> {
-    return apiFetch<void>("/TimeOff/requests/withdraw", {
-        method: "POST",
-        body: JSON.stringify({ id }),
-    });
+export function deleteTimeOffRequest(id: number): Promise<void> {
+    return apiFetch<void>(`/LeaveRequest/${id}`, { method: "DELETE" });
 }
