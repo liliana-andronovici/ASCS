@@ -18,21 +18,25 @@ function load(file, imports = {}, globals = {}) {
         if (id === 'zod') return zod;
         assert.ok(imports[id], `Unexpected import ${id}`);
         return imports[id];
-    }, Headers, URLSearchParams, ...globals });
+    }, Headers, URLSearchParams, atob, ...globals });
     return exports;
 }
 
 async function run() {
-    const storage = new Map([['infigohr_token', 'legacy-token']]);
+    const token = label => `${Buffer.from('{}').toString('base64url')}.${Buffer.from(JSON.stringify({ sub: '1', exp: Math.floor(Date.now() / 1000) + 3600, label })).toString('base64url')}.signature`;
+    const legacyToken = token('legacy');
+    const adminToken = token('admin');
+    const newToken = token('new');
+    const storage = new Map([['infigohr_token', legacyToken]]);
     const localStorage = {
         getItem: key => storage.get(key) ?? null,
         setItem: (key, value) => storage.set(key, value),
         removeItem: key => storage.delete(key),
     };
     const sessions = load('lib/sessions.ts', {}, { localStorage });
-    assert.equal(sessions.getToken(), 'legacy-token');
-    sessions.setToken('admin-token');
-    assert.equal(storage.get('accessToken'), 'admin-token');
+    assert.equal(sessions.getToken(), legacyToken);
+    sessions.setToken(adminToken);
+    assert.equal(storage.get('accessToken'), adminToken);
     assert.equal(storage.has('infigohr_token'), false);
 
     const calls = [];
@@ -52,7 +56,7 @@ async function run() {
     payload = [{ id: 1, name: 'Room', floor: 1, seats: 6, amenities: null, locationId: 1, locationName: 'Office' }];
     await rooms.getRooms();
     assert.equal(calls.at(-1).url, 'https://ascs-bk.onrender.com/api/Rooms');
-    assert.equal(calls.at(-1).options.headers.get('Authorization'), 'Bearer admin-token');
+    assert.equal(calls.at(-1).options.headers.get('Authorization'), `Bearer ${adminToken}`);
     const start = '2026-10-21T10:00:00Z';
     const end = '2026-10-22T10:00:00Z';
     payload = [{ id: 1, roomId: 1, roomName: 'Room', organizerEmployeeId: 1,
@@ -71,16 +75,16 @@ async function run() {
     status = 401;
     await assert.rejects(api.apiFetch('/auth/sign-in', { auth: 'public', method: 'POST' }));
     assert.equal(calls.at(-1).options.headers.has('Authorization'), false);
-    assert.equal(sessions.getToken(), 'admin-token');
+    assert.equal(sessions.getToken(), adminToken);
     assert.equal(redirects, 0);
-    beforeResponse = () => sessions.setToken('new-session');
+    beforeResponse = () => sessions.setToken(newToken);
     await assert.rejects(rooms.getRooms());
-    assert.equal(sessions.getToken(), 'new-session');
+    assert.equal(sessions.getToken(), newToken);
     assert.equal(redirects, 0);
     beforeResponse = () => {};
     status = 500;
     await assert.rejects(rooms.getRooms(), error => error instanceof api.ApiError && error.status === 500);
-    assert.equal(sessions.getToken(), 'new-session');
+    assert.equal(sessions.getToken(), newToken);
     console.log('PASS: Rooms API paths, DTOs, query parameters, bearer token migration, public login, stale-session protection and server errors.');
 }
 run().catch(error => { console.error(error); process.exitCode = 1; });

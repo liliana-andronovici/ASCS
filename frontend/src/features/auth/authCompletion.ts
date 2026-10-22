@@ -1,9 +1,10 @@
 import type { NavigateFunction } from "react-router-dom";
-import { setToken } from "../../lib/sessions";
+import { clearToken, setToken } from "../../lib/sessions";
 import type { AuthResponse } from "./api";
 
 export function completeAuthentication(response: AuthResponse, navigate: NavigateFunction) {
     if (response.requiresTwoFactor) {
+        clearToken();
         if (!response.challengeToken) throw new Error("Missing verification challenge.");
         navigate("/two-factor", {
             replace: true,

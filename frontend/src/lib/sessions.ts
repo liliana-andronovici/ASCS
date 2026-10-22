@@ -2,11 +2,29 @@ const TOKEN_KEY = "accessToken";
 const LEGACY_TOKEN_KEY = "infigohr_token";
 const AVATAR_KEY = "infigohr_avatar";
 
+function isUnexpiredToken(token: string): boolean {
+    try {
+        const parts = token.split(".");
+        if (parts.length !== 3 || parts.some(part => !part)) return false;
+        const encoded = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const payload = JSON.parse(atob(encoded.padEnd(Math.ceil(encoded.length / 4) * 4, "=")));
+        // UI expiry check only; the backend validates the signature and permissions.
+        return typeof payload.exp === "number" && Number.isFinite(payload.exp) && payload.exp * 1000 > Date.now();
+    } catch { return false; }
+}
+
 export function getToken(): string | null {
-    return localStorage.getItem(TOKEN_KEY) ?? localStorage.getItem(LEGACY_TOKEN_KEY);
+    const token = localStorage.getItem(TOKEN_KEY) ?? localStorage.getItem(LEGACY_TOKEN_KEY);
+    if (token && !isUnexpiredToken(token)) {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(LEGACY_TOKEN_KEY);
+        return null;
+    }
+    return token;
 }
 
 export function setToken(token: string): void {
+    if (!isUnexpiredToken(token)) throw new Error("Invalid or expired access token.");
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.removeItem(LEGACY_TOKEN_KEY);
 }

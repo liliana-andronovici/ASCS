@@ -5,6 +5,17 @@ export interface SignInInput {
     password: string;
 }
 
+export interface SignUpInput extends SignInInput {
+    firstName: string;
+    lastName: string;
+    title: string;
+}
+
+export function signUp(input: SignUpInput): Promise<void> {
+    // The existing API creates the account and returns 201 with no access token.
+    return apiFetch<void>("/auth/sign-up", { auth: "public", method: "POST", body: JSON.stringify(input) });
+}
+
 export interface AuthResponse {
     accessToken?: string | null;
     requiresTwoFactor?: boolean;

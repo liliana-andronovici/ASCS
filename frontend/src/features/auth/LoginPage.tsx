@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ApiError } from "../../lib/api";
 import { signIn } from "./api";
 import { Eye, EyeOff } from "lucide-react";
@@ -9,8 +9,10 @@ import { Input } from "../../components/Input";
 import { completeAuthentication } from "./authCompletion";
 
 export default function LoginPage() {
+    const location = useLocation();
+    const signupEmail = typeof location.state?.signupEmail === "string" ? location.state.signupEmail : "";
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState(signupEmail);
     const [password, setPassword] = useState("");
     const [isPending, setIsPending] = useState(false);
     const [error, setError] = useState("");
@@ -28,7 +30,7 @@ export default function LoginPage() {
             completeAuthentication(response, navigate);
         } catch (error) {
             setError(error instanceof ApiError && error.status === 401
-                ? "Invalid email or password."
+                ? "Invalid email or password ."
                 : "Unable to sign in. Please try again.");
         } finally {
             setIsPending(false);
@@ -38,6 +40,7 @@ export default function LoginPage() {
     return (
         <>
             <h2 className="text-center text-xl font-semibold text-navy">Sign in</h2>
+            {location.state?.signupComplete === true && <p role="status" className="my-3 text-sm text-green-700">Account created. Sign in with your email and password.</p>}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <Input
@@ -88,9 +91,7 @@ export default function LoginPage() {
                 </Button>
             </form>
 
-            <Link to="/magic-link" className="mt-4 block text-center text-sm text-coral hover:underline">
-                Email me a magic link instead
-            </Link>
+            <Link to="/sign-up" className="mt-4 block text-center text-sm text-coral hover:underline">New here? Create an account</Link>
             <Link to="/two-factor" className="mt-3 block text-center text-sm text-gray-500 hover:underline">
                 Have a verification code?
             </Link>

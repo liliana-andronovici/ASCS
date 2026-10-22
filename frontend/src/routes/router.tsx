@@ -1,14 +1,14 @@
-﻿import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import { Navigate } from "react-router-dom";
 import { AuthLayer } from "../features/auth/AuthLayer";
 import {
     AcceptInvitePage,
-    MagicLinkPage,
     ResetPasswordPage,
     TwoFactorPage,
 } from "../features/auth/AuthFlowPages";
 import LoginPage from "../features/auth/LoginPage";
+import SignUpPage from "../features/auth/SignUpPage";
 import { RequireAuth } from "../features/auth/RequireAuth";
 import HomePage from "../pages/HomePage";
 import PeoplePage from "../features/employees/PeoplePage";
@@ -65,11 +65,11 @@ export const router = createBrowserRouter([
         element: <AuthLayer />,
         children: [
             { path: "sign-in", element: <LoginPage /> },
+            { path: "sign-up", element: <SignUpPage /> },
             { path: "two-factor", element: <TwoFactorPage /> },
             { path: "accept-invite", element: <AcceptInvitePage /> },
             { path: "reset-password", element: <ResetPasswordPage /> },
             { path: "forgot-password", element: <Navigate to="/reset-password" replace /> },
-            { path: "magic-link", element: <MagicLinkPage /> },
         ],
     },
 ]);

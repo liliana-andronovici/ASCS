@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test:rooms": "node tests/room-booking.test.cjs",
     "test:home": "node tests/home.test.cjs",
+    "test:signup": "node tests/auth-signup.test.cjs",
     "preview": "vite preview"
   },
   "dependencies": {
