@@ -1,4 +1,5 @@
 using System.Security.Cryptography.X509Certificates;
+using InfigoHR.Persistence;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,33 +14,58 @@ public static class DataProtectionSetup
         IConfiguration configuration,
         IHostEnvironment environment)
     {
-        var keyDirectory = configuration["DataProtection:KeyDirectory"]
-                           ?? Path.Combine(
-                               Environment.GetFolderPath(
-                                   Environment.SpecialFolder.LocalApplicationData),
-                               "InfigoHR",
-                               "data-protection-keys");
-
         var dataProtection = services.AddDataProtection()
-            .SetApplicationName("InfigoHR")
-            .PersistKeysToFileSystem(new DirectoryInfo(keyDirectory));
+            .SetApplicationName("InfigoHR");
 
-        var certificatePath =
-            configuration["DataProtection:CertificatePath"];
-
-        if (!string.IsNullOrWhiteSpace(certificatePath))
+        if (environment.IsDevelopment())
         {
-            var certificate = X509CertificateLoader.LoadPkcs12FromFile(
+            var keyDirectory = configuration["DataProtection:KeyDirectory"]
+                               ?? Path.Combine(
+                                   Environment.GetFolderPath(
+                                       Environment.SpecialFolder.LocalApplicationData),
+                                   "InfigoHR",
+                                   "data-protection-keys");
+
+            dataProtection.PersistKeysToFileSystem(new DirectoryInfo(keyDirectory));
+        }
+        else
+        {
+            dataProtection.PersistKeysToDbContext<AppDbContext>();
+        }
+
+        var certificateBase64 = configuration["DataProtection:CertificateBase64"];
+        var certificatePath = configuration["DataProtection:CertificatePath"];
+        var certificatePassword = configuration["DataProtection:CertificatePassword"];
+        X509Certificate2? certificate = null;
+
+        if (!string.IsNullOrWhiteSpace(certificateBase64))
+        {
+            certificate = X509CertificateLoader.LoadPkcs12(
+                Convert.FromBase64String(certificateBase64),
+                certificatePassword);
+        }
+        else if (!string.IsNullOrWhiteSpace(certificatePath))
+        {
+            certificate = X509CertificateLoader.LoadPkcs12FromFile(
                 certificatePath,
-                configuration["DataProtection:CertificatePassword"]);
+                certificatePassword);
+        }
+
+        if (certificate is not null)
+        {
+            if (!certificate.HasPrivateKey)
+            {
+                throw new InvalidOperationException(
+                    "The Data Protection certificate must contain its private key.");
+            }
 
             dataProtection.ProtectKeysWithCertificate(certificate);
         }
         else if (!environment.IsDevelopment())
         {
             throw new InvalidOperationException(
-                "Configure a certificate to protect the persistent " +
-                "Data Protection key ring.");
+                "Configure DataProtection:CertificateBase64 or " +
+                "DataProtection:CertificatePath to protect the key ring.");
         }
 
         return services;
