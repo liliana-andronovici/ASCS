@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "../../components/Button";
 import { ProfileTab } from "./ProfileTab";
+import { TwoFactorSettings } from "./TwoFactorSettings";
 import { useLocalPreferences, type Preferences } from "./useLocalPreferences";
 
 const GROUPS = [
@@ -67,7 +68,7 @@ function SecurityTab() {
         <div className="flex max-w-md flex-col gap-4">
             <h2 className="text-lg font-semibold text-navy">Password & security</h2>
             <div className="rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                Password changes and two-factor authentication are not available here yet.
+                Password changes are not available here yet.
             </div>
             <div className="flex flex-col gap-1 opacity-50">
                 <label className="text-sm text-gray-700">Current password</label>
@@ -80,6 +81,7 @@ function SecurityTab() {
             <Button disabled className="!w-auto px-4">
                 Update password
             </Button>
+            <TwoFactorSettings />
         </div>
     );
 }
