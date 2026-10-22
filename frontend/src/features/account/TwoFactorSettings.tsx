@@ -15,7 +15,6 @@ export function TwoFactorSettings() {
     const [password, setPassword] = useState("");
     const [code, setCode] = useState("");
     const [useRecovery, setUseRecovery] = useState(false);
-    const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
     const [pending, setPending] = useState(false);
     const [error, setError] = useState("");
 
@@ -39,7 +38,6 @@ export function TwoFactorSettings() {
                 if (!setup) return;
                 const response = await enableTwoFactor(setup.setupId, code);
                 setToken(response.accessToken);
-                setRecoveryCodes(response.recoveryCodes);
                 setStatus({ isEnabled: true, recoveryCodesRemaining: response.recoveryCodes.length });
                 setSetup(null);
             } else {
@@ -47,14 +45,12 @@ export function TwoFactorSettings() {
                 if (action === "regenerate") {
                     const response = await regenerateTwoFactorCodes(proof);
                     setToken(response.accessToken);
-                    setRecoveryCodes(response.recoveryCodes);
                     setStatus({ isEnabled: true, recoveryCodesRemaining: response.recoveryCodes.length });
                 } else {
                     const response = await disableTwoFactor(proof);
                     if (!response.accessToken) throw new Error("Missing access token.");
                     setToken(response.accessToken);
                     setStatus({ isEnabled: false, recoveryCodesRemaining: 0 });
-                    setRecoveryCodes([]);
                 }
             }
             setPassword("");
@@ -82,11 +78,6 @@ export function TwoFactorSettings() {
                 <p className="text-sm text-gray-500">
                     {status.isEnabled ? `Enabled. Backup codes remaining: ${status.recoveryCodesRemaining}.` : "Disabled. Add verification with an authenticator app to protect your account."}
                 </p>
-                {recoveryCodes.length > 0 && <div className="rounded-md bg-amber-50 p-4 text-sm text-amber-900">
-                    <p>Save these backup codes in a safe place. Each code can be used once. They will not be shown again after you leave this tab.</p>
-                    <ul className="mt-2 break-all font-mono">{recoveryCodes.map((value) => <li key={value}>{value}</li>)}</ul>
-                    <Button type="button" variant="secondary" className="mt-3" onClick={() => setRecoveryCodes([])}>I have saved my codes</Button>
-                </div>}
                 <form className="flex flex-col gap-4" onSubmit={submit}>
                     {setup ? <>
                         <p className="text-sm text-gray-500">Enter this setup key in your authenticator app, then enter its 6-digit code below. Setup expires at {new Date(setup.expiresAtUtc).toLocaleTimeString()}.</p>
