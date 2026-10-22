@@ -26,6 +26,7 @@ public class EmployeeRepository
         return Entities
             .AsNoTracking()
             .Include(employee => employee.Auth)
+            .Include(employee => employee.TwoFactorAuth)
             .Include(employee => employee.Roles)
             .ThenInclude(role => role.Permissions)
             .SingleOrDefaultAsync(

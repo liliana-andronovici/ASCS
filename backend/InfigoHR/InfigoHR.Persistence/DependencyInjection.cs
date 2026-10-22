@@ -17,6 +17,7 @@ public static class DependencyInjection
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
+        services.AddScoped<IAuthRepository, AuthRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IEquipmentRepository, EquipmentRepository>();
         services.AddScoped<IEquipmentTypeRepository, EquipmentTypeRepository>();
@@ -24,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IOnboardingRepository, OnboardingRepository>();
         services.AddScoped<IOnboardingTaskRepository, OnboardingTaskRepository>();
+        services.AddScoped<ITwoFactorRepository, TwoFactorRepository>();
         services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
         services.AddScoped<IRoomRepository, RoomRepository>();
 

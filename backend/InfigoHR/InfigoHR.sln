@@ -11,7 +11,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfigoHR.Presentation", "InfigoHR.Presentation\InfigoHR.Presentation.csproj", "{87479AEF-D884-4CEB-B43A-2FFDF87F7826}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfigoHR.EmailService", "InfigoHR.EmailService\InfigoHR.EmailService.csproj", "{4724143D-608E-413E-AE09-1BCA6F95F114}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfigoHR.Authentication", "InfigoHR.Authentication\InfigoHR.Authentication.csproj", "{72C08B22-AE78-466A-96B1-E92EF60A9795}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfigoHR.EmailTemplates", "InfigoHR.EmailTemplates\InfigoHR.EmailTemplates.csproj", "{BEA67157-BD83-480C-977F-A2BD05E13DAD}"
 EndProject
 Global
 				GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,5 +46,9 @@ Global
 					            {72C08B22-AE78-466A-96B1-E92EF60A9795}.Debug|Any CPU.Build.0 = Debug|Any CPU
 					            {72C08B22-AE78-466A-96B1-E92EF60A9795}.Release|Any CPU.ActiveCfg = Release|Any CPU
 					            {72C08B22-AE78-466A-96B1-E92EF60A9795}.Release|Any CPU.Build.0 = Release|Any CPU
+					            {BEA67157-BD83-480C-977F-A2BD05E13DAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+					            {BEA67157-BD83-480C-977F-A2BD05E13DAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+					            {BEA67157-BD83-480C-977F-A2BD05E13DAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+					            {BEA67157-BD83-480C-977F-A2BD05E13DAD}.Release|Any CPU.Build.0 = Release|Any CPU
 				EndGlobalSection
 EndGlobal
