@@ -1,5 +1,7 @@
 ﻿using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InfigoHR.Presentation.Controllers;
@@ -8,6 +10,16 @@ namespace InfigoHR.Presentation.Controllers;
 [Route("api/[controller]")]
 public class OnboardingController(IOnboardingService service) : ControllerBase
 {
+    [Authorize]
+    [HttpGet("upcoming")]
+    public async Task<ActionResult<List<UpcomingOnboardingTaskModel>>> GetUpcoming()
+    {
+        if (!int.TryParse(User.FindFirstValue("sub"), out var employeeId) || employeeId <= 0)
+            return Unauthorized();
+
+        return Ok(await service.GetUpcomingTasksAsync(employeeId));
+    }
+
     [HttpGet]
     public async Task<ActionResult<List<OnboardingSummaryModel>>> GetAll()
     {

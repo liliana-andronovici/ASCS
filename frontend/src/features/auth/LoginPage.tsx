@@ -44,7 +44,7 @@ export default function LoginPage() {
                     id="email"
                     label="Work email"
                     type="email"
-                    placeholder="ana.popescu@infigo.ro"
+                    placeholder="name@company.com"
                     autoComplete="username"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}

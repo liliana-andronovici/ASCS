@@ -3,19 +3,20 @@ import type { TimeOffRequest, TimeOffStatus } from "./types";
 
 type RequestsTableProps = {
     requests: TimeOffRequest[];
-    deletingId: number | null;
-    onDelete: (id: number) => void;
+    withdrawingId: number | null;
+    onWithdraw: (id: number) => void;
 };
 
 const statusStyles: Record<TimeOffStatus, string> = {
     Approved: "bg-coral/10 text-coral",
     Pending: "border border-gray-300 text-navy",
     Declined: "bg-gray-100 text-gray-600",
+    Withdrawn: "bg-gray-100 text-gray-600",
 };
 
-const headers = ["Type", "Dates", "Note", "Status"];
+const headers = ["Type", "Dates", "Days", "Approver", "Status"];
 
-export function RequestsTable({ requests, deletingId, onDelete }: RequestsTableProps) {
+export function RequestsTable({ requests, withdrawingId, onWithdraw }: RequestsTableProps) {
     if (requests.length === 0) {
         return <p className="text-sm text-gray-500">No requests yet.</p>;
     }
@@ -36,8 +37,9 @@ export function RequestsTable({ requests, deletingId, onDelete }: RequestsTableP
             {requests.map((request) => (
                 <tr key={request.id} className="border-b border-gray-100">
                     <td className="py-3 font-semibold text-navy">{request.type}</td>
-                    <td className="py-3">{formatDateRange(request.startDateUtc, request.endDateUtc)}</td>
-                    <td className="py-3">{request.note}</td>
+                    <td className="py-3">{formatDateRange(request.startDate, request.endDate)}</td>
+                    <td className="py-3">{request.days}</td>
+                    <td className="py-3">{request.approverName}</td>
                     <td className="py-3">
                             <span
                                 className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusStyles[request.status]}`}
@@ -46,14 +48,14 @@ export function RequestsTable({ requests, deletingId, onDelete }: RequestsTableP
                             </span>
                     </td>
                     <td className="py-3 text-right">
-                        {request.status === "Pending" && (
+                        {request.canWithdraw && (
                             <button
                                 type="button"
-                                onClick={() => onDelete(request.id)}
-                                disabled={deletingId === request.id}
+                                onClick={() => onWithdraw(request.id)}
+                                disabled={withdrawingId === request.id}
                                 className="text-xs text-coral hover:underline disabled:opacity-50"
                             >
-                                Delete
+                                Withdraw
                             </button>
                         )}
                     </td>

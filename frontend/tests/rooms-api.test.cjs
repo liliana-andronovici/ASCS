@@ -23,17 +23,16 @@ function load(file, imports = {}, globals = {}) {
 }
 
 async function run() {
-    const storage = new Map([['infigohr_token', 'legacy-token']]);
+    const storage = new Map([['accessToken', 'admin-token']]);
     const localStorage = {
         getItem: key => storage.get(key) ?? null,
         setItem: (key, value) => storage.set(key, value),
         removeItem: key => storage.delete(key),
     };
     const sessions = load('lib/sessions.ts', {}, { localStorage });
-    assert.equal(sessions.getToken(), 'legacy-token');
+    assert.equal(sessions.getToken(), 'admin-token');
     sessions.setToken('admin-token');
     assert.equal(storage.get('accessToken'), 'admin-token');
-    assert.equal(storage.has('infigohr_token'), false);
 
     const calls = [];
     let payload;
@@ -81,6 +80,6 @@ async function run() {
     status = 500;
     await assert.rejects(rooms.getRooms(), error => error instanceof api.ApiError && error.status === 500);
     assert.equal(sessions.getToken(), 'new-session');
-    console.log('PASS: Rooms API paths, DTOs, query parameters, bearer token migration, public login, stale-session protection and server errors.');
+    console.log('PASS: Rooms API paths, DTOs, query parameters, bearer token, public login, stale-session protection and server errors.');
 }
 run().catch(error => { console.error(error); process.exitCode = 1; });

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import logoImage from "../assets/logo.svg";
 import { AccountMenu } from "../features/account/AccountMenu";
 import {
     ChevronRight,
@@ -44,7 +43,7 @@ export function Sidebar() {
                 flex items-center border-b border-white/20 p-4 h-16 ${collapsed ? "justify-center" : "justify-between"}
                 `}
             >
-                {!collapsed && <img src={logoImage} alt="logo" className="h-8 w-auto"/>}
+                {!collapsed && <span className="text-lg font-semibold tracking-wide">HR Portal</span>}
                 <button
                     onClick={() => setCollapsed((v) => !v)}
                     className="cursor-pointer text-white/70 hover:text-white p-2 rounded-md hover:bg-coral"

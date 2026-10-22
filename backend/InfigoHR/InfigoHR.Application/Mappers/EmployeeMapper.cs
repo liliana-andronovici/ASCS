@@ -17,8 +17,50 @@ public static class EmployeeMapper
             DepartmentId = entity.DepartmentId,
             LocationId = entity.LocationId,
             ManagerId = entity.ManagerId,
-            Status = entity.Status
+            Status = entity.Status,
+            DepartmentName = entity.Department?.Name,
+            LocationName = entity.Location?.Name,
+            Manager = entity.Manager is null ? null : new EmployeeMainDataModel
+            {
+                Id = entity.Manager.Id,
+                FirstName = entity.Manager.FirstName,
+                LastName = entity.Manager.LastName,
+                Title = entity.Manager.Title
+            }
         };
+
+    public static EmployeeProfileModel ToProfileModel(EmployeeEntity entity) => new()
+    {
+        Id = entity.Id,
+        FirstName = entity.FirstName,
+        LastName = entity.LastName,
+        Email = entity.Email,
+        Title = entity.Title,
+        StartedOnUtc = entity.StartedOnUtc,
+        DepartmentId = entity.DepartmentId,
+        DepartmentName = entity.Department?.Name,
+        LocationId = entity.LocationId,
+        LocationName = entity.Location?.Name,
+        ManagerId = entity.ManagerId,
+        Manager = entity.Manager is null ? null : new EmployeeMainDataModel
+        {
+            Id = entity.Manager.Id,
+            FirstName = entity.Manager.FirstName,
+            LastName = entity.Manager.LastName,
+            Title = entity.Manager.Title
+        },
+        Status = entity.Status,
+        Phone = entity.Phone,
+        Desk = entity.Desk,
+        BirthdayMonth = entity.BirthdayMonth,
+        BirthdayDay = entity.BirthdayDay,
+        Languages = entity.Languages.ToArray(),
+        EmployeeCode = entity.EmployeeCode,
+        EmploymentType = entity.EmploymentType,
+        ContractType = entity.ContractType,
+        WeeklyHours = entity.WeeklyHours,
+        ProfileVersion = entity.ProfileVersion
+    };
 
     public static EmployeeEntity ToEntity(CreateEmployeeModel model) =>
         new()

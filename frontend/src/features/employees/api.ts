@@ -1,5 +1,5 @@
 ﻿import { apiFetch } from "../../lib/api";
-import type { Employee, EmployeeEquipment, PagedResult, EmployeeQuery } from "./types";
+import type { Employee, EmployeeDocument, EmployeeEquipment, EmployeeHistory, EmployeeProfile, PagedResult, EmployeeQuery } from "./types";
 
 export function getEmployees(query: EmployeeQuery = {}): Promise<PagedResult<Employee>> {
     const params = new URLSearchParams();
@@ -12,6 +12,22 @@ export function getEmployees(query: EmployeeQuery = {}): Promise<PagedResult<Emp
 
 export function getEmployeeById(id: number): Promise<Employee> {
     return apiFetch<Employee>(`/employees/${id}`);
+}
+
+export function getEmployeeProfile(id: number): Promise<EmployeeProfile> {
+    return apiFetch<EmployeeProfile>(`/people/${id}`);
+}
+
+export function patchEmployeeProfile(id: number, changes: Record<string, unknown>): Promise<EmployeeProfile> {
+    return apiFetch<EmployeeProfile>(`/people/${id}`, { method: "PATCH", body: JSON.stringify(changes) });
+}
+
+export function getEmployeeDocuments(id: number): Promise<PagedResult<EmployeeDocument>> {
+    return apiFetch<PagedResult<EmployeeDocument>>(`/people/${id}/documents`);
+}
+
+export function getEmployeeHistory(id: number): Promise<PagedResult<EmployeeHistory>> {
+    return apiFetch<PagedResult<EmployeeHistory>>(`/people/${id}/history`);
 }
 
 export function getEmployeeEquipment(id: number): Promise<EmployeeEquipment[]> {

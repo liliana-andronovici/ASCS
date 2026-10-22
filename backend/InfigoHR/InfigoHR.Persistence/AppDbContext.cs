@@ -13,6 +13,8 @@ public class AppDbContext : DbContext, IDataProtectionKeyContext
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
     public DbSet<EmployeeEntity> Employees => Set<EmployeeEntity>();
+    public DbSet<EmployeeDocumentEntity> EmployeeDocuments => Set<EmployeeDocumentEntity>();
+    public DbSet<EmployeeHistoryEntity> EmployeeHistory => Set<EmployeeHistoryEntity>();
     public DbSet<EquipmentEntity> Equipment => Set<EquipmentEntity>();
     public DbSet<EquipmentTypeEntity> EquipmentTypes => Set<EquipmentTypeEntity>();
     public DbSet<EmployeeEquipmentEntity> EmployeeEquipment => Set<EmployeeEquipmentEntity>();

@@ -9,7 +9,7 @@ export interface Preferences {
     compactTables: boolean;
 }
 
-const KEY = "infigohr_preferences";
+const KEY = "hr_portal_preferences";
 
 function storageKey(): string {
     return `${KEY}_${getCurrentEmployeeId() ?? "guest"}`;
