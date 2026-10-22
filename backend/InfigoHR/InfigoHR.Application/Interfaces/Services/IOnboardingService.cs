@@ -8,4 +8,5 @@ public interface IOnboardingService
     Task AddTaskAsync(int employeeId, AddOnboardingTaskModel model);
     Task ToggleTaskAsync(int employeeId, int taskId);
     Task<List<OnboardingSummaryModel>> GetOnboardingSummariesAsync();
+    Task<List<UpcomingOnboardingTaskModel>> GetUpcomingTasksAsync(int employeeId);
 }

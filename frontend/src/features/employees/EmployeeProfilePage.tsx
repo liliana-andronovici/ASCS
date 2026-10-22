@@ -143,7 +143,7 @@ export default function EmployeeProfilePage() {
         <div className="flex min-h-full flex-col bg-white">
             <div className="flex h-[60px] items-center justify-between border-b border-gray-200 px-6">
                 <Link to="/people" className="flex items-center gap-1 text-sm text-gray-500 hover:text-navy"><ChevronLeft size={16} /> People</Link>
-                {canManageEmployees() && !editing && <Button type="button" onClick={() => { setSearchParams({}); startEditing(); }}>Edit profile</Button>}
+                {canManageEmployees() && !editing && <Button type="button" fullWidth={false} onClick={() => { setSearchParams({}); startEditing(); }}>Edit profile</Button>}
             </div>
             <section className="flex-1">
                 <div className="flex flex-wrap items-center gap-6 border-b border-gray-200 px-6 py-7">

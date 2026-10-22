@@ -11,4 +11,12 @@ public class OnboardingTaskRepository(AppDbContext dbContext)
         Entities
             .Include(task => task.Onboarding)
             .FirstOrDefaultAsync(task => task.Id == taskId);
+
+    public Task<List<OnboardingTaskEntity>> GetUpcomingForEmployeeAsync(int employeeId, DateTime fromUtc, DateTime toUtc) =>
+        Entities
+            .AsNoTracking()
+            .Where(task => task.Onboarding!.EmployeeId == employeeId && task.CompletedOnUtc == null &&
+                           task.DueDateUtc >= fromUtc && task.DueDateUtc < toUtc)
+            .OrderBy(task => task.DueDateUtc)
+            .ToListAsync();
 }

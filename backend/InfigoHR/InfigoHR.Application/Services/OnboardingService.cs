@@ -93,4 +93,18 @@ public class OnboardingService : IOnboardingService
             })
             .ToList();
     }
+
+    public async Task<List<UpcomingOnboardingTaskModel>> GetUpcomingTasksAsync(int employeeId)
+    {
+        var todayUtc = DateTime.UtcNow.Date;
+        var tasks = await _onboardingTaskRepository.GetUpcomingForEmployeeAsync(employeeId, todayUtc, todayUtc.AddDays(46));
+
+        return tasks.Select(task => new UpcomingOnboardingTaskModel
+        {
+            Id = task.Id,
+            EmployeeId = employeeId,
+            Title = task.Title,
+            DueDate = DateOnly.FromDateTime(task.DueDateUtc!.Value)
+        }).ToList();
+    }
 }
