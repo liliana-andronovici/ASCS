@@ -1,13 +1,16 @@
 using InfigoHR.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 
 namespace InfigoHR.Persistence;
 
-public class AppDbContext : DbContext
+public class AppDbContext : DbContext, IDataProtectionKeyContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
+
+    public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
     public DbSet<EmployeeEntity> Employees => Set<EmployeeEntity>();
     public DbSet<EquipmentEntity> Equipment => Set<EquipmentEntity>();
