@@ -8,6 +8,7 @@ import { Select } from "../../components/Select";
 import { useDepartments } from "../departments/useDepartments";
 import { useLocations } from "../locations/useLocations";
 import { useCreateEmployee, useUpdateEmployee } from "./useEmployeeMutations";
+import { useEmployeeDirectory } from "./useEmployees";
 import { employeeFormSchema, type EmployeeFormValues } from "./employeeSchema";
 import type { Employee } from "./types";
 
@@ -21,6 +22,8 @@ export function EmployeeFormModal({ open, onClose, employee }: Props) {
     const isEditing = !!employee;
     const [departmentId, setDepartmentId] = useState<number | null>(employee?.departmentId ?? null);
     const [locationId, setLocationId] = useState<number | null>(employee?.locationId ?? null);
+    const [managerId, setManagerId] = useState<number | null>(employee?.managerId ?? null);
+    const { data: directory, isLoading: isManagersLoading, isError: isManagersError } = useEmployeeDirectory();
     const { data: departments, isLoading: isDepartmentsLoading, isError: isDepartmentsError } = useDepartments();
     const { data: locations, isLoading: isLocationsLoading, isError: isLocationsError } = useLocations();
     const createMutation = useCreateEmployee();
@@ -51,7 +54,7 @@ export function EmployeeFormModal({ open, onClose, employee }: Props) {
             startedOnUtc: new Date(`${dateOnly}T00:00:00.000Z`).toISOString(),
             departmentId,
             locationId,
-            managerId: employee?.managerId ?? null,
+            managerId,
             status: employee?.status ?? ("Active" as const),
         };
 
@@ -122,6 +125,30 @@ export function EmployeeFormModal({ open, onClose, employee }: Props) {
                     {isLocationsError && (
                         <p id="employee-location-error" role="alert" className="text-sm text-red-600 mt-1">
                             {isEditing ? "Couldn't load locations. Please try again to change the location." : "Couldn't load locations. You can add this person without a location."}
+                        </p>
+                    )}
+                </div>
+                <div>
+                    <Select
+                        id="employee-manager"
+                        label="Manager"
+                        value={managerId ?? ""}
+                        onChange={(event) => setManagerId(event.target.value ? Number(event.target.value) : null)}
+                        disabled={isManagersLoading || isManagersError || !directory || isPending}
+                        aria-describedby={isManagersError ? "employee-manager-error" : undefined}
+                        options={[
+                            { value: "", label: isManagersLoading ? "Loading people..." : "No manager" },
+                            ...(directory?.items ?? [])
+                                .filter((person) => person.id !== employee?.id)
+                                .map((person) => ({
+                                    value: String(person.id),
+                                    label: `${person.firstName} ${person.lastName} (${person.email})`,
+                                })),
+                        ]}
+                    />
+                    {isManagersError && (
+                        <p id="employee-manager-error" role="alert" className="text-sm text-red-600 mt-1">
+                            {isEditing ? "Couldn't load people. Please try again to change the manager." : "Couldn't load people. You can add this person without a manager."}
                         </p>
                     )}
                 </div>
