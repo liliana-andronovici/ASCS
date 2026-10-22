@@ -34,6 +34,14 @@ public class EmployeeRepository
                 cancellationToken);
     }
 
+    public async Task<List<EmployeeEntity>> GetAllWithDetailsAsync() =>
+        await Entities
+            .AsNoTracking()
+            .Include(employee => employee.Department)
+            .Include(employee => employee.Location)
+            .OrderBy(employee => employee.Id)
+            .ToListAsync();
+
     public Task<bool> EmailExistsAsync(
         string email,
         CancellationToken cancellationToken = default)

@@ -13,4 +13,6 @@ public interface IEmployeeService
     Task<int> CreateAsync(CreateEmployeeModel model);
     Task UpdateAsync(UpdateEmployeeModel model);
     Task DeleteAsync(int id);
+    Task<byte[]> ExportCsvAsync();
+    Task<ImportResultModel> ImportCsvAsync(Stream csvStream);
 }

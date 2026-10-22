@@ -1,5 +1,6 @@
 using InfigoHR.Application.Common;
 using InfigoHR.Application.Models.Departments;
+using InfigoHR.Application.Models.Employees;
 using InfigoHR.Application.QueryParameters.Departments;
 
 namespace InfigoHR.Application.Interfaces.Services;
@@ -12,4 +13,6 @@ public interface IDepartmentService
     Task<int> CreateAsync(CreateDepartmentModel model);
     Task UpdateAsync(UpdateDepartmentModel model);
     Task DeleteAsync(int id);
+    Task<byte[]> ExportCsvAsync();
+    Task<ImportResultModel> ImportCsvAsync(Stream csvStream);
 }

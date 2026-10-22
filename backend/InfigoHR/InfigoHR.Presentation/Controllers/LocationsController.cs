@@ -1,5 +1,7 @@
 using InfigoHR.Application.Models.Locations;
 using InfigoHR.Application.Interfaces.Services;
+using InfigoHR.Application.Models.Employees;
+using InfigoHR.Presentation.Models;
 using Microsoft.AspNetCore.Mvc;
 using InfigoHR.Application.Common;
 using InfigoHR.Application.QueryParameters.Locations;
@@ -36,6 +38,24 @@ public class LocationsController : ControllerBase
     {
         var location = await _locationService.GetByIdAsync(id);
         return Ok(location);
+    }
+
+    [HttpGet("export")]
+    public async Task<IActionResult> Export()
+    {
+        var file = await _locationService.ExportCsvAsync();
+        return File(file, "text/csv", "locations.csv");
+    }
+
+    [HttpPost("import")]
+    public async Task<ActionResult<ImportResultModel>> Import(IFormFile file)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new ErrorResponseModel { Message = "Please upload a non-empty CSV file." });
+
+        await using var stream = file.OpenReadStream();
+        var result = await _locationService.ImportCsvAsync(stream);
+        return Ok(result);
     }
 
     [HttpPost]

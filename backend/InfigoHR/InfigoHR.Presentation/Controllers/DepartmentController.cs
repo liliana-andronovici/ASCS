@@ -1,5 +1,7 @@
 using InfigoHR.Application.Interfaces.Services;
 using InfigoHR.Application.Models.Departments;
+using InfigoHR.Application.Models.Employees;
+using InfigoHR.Presentation.Models;
 using Microsoft.AspNetCore.Mvc;
 using InfigoHR.Application.Common;
 using InfigoHR.Application.QueryParameters.Departments;
@@ -37,6 +39,24 @@ public class DepartmentController : ControllerBase
     {
         var department = await _departmentService.GetByIdAsync(id);
         return Ok(department);
+    }
+
+    [HttpGet("export")]
+    public async Task<IActionResult> Export()
+    {
+        var file = await _departmentService.ExportCsvAsync();
+        return File(file, "text/csv", "departments.csv");
+    }
+
+    [HttpPost("import")]
+    public async Task<ActionResult<ImportResultModel>> Import(IFormFile file)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new ErrorResponseModel { Message = "Please upload a non-empty CSV file." });
+
+        await using var stream = file.OpenReadStream();
+        var result = await _departmentService.ImportCsvAsync(stream);
+        return Ok(result);
     }
 
     [HttpPost]
