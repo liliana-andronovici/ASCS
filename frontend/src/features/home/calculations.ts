@@ -30,7 +30,7 @@ export function buildUpcoming(employees: Employee[], now: Date, days = 45) {
         const started = startOfDay(new Date(employee.startedOnUtc));
         const name = `${employee.firstName} ${employee.lastName}`;
         if (started.getTime() >= today.getTime() && started.getTime() <= limit) {
-            items.push({ id: `start-${employee.id}`, date: started, what: "Starts at Infigo", who: `${name} · ${employee.title}` });
+            items.push({ id: `start-${employee.id}`, date: started, what: "Starts work", who: `${name} · ${employee.title}` });
             continue;
         }
         let next = new Date(today.getFullYear(), started.getMonth(), started.getDate());

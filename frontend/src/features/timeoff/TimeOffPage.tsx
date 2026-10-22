@@ -2,27 +2,46 @@ import { useState } from "react";
 import { Button } from "../../components/Button";
 import { PageHeader } from "../../layout/PageHeader";
 import { getErrorMessage } from "../../lib/errors";
+import { BalanceCards } from "./BalanceCards";
 import { NewRequestPanel } from "./NewRequestPanel";
 import { RequestsTable } from "./RequestsTable";
-import { useDeleteTimeOffRequest, useTimeOffRequests } from "./useTimeOff";
+import {
+    useTimeOffOverview,
+    useTimeOffRequests,
+    useWithdrawTimeOffRequest,
+} from "./useTimeOff";
 
 export default function TimeOffPage() {
     const [panelOpen, setPanelOpen] = useState(false);
+    const overview = useTimeOffOverview();
     const requests = useTimeOffRequests();
-    const remove = useDeleteTimeOffRequest();
-    const deletingId = remove.isPending ? remove.variables : null;
+    const withdraw = useWithdrawTimeOffRequest();
+
+    if (overview.isPending) {
+        return <div className="p-6 text-sm text-gray-500">Loading time off…</div>;
+    }
+
+    if (overview.isError) {
+        return <div className="p-6 text-sm text-coral">{getErrorMessage(overview.error)}</div>;
+    }
+
+    const { approverName, balances } = overview.data;
+    const withdrawingId = withdraw.isPending ? withdraw.variables : null;
 
     return (
         <div className="flex min-h-0 flex-1 flex-col">
             <PageHeader title="Time off">
-                <div className="w-44">
-                    <Button type="button" onClick={() => setPanelOpen(true)}>
-                        Request time off
-                    </Button>
+                <div className="flex items-center gap-4">
+                    <div className="w-44">
+                        <Button type="button" onClick={() => setPanelOpen(true)}>
+                            Request time off
+                        </Button>
+                    </div>
                 </div>
             </PageHeader>
 
             <div className="flex min-w-0 flex-1 flex-col">
+                <BalanceCards balances={balances} />
                 <section className="flex-1 px-6 py-5">
                     <h2 className="mb-2 text-base font-semibold text-navy">Your requests</h2>
                     {requests.isPending && <p className="text-sm text-gray-500">Loading requests…</p>}
@@ -32,17 +51,21 @@ export default function TimeOffPage() {
                     {requests.data && (
                         <RequestsTable
                             requests={requests.data}
-                            deletingId={deletingId}
-                            onDelete={(id) => remove.mutate(id)}
+                            withdrawingId={withdrawingId}
+                            onWithdraw={(id) => withdraw.mutate(id)}
                         />
                     )}
-                    {remove.isError && (
-                        <p className="mt-2 text-sm text-coral">{getErrorMessage(remove.error)}</p>
+                    {withdraw.isError && (
+                        <p className="mt-2 text-sm text-coral">{getErrorMessage(withdraw.error)}</p>
                     )}
                 </section>
             </div>
 
-            <NewRequestPanel open={panelOpen} onClose={() => setPanelOpen(false)} />
+            <NewRequestPanel
+                open={panelOpen}
+                onClose={() => setPanelOpen(false)}
+                approverName={approverName}
+            />
         </div>
     );
 }

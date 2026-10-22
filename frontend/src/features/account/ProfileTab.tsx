@@ -152,7 +152,7 @@ export function ProfileTab() {
                     <Fact label="Manager" value={managerName ?? "Not assigned"} />
                     <Fact label="Work email" value={employee.email} />
                     <Fact label="Started" value={formatDate(employee.startedOnUtc)} />
-                    <Fact label="With Infigo" value={formatTenure(employee.startedOnUtc)} />
+                    <Fact label="Tenure" value={formatTenure(employee.startedOnUtc)} />
                 </dl>
             </section>
 

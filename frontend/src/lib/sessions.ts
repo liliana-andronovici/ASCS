@@ -1,20 +1,17 @@
 const TOKEN_KEY = "accessToken";
-const LEGACY_TOKEN_KEY = "infigohr_token";
-const AVATAR_KEY = "infigohr_avatar";
+const AVATAR_KEY = "hr_portal_avatar";
 
 export function getToken(): string | null {
-    return localStorage.getItem(TOKEN_KEY) ?? localStorage.getItem(LEGACY_TOKEN_KEY);
+    return localStorage.getItem(TOKEN_KEY);
 }
 
 export function setToken(token: string): void {
     localStorage.setItem(TOKEN_KEY, token);
-    localStorage.removeItem(LEGACY_TOKEN_KEY);
 }
 
 export function clearToken(expectedToken?: string): boolean {
     if (expectedToken !== undefined && getToken() !== expectedToken) return false;
     localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(LEGACY_TOKEN_KEY);
     return true;
 }
 

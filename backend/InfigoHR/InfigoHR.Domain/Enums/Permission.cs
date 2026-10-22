@@ -4,5 +4,6 @@ public enum Permission
 {
     ReadDepartment = 1,
     ManageDepartment = 2,
-    ManageRoles = 3
+    ManageRoles = 3,
+    ManageEmployee = 4
 }

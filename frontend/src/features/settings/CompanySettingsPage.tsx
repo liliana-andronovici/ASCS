@@ -34,7 +34,7 @@ export default function CompanySettingsPage() {
         <div className="p-6">
             <div className="mb-6">
                 <h2 className="text-xl font-bold text-navy">Company overview</h2>
-                <p className="mt-1 text-sm text-gray-500">People, departments, and offices in Infigo HR.</p>
+                <p className="mt-1 text-sm text-gray-500">People, departments, and offices in your organization.</p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">

@@ -1,9 +1,9 @@
 // Design preview only. Replace with verified invitation data when the API exists.
 export const invitePreview = {
     inviterName: "Ana Popescu",
-    companyName: "Infigo",
+    companyName: "Example Company",
     jobTitle: "Product Designer",
-    email: "mihai.dinu@infigo.ro",
+    email: "name@example.com",
     firstName: "Mihai",
     lastName: "Dinu",
 };

@@ -5,4 +5,5 @@ namespace InfigoHR.Application.Interfaces.Repositories;
 public interface ILeaveRequestRepository : IGenericRepository<LeaveRequestEntity>
 {
     Task<IReadOnlyList<LeaveRequestEntity>> GetByEmployeeIdAsync(int employeeId);
+    Task<int> CountApprovedOnAsync(DateOnly date);
 }
